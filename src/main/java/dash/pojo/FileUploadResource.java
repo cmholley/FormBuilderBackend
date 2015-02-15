@@ -48,10 +48,10 @@ public class FileUploadResource {
 
 	@Autowired
 	private FileUploadService fileUploadService;
-	
+
 	@Autowired
 	private FormService formService;
-	
+
 	@Autowired
 	private UserService userService;
 
@@ -76,43 +76,49 @@ public class FileUploadResource {
 			@FormDataParam("file") FormDataContentDisposition fileDetail,
 			@HeaderParam("Content-Length") final long fileSize)
 			throws AppException {
-		User user= userService.getUserById(user_id);
-		
-		//Ensure content type is valid
-		try{
-		MediaType.valueOf(content_type);
-		}catch (IllegalArgumentException e){
-				return Response.status(Response.Status.BAD_REQUEST)
+		User user = userService.getUserById(user_id);
+
+		// Ensure content type is valid
+		try {
+			MediaType.valueOf(content_type);
+		} catch (IllegalArgumentException e) {
+			return Response
+					.status(Response.Status.BAD_REQUEST)
 					.entity("content type must be a valid javax.ws.rs.core.MediaType")
-					.build();}
-		
-		
-		String path= AppConstants.APPLICATION_UPLOAD_LOCATION_FOLDER+"/"
-				+ user.getId()+"/" + fileDetail.getFileName().replaceAll("%20", "_").toLowerCase();
-		
-		FileUpload fileUpload = new FileUpload(user_id, form_id, path, fileDetail.getFileName().replaceAll("%20", "_").toLowerCase()
-				, content_type);
-		Long createFileUploadId = fileUploadService
-				.createFileUpload(fileUpload, uploadedInputStream);
+					.build();
+		}
+
+		String path = AppConstants.APPLICATION_UPLOAD_LOCATION_FOLDER + "/"
+				+ user.getId() + "/"
+				+ fileDetail.getFileName().replaceAll("%20", "_").toLowerCase();
+
+		FileUpload fileUpload = new FileUpload(user_id, form_id, path,
+				fileDetail.getFileName().replaceAll("%20", "_").toLowerCase(),
+				content_type);
+		Long createFileUploadId = fileUploadService.createFileUpload(
+				fileUpload, uploadedInputStream);
 		return Response
 				.status(Response.Status.CREATED)
 				// 201
 				.entity("A new fileUpload has been created at index")
 				.header("Location", String.valueOf(createFileUploadId))
-				.header("ObjectId", String.valueOf(createFileUploadId))
-				.build();
+				.header("ObjectId", String.valueOf(createFileUploadId)).build();
 	}
-	
+
 	@DELETE
 	@Path("{id}")
 	@Produces({ MediaType.TEXT_HTML })
 	public Response deleteFileUpload(@PathParam("id") Long id)
 			throws AppException {
-		FileUpload fileUpload = fileUploadService.verifyFileUploadExistenceById(id);
-		Form form = formService.verifyFormExistenceById(fileUpload.getForm_id());
+		FileUpload fileUpload = fileUploadService
+				.verifyFileUploadExistenceById(id);
+		Form form = formService
+				.verifyFormExistenceById(fileUpload.getForm_id());
 		fileUploadService.deleteFileUpload(fileUpload, form);
-		return Response.status(Response.Status.NO_CONTENT)// 204
-				.entity("FileUpload successfully removed from database").build();
+		return Response.status(Response.Status.NO_CONTENT)
+				// 204
+				.entity("FileUpload successfully removed from database")
+				.build();
 	}
 
 	/**
@@ -124,18 +130,16 @@ public class FileUploadResource {
 	 * @throws AppException
 	 */
 	/*
-	@POST
-	@Path("list")
-	@Consumes({ MediaType.APPLICATION_JSON })
-	public Response createFileUploads(List<FileUpload> fileUploads)
-			throws AppException {
-		fileUploadService.createFileUploads(fileUploads);
-		return Response.status(Response.Status.CREATED)
-				// 201
-				.entity("List of fileUploads was successfully created")
-				.build();
-	}
-	*/
+	 * @POST
+	 * 
+	 * @Path("list")
+	 * 
+	 * @Consumes({ MediaType.APPLICATION_JSON }) public Response
+	 * createFileUploads(List<FileUpload> fileUploads) throws AppException {
+	 * fileUploadService.createFileUploads(fileUploads); return
+	 * Response.status(Response.Status.CREATED) // 201
+	 * .entity("List of fileUploads was successfully created") .build(); }
+	 */
 
 	// *************************************
 	// READ************************************
@@ -152,27 +156,32 @@ public class FileUploadResource {
 	 * @throws AppException
 	 */
 	/*
-	@GET
-	@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
-	public List<FileUpload> getFileUploads(
-			@QueryParam("numberOfFileUploads") @DefaultValue("25") int numberOfFileUploads,
-			@QueryParam("startIndex") @DefaultValue("0") Long startIndex)
-			throws IOException, AppException {
-		List<FileUpload> fileUploads = fileUploadService
-				.getFileUploads(numberOfFileUploads, startIndex);
-		return fileUploads;
-	}
-	*/
+	 * @GET
+	 * 
+	 * @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+	 * public List<FileUpload> getFileUploads(
+	 * 
+	 * @QueryParam("numberOfFileUploads") @DefaultValue("25") int
+	 * numberOfFileUploads,
+	 * 
+	 * @QueryParam("startIndex") @DefaultValue("0") Long startIndex) throws
+	 * IOException, AppException { List<FileUpload> fileUploads =
+	 * fileUploadService .getFileUploads(numberOfFileUploads, startIndex);
+	 * return fileUploads; }
+	 */
 
 	@GET
 	@Path("{id}")
-	public Response getFileUploadById(@PathParam("id") Long id) throws IOException,
-			AppException {
-		FileUpload fileUploadById = fileUploadService
-				.getFileUploadById(id);
-		Form form = formService.verifyFormExistenceById(fileUploadById.getForm_id());
-		return Response.ok(fileUploadService.getUploadFile(fileUploadById, form))
-				.type(Files.probeContentType(Paths.get(fileUploadById.getPath()))).build(); 
+	public Response getFileUploadById(@PathParam("id") Long id)
+			throws IOException, AppException {
+		FileUpload fileUploadById = fileUploadService.getFileUploadById(id);
+		Form form = formService.verifyFormExistenceById(fileUploadById
+				.getForm_id());
+		return Response
+				.ok(fileUploadService.getUploadFile(fileUploadById, form))
+				.type(fileUploadById.getContent_type())
+				.header("file_name", fileUploadById.getFile_name())
+				.build();
 	}
 
 	// ************************************* UPDATE
@@ -190,58 +199,52 @@ public class FileUploadResource {
 	 * @throws AppException
 	 */
 	/*
-	@PUT
-	@Path("{id}")
-	@Consumes({ MediaType.APPLICATION_JSON })
-	@Produces({ MediaType.TEXT_HTML })
-	public Response putFileUploadById(@PathParam("id") Long id,
-			FileUpload fileUpload) throws AppException {
+	 * @PUT
+	 * 
+	 * @Path("{id}")
+	 * 
+	 * @Consumes({ MediaType.APPLICATION_JSON })
+	 * 
+	 * @Produces({ MediaType.TEXT_HTML }) public Response
+	 * putFileUploadById(@PathParam("id") Long id, FileUpload fileUpload) throws
+	 * AppException {
+	 * 
+	 * FileUpload fileUploadById = fileUploadService
+	 * .verifyFileUploadExistenceById(id);
+	 * 
+	 * if (fileUploadById == null) { // resource not existent yet, and should be
+	 * created under the // specified URI //THIS SHOULD NEVER OCCUR FOR FILE
+	 * UPLOAD WILL PROBABLY BREAK Long createFileUploadId = fileUploadService
+	 * .createFileUpload(fileUpload, null); return Response
+	 * .status(Response.Status.CREATED) // 201
+	 * .entity("A new fileUpload has been created AT THE LOCATION you specified"
+	 * ) .header("Location", String.valueOf(createFileUploadId)) .build(); }
+	 * else { // resource is existent and a full update should occur
+	 * fileUploadService.updateFullyFileUpload(fileUpload); return Response
+	 * .status(Response.Status.OK) // 200 .entity(
+	 * "The fileUpload you specified has been fully updated created AT THE LOCATION you specified"
+	 * ) .header("Location", String.valueOf(id)).build(); } }
+	 */
 
-		FileUpload fileUploadById = fileUploadService
-				.verifyFileUploadExistenceById(id);
+	/*
+	 * PARTIAL update
+	 * 
+	 * @POST
+	 * 
+	 * @Path("{id}")
+	 * 
+	 * @Consumes({ MediaType.APPLICATION_JSON })
+	 * 
+	 * @Produces({ MediaType.TEXT_HTML }) public Response
+	 * partialUpdateFileUpload(@PathParam("id") Long id, FileUpload fileUpload)
+	 * throws AppException { fileUpload.setId(id);
+	 * fileUploadService.updatePartiallyFileUpload(fileUpload); return Response
+	 * .status(Response.Status.OK) // 200
+	 * .entity("The fileUpload you specified has been successfully updated")
+	 * .build(); }
+	 */
 
-		if (fileUploadById == null) {
-			// resource not existent yet, and should be created under the
-			// specified URI
-			//THIS SHOULD NEVER OCCUR FOR FILE UPLOAD WILL PROBABLY BREAK
-			Long createFileUploadId = fileUploadService
-					.createFileUpload(fileUpload, null);
-			return Response
-					.status(Response.Status.CREATED)
-					// 201
-					.entity("A new fileUpload has been created AT THE LOCATION you specified")
-					.header("Location", String.valueOf(createFileUploadId))
-					.build();
-		} else {
-			// resource is existent and a full update should occur
-			fileUploadService.updateFullyFileUpload(fileUpload);
-			return Response
-					.status(Response.Status.OK)
-					// 200
-					.entity("The fileUpload you specified has been fully updated created AT THE LOCATION you specified")
-					.header("Location", String.valueOf(id)).build();
-		}
-	}
-	*/
-
-	/*PARTIAL update
-	@POST
-	@Path("{id}")
-	@Consumes({ MediaType.APPLICATION_JSON })
-	@Produces({ MediaType.TEXT_HTML })
-	public Response partialUpdateFileUpload(@PathParam("id") Long id,
-			FileUpload fileUpload) throws AppException {
-		fileUpload.setId(id);
-		fileUploadService.updatePartiallyFileUpload(fileUpload);
-		return Response
-				.status(Response.Status.OK)
-				// 200
-				.entity("The fileUpload you specified has been successfully updated")
-				.build();
-	}*/
-	
 	// ************************************* FILE UPLOAD
 	// ************************************
-	
-	
+
 }
