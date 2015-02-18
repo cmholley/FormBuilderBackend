@@ -92,8 +92,6 @@ public class FormResponseDaoJPA2Impl implements FormResponseDao {
 		formResponse.setInsertion_date(new Date());
 		formResponse.setLatest_update(new Date());
 		entityManager.persist(formResponse);
-		entityManager.flush();// force insert to receive the id of the formResponse
-
 		// Give admin over new formResponse to the new formResponse
 
 		return formResponse.getId();
