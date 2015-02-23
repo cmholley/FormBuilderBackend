@@ -44,6 +44,9 @@ public class Form implements  IAclObject {
 	/** name of the form */
 	@XmlElement(name = "name")
 	private String name;
+	
+	@XmlElement(name = "subtitle")
+	private String subtitle;
 
 	/** insertion date in the database */
 	@XmlElement(name = "insertion_date")
@@ -255,6 +258,14 @@ public class Form implements  IAclObject {
 	
 	public void setClosed_message(String newClosed_message){
 		this.closed_message = newClosed_message;
+	}
+
+	public String getSubtitle() {
+		return subtitle;
+	}
+
+	public void setSubtitle(String subtitle) {
+		this.subtitle = subtitle;
 	}
 }
 

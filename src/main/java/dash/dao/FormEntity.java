@@ -50,6 +50,9 @@ public class FormEntity implements Serializable {
 	/** basic_field_sample of the user */
 	@Column(name = "name")
 	private String name;
+	
+	@Column(name = "subtitle")
+	private String subtitle;
 
 	/** insertion date in the database */
 	@Column(name = "insertion_date")
@@ -269,5 +272,13 @@ public class FormEntity implements Serializable {
 	
 	public void setClosed_message(String newClosed_message){
 		this.closed_message = newClosed_message;
+	}
+
+	public String getSubtitle() {
+		return subtitle;
+	}
+
+	public void setSubtitle(String subtitle) {
+		this.subtitle = subtitle;
 	}
 }

@@ -3,11 +3,14 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: 127.0.0.1
--- Generation Time: Jan 26, 2015 at 04:03 PM
+-- Generation Time: Feb 22, 2015 at 08:17 AM
 -- Server version: 5.6.20
 -- PHP Version: 5.5.15
 
+SET FOREIGN_KEY_CHECKS=0;
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+SET AUTOCOMMIT = 0;
+START TRANSACTION;
 SET time_zone = "+00:00";
 
 
@@ -46,7 +49,7 @@ CREATE TABLE IF NOT EXISTS `acl_entry` (
   `granting` tinyint(1) NOT NULL,
   `audit_success` tinyint(1) NOT NULL,
   `audit_failure` tinyint(1) NOT NULL
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=965 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=1049 ;
 
 -- --------------------------------------------------------
 
@@ -61,7 +64,7 @@ CREATE TABLE IF NOT EXISTS `acl_object_identity` (
   `parent_object` bigint(20) DEFAULT NULL,
   `owner_sid` bigint(20) NOT NULL DEFAULT '4',
   `entries_inheriting` tinyint(1) NOT NULL
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=197 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=211 ;
 
 -- --------------------------------------------------------
 
@@ -73,7 +76,7 @@ CREATE TABLE IF NOT EXISTS `acl_sid` (
 `id` bigint(20) NOT NULL,
   `principal` tinyint(1) NOT NULL,
   `sid` varchar(100) NOT NULL
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=45 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=46 ;
 
 -- --------------------------------------------------------
 
@@ -85,7 +88,23 @@ CREATE TABLE IF NOT EXISTS `authorities` (
 `id` int(11) NOT NULL,
   `username` varchar(50) NOT NULL,
   `authority` varchar(50) NOT NULL
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=9 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=10 ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `file_uploads`
+--
+
+CREATE TABLE IF NOT EXISTS `file_uploads` (
+`id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `form_id` int(11) DEFAULT NULL,
+  `path` varchar(256) NOT NULL,
+  `file_name` varchar(256) NOT NULL,
+  `content_type` varchar(128) NOT NULL,
+  `upload_timestamp` datetime DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=121 ;
 
 -- --------------------------------------------------------
 
@@ -96,8 +115,21 @@ CREATE TABLE IF NOT EXISTS `authorities` (
 CREATE TABLE IF NOT EXISTS `forms` (
 `id` int(11) NOT NULL,
   `name` varchar(128) NOT NULL DEFAULT 'UNTITLED',
-  `insertion_date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=47 ;
+  `subtitle` varchar(5000) DEFAULT NULL,
+  `insertion_date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `enabled` tinyint(1) NOT NULL DEFAULT '0',
+  `theme` enum('PLAIN') DEFAULT 'PLAIN',
+  `public` tinyint(1) NOT NULL DEFAULT '0',
+  `redirect_to_url` tinyint(1) NOT NULL DEFAULT '0',
+  `alert_for_response` tinyint(1) NOT NULL DEFAULT '0',
+  `email_embedded_responses` tinyint(1) NOT NULL DEFAULT '0',
+  `send_confirmation_email` tinyint(1) NOT NULL DEFAULT '0',
+  `email_message` varchar(12000) DEFAULT NULL,
+  `completed_message` varchar(12000) DEFAULT NULL,
+  `redirect_url` varchar(1200) DEFAULT NULL,
+  `expiration_date` date DEFAULT NULL,
+  `closed_message` varchar(12000) DEFAULT 'We''re sorry, this form is closed'
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=60 ;
 
 -- --------------------------------------------------------
 
@@ -140,7 +172,7 @@ CREATE TABLE IF NOT EXISTS `login` (
   `password` varchar(128) NOT NULL,
   `enabled` tinyint(1) NOT NULL DEFAULT '1',
 `id` int(11) NOT NULL
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=20 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=21 ;
 
 -- --------------------------------------------------------
 
@@ -159,8 +191,9 @@ CREATE TABLE IF NOT EXISTS `questions` (
   `placeholder` varchar(128) DEFAULT 'Your text here...',
   `required` tinyint(1) NOT NULL DEFAULT '0',
   `validation` varchar(16) NOT NULL DEFAULT 'NONE',
-  `options` varchar(256) DEFAULT NULL
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=305 ;
+  `options` varchar(256) DEFAULT NULL,
+  `settings` varchar(5000) DEFAULT NULL
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=351 ;
 
 -- --------------------------------------------------------
 
@@ -173,7 +206,7 @@ CREATE TABLE IF NOT EXISTS `sample_object` (
   `document_folder` varchar(128) DEFAULT NULL,
   `basic_field_sample` varchar(64) DEFAULT NULL,
   `time_stamp_sample` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=6 ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -192,7 +225,7 @@ CREATE TABLE IF NOT EXISTS `user_data` (
   `email` varchar(50) DEFAULT NULL,
   `picture` varchar(200) DEFAULT NULL,
   `insertion_date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=20 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=21 ;
 
 --
 -- Indexes for dumped tables
@@ -227,6 +260,12 @@ ALTER TABLE `acl_sid`
 --
 ALTER TABLE `authorities`
  ADD PRIMARY KEY (`id`), ADD UNIQUE KEY `ix_auth_username` (`username`,`authority`);
+
+--
+-- Indexes for table `file_uploads`
+--
+ALTER TABLE `file_uploads`
+ ADD PRIMARY KEY (`id`), ADD KEY `user_id` (`user_id`);
 
 --
 -- Indexes for table `forms`
@@ -283,27 +322,32 @@ MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=13;
 -- AUTO_INCREMENT for table `acl_entry`
 --
 ALTER TABLE `acl_entry`
-MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=965;
+MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=1049;
 --
 -- AUTO_INCREMENT for table `acl_object_identity`
 --
 ALTER TABLE `acl_object_identity`
-MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=197;
+MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=211;
 --
 -- AUTO_INCREMENT for table `acl_sid`
 --
 ALTER TABLE `acl_sid`
-MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=45;
+MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=46;
 --
 -- AUTO_INCREMENT for table `authorities`
 --
 ALTER TABLE `authorities`
-MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=9;
+MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=10;
+--
+-- AUTO_INCREMENT for table `file_uploads`
+--
+ALTER TABLE `file_uploads`
+MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=121;
 --
 -- AUTO_INCREMENT for table `forms`
 --
 ALTER TABLE `forms`
-MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=47;
+MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=60;
 --
 -- AUTO_INCREMENT for table `form_responses`
 --
@@ -318,22 +362,22 @@ MODIFY `entry_id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=2343;
 -- AUTO_INCREMENT for table `login`
 --
 ALTER TABLE `login`
-MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=20;
+MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=21;
 --
 -- AUTO_INCREMENT for table `questions`
 --
 ALTER TABLE `questions`
-MODIFY `question_id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=305;
+MODIFY `question_id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=351;
 --
 -- AUTO_INCREMENT for table `sample_object`
 --
 ALTER TABLE `sample_object`
-MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=6;
+MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 --
 -- AUTO_INCREMENT for table `user_data`
 --
 ALTER TABLE `user_data`
-MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=20;
+MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=21;
 --
 -- Constraints for dumped tables
 --
@@ -366,11 +410,38 @@ ALTER TABLE `authorities`
 ADD CONSTRAINT `fk_authorities_users` FOREIGN KEY (`username`) REFERENCES `login` (`username`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
+-- Constraints for table `file_uploads`
+--
+ALTER TABLE `file_uploads`
+ADD CONSTRAINT `file_uploads->user_data` FOREIGN KEY (`user_id`) REFERENCES `user_data` (`id`) ON UPDATE CASCADE;
+
+--
+-- Constraints for table `form_responses`
+--
+ALTER TABLE `form_responses`
+ADD CONSTRAINT `response->form.id` FOREIGN KEY (`form_id`) REFERENCES `forms` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+ADD CONSTRAINT `response->user_data.id` FOREIGN KEY (`owner_id`) REFERENCES `user_data` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `form_response_entries`
+--
+ALTER TABLE `form_response_entries`
+ADD CONSTRAINT `entry->response.id` FOREIGN KEY (`form_response_id`) REFERENCES `form_responses` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
 -- Constraints for table `login`
 --
 ALTER TABLE `login`
 ADD CONSTRAINT `login->user_data (id)` FOREIGN KEY (`id`) REFERENCES `user_data` (`id`) ON DELETE CASCADE,
 ADD CONSTRAINT `login->user_data (username)` FOREIGN KEY (`username`) REFERENCES `user_data` (`username`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `questions`
+--
+ALTER TABLE `questions`
+ADD CONSTRAINT `question->form.id` FOREIGN KEY (`form_id`) REFERENCES `forms` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+SET FOREIGN_KEY_CHECKS=1;
+COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;

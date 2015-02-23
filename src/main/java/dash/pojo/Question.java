@@ -101,6 +101,11 @@ public class Question  implements Serializable {
 	@XmlElement(name = "validation")
 	@Column(name = "validation")
 	private AppConstants.InputValidation validation;
+	
+	/** A JSON of misc question settings. */
+	@XmlElement(name = "settings")
+	@Column(name="settings")
+	private String settings="{}";
 
 
 
