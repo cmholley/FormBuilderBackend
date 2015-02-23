@@ -211,7 +211,7 @@ public class FileUploadServiceDbAccessImpl extends ApplicationObjectSupport
 	public void deleteFileUpload(FileUpload fileUpload, Form form) throws AppException{
 		
 		//first remove the actual file
-		Path path = Paths.get(fileUpload.getPath()+fileUpload.getFile_name());
+		Path path = Paths.get(fileUpload.getPath());
 		try {
 		    Files.delete(path);
 		} catch (NoSuchFileException x) {
