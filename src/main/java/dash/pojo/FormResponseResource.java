@@ -248,7 +248,10 @@ public class FormResponseResource {
 	public Response deletePost(@PathParam("id") Long id)
 			throws AppException {
 		FormResponse formResponse = formResponseService.verifyFormResponseExistenceById(id);
-		
+		if(formResponse==null){ return Response.status(Response.Status.BAD_REQUEST)
+				.entity("There was no formResponse found with this Id, please ensure this response exists in the database")
+				.build();
+		}
 		
 		formResponseService.deleteFormResponse(formResponse);
 		return Response.status(Response.Status.NO_CONTENT)// 204

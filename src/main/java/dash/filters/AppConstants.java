@@ -9,7 +9,7 @@ public class AppConstants {
 		SHORT_TEXT
 	}
 	public enum InputValidation{
-		NONE, NUMBER, EMAIL, URL
+		NONE, NUMBER, EMAIL, URL, PHONE
 	}
 	public enum TOKEN_TYPE{ 
 		PASSWORD_RESET, EMAIL_ACTIVATION 

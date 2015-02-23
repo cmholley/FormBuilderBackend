@@ -61,7 +61,7 @@ public class Form implements  IAclObject {
 	private boolean publi;
 	
 	@XmlElement(name = "theme")
-	private THEME theme;
+	private THEME theme= THEME.PLAIN;
 	
 	@XmlElement(name = "redirect_to_url")
 	private boolean redirect_to_url;
