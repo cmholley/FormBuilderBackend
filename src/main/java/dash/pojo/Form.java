@@ -267,5 +267,11 @@ public class Form implements  IAclObject {
 	public void setSubtitle(String subtitle) {
 		this.subtitle = subtitle;
 	}
+	public boolean isExpired(){
+		if(expiration_date==null){return false;}
+		if(expiration_date.before(new Date())){
+			return true;
+		}else{return false;}
+	}
 }
 

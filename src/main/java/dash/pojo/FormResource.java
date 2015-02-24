@@ -17,8 +17,10 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.core.JsonParseException;
@@ -146,12 +148,23 @@ public class FormResource {
 	public Response getFormById(@PathParam("id") Long id,
 			@QueryParam("detailed") boolean detailed) throws IOException,
 			AppException {
+		try{
 		Form formById = formService
 				.getFormById(id);
 		return Response.status(200)
 				.entity(new GenericEntity<Form>(formById) {
 				}).header("Access-Control-Allow-Headers", "X-extra-header")
 				.allow("OPTIONS").build();
+		}catch(AccessDeniedException e){
+			Form formData = formService.verifyFormExistenceById(id);
+			formData.setQuestions(null);			
+			return Response.status(Status.UNAUTHORIZED)
+					.entity(new GenericEntity<Form>(formData) {
+					}).header("Access-Control-Allow-Headers", "X-extra-header")
+					.allow("OPTIONS").build();
+			
+		}
+		
 	}
 	
 	

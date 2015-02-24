@@ -68,7 +68,7 @@ public interface FormService {
 	
 	//Enable the following line of code to restrict read access to a single object.
 	// and returnObject.getPubli()==true or returnObject.getEnabled()==true and hasRole('ROLE_USER')
-	@PostAuthorize("hasPermission(returnObject, 'read') or hasRole('ROLE_ADMIN') or returnObject.getEnabled()==true and returnObject.getPubli()==true or returnObject.getEnabled()==true and hasRole('ROLE_USER')" )
+	@PostAuthorize("hasPermission(returnObject, 'read') or hasRole('ROLE_ADMIN') or returnObject.getEnabled()==true and returnObject.getPubli()==true and returnObject.isExpired()==false or returnObject.getEnabled()==true and hasRole('ROLE_USER') and returnObject.isExpired()==false" )
 	public Form getFormById(Long id) throws AppException;
 	
 
