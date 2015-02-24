@@ -8,6 +8,7 @@ import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
 
 import dash.errorhandling.AppException;
+import dash.pojo.Form;
 import dash.pojo.FormResponse;
 import dash.pojo.SampleObject;
 
@@ -71,8 +72,9 @@ public interface FormResponseService {
 	@PostAuthorize("hasPermission(returnObject, 'read') or hasRole('ROLE_ADMIN')")
 	public FormResponse getFormResponseById(Long id) throws AppException;
 	
-	@PostFilter("hasPermission(filterObject, 'read') or hasRole('ROLE_ADMIN')")
-	public List<FormResponse> getFormResponsesByFormId(Long id, int numberOfFormResponses, int page) throws AppException;
+	//@PostFilter("hasPermission(filterObject, 'read') or hasRole('ROLE_ADMIN')")
+	@PostFilter("hasPermission(#form, 'write') or hasRole('ROLE_ADMIN')")
+	public List<FormResponse> getFormResponsesByFormId(Long id, int numberOfFormResponses, int page, Form form) throws AppException;
 
 	/*
 	 * ******************** Update related methods **********************

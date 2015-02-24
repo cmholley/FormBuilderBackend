@@ -137,7 +137,7 @@ public class FormResponseServiceDbAccessImpl extends ApplicationObjectSupport
 	}
 	
 	@Override
-	public List<FormResponse> getFormResponsesByFormId(Long id, int numberOfFormResponses, int page) throws AppException {
+	public List<FormResponse> getFormResponsesByFormId(Long id, int numberOfFormResponses, int page, Form form) throws AppException {
 		List<FormResponseEntity> formResponsesByFormId = formResponseDao
 				.getFormResponsesByFormId(id, numberOfFormResponses, page);
 		if (formResponsesByFormId == null) {

@@ -160,7 +160,7 @@ public class FormResponseResource {
 			AppException {
 		Form formById = formService
 				.verifyFormExistenceById(id);
-		List<FormResponse> formResponsesByFormId= formResponseService.getFormResponsesByFormId(id, numberOfFormResponses, page);
+		List<FormResponse> formResponsesByFormId= formResponseService.getFormResponsesByFormId(id, numberOfFormResponses, page, formService.getFormById(id));
 		return formResponsesByFormId;
 	}
 	
