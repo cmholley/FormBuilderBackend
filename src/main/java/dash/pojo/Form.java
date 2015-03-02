@@ -64,7 +64,7 @@ public class Form implements  IAclObject {
 	private boolean publi;
 	
 	@XmlElement(name = "theme")
-	private THEME theme;
+	private THEME theme= THEME.PLAIN;
 	
 	@XmlElement(name = "redirect_to_url")
 	private boolean redirect_to_url;
@@ -127,7 +127,9 @@ public class Form implements  IAclObject {
 		this.theme = theme;
 	}
 
-	public Form() {
+	public Form() {		
+	this.closed_message = "We're sorry, this form is closed";
+	this.completed_message = "Thank you for your submission, your response has been recorded";
 	}
 
 
@@ -266,6 +268,12 @@ public class Form implements  IAclObject {
 
 	public void setSubtitle(String subtitle) {
 		this.subtitle = subtitle;
+	}
+	public boolean isExpired(){
+		if(expiration_date==null){return false;}
+		if(expiration_date.before(new Date())){
+			return true;
+		}else{return false;}
 	}
 }
 
