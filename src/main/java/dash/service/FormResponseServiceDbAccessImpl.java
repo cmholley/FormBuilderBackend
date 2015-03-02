@@ -242,13 +242,13 @@ public class FormResponseServiceDbAccessImpl extends ApplicationObjectSupport
 		// If you would like to allow null values use the following line.
 		// Reference PostServiceImpl in the VolunteerManagementApp for more
 		// details.
-		// BeanUtilsBean withNull=new BeanUtilsBean();
+		 BeanUtilsBean withNull=new BeanUtilsBean();
 
 		// Assuming the NullAwareBeanUtilsBean is sufficient this code can be
 		// used.
-		BeanUtilsBean notNull = new NullAwareBeanUtilsBean();
+		//BeanUtilsBean notNull = new NullAwareBeanUtilsBean();
 		try {
-			notNull.copyProperties(verifyFormResponseExistenceById,
+			withNull.copyProperties(verifyFormResponseExistenceById,
 					formResponse);
 		} catch (IllegalAccessException e) {
 			// TODO Auto-generated catch block
