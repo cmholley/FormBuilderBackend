@@ -21,8 +21,19 @@ import javax.ws.rs.core.Response;
 import org.apache.commons.beanutils.BeanUtilsBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.ApplicationObjectSupport;
+import org.springframework.mail.MailException;
+import org.springframework.mail.MailSender;
+import org.springframework.mail.SimpleMailMessage;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
+
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.mail.MailParseException;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 
 import dash.dao.FormResponseDao;
 import dash.dao.FormResponseEntity;
@@ -50,12 +61,18 @@ public class FormResponseServiceDbAccessImpl extends ApplicationObjectSupport
 
 	@Autowired
 	FormResponseDao formResponseDao;
-	
+
 	@Autowired
 	FormService formService;
 
 	@Autowired
 	private GenericAclController<FormResponse> aclController;
+
+	@Autowired
+	private JavaMailSender mailSender;
+
+	@Autowired
+	private SimpleMailMessage templateMessage;
 
 	/********************* Create related methods implementation ***********************/
 	@Override
@@ -63,23 +80,21 @@ public class FormResponseServiceDbAccessImpl extends ApplicationObjectSupport
 	public Long createFormResponse(FormResponse formResponse)
 			throws AppException {
 
-		//Generate empty form response entries for each question
-		Set<Entry> entries= new HashSet<Entry>();
+		// Generate empty form response entries for each question
+		Set<Entry> entries = new HashSet<Entry>();
 		Form form = formService.getFormById(formResponse.getForm_id());
-		Set<Question> questions= form.getQuestions();
-		
-		if(questions != null && formResponse.getEntries().isEmpty()){
+		Set<Question> questions = form.getQuestions();
+
+		if (questions != null && formResponse.getEntries().isEmpty()) {
 			for (Question question : questions) {
-			    Entry entry= new Entry();
-			    entry.setQuestion_id(question.getQuestion_id());
-			    entry.setLabel(question.getLabel());
+				Entry entry = new Entry();
+				entry.setQuestion_id(question.getQuestion_id());
+				entry.setLabel(question.getLabel());
 				entries.add(entry);
 			}
 			formResponse.setEntries(entries);
 		}
-		
-		
-		
+
 		long formResponseId = formResponseDao
 				.createFormResponse(new FormResponseEntity(formResponse));
 		formResponse.setId(formResponseId);
@@ -87,6 +102,9 @@ public class FormResponseServiceDbAccessImpl extends ApplicationObjectSupport
 		aclController.createAce(formResponse, CustomPermission.READ);
 		aclController.createAce(formResponse, CustomPermission.WRITE);
 		aclController.createAce(formResponse, CustomPermission.DELETE);
+
+		if (formResponse.getSend_confirmation_to_responder()) //Sends Confirmation Email to Responder
+			this.sendConfirmationEmail(formResponse);
 		return formResponseId;
 	}
 
@@ -109,15 +127,54 @@ public class FormResponseServiceDbAccessImpl extends ApplicationObjectSupport
 				.getFormResponses(numberOfFormResponses, startIndex);
 		return getFormResponsesFromEntities(formResponses);
 	}
-	
+
 	public List<FormResponse> getMyFormResponses(int numberOfFormResponses,
-			Long startIndex)throws AppException{
-		
-		//TODO: Instead of returning the getAll function we should do a lookup
+			Long startIndex) throws AppException {
+
+		// TODO: Instead of returning the getAll function we should do a lookup
 		// in the ACL tables to compile a list of all objects where the user has
-		// the required permission and then do a select query to build a collection
+		// the required permission and then do a select query to build a
+		// collection
 		// of only those objects.
 		return getFormResponses(numberOfFormResponses, startIndex);
+	}
+
+	
+	//Sends a plain text email with confirmation. 
+	private void sendConfirmationEmail(FormResponse formResponse) {
+		SimpleMailMessage msg = new SimpleMailMessage(this.templateMessage);
+		msg.setTo(formResponse.getResponderEmail());
+		msg.setText("Confirmation Email"); // Replace with confirmation text.
+											// Can change in the bean or
+											// personalized confirmation- Chris
+		try {
+			this.mailSender.send(msg);
+		} catch (MailException ex) {
+			// simply log it and go on...
+			System.err.println(ex.getMessage());
+		}
+	}
+	
+	//Sends an email with text and attachment
+	private void sendResponseAlert(FormResponse formResponse, Form form) {
+
+		MimeMessage message = this.mailSender.createMimeMessage();
+
+		try {
+			MimeMessageHelper helper = new MimeMessageHelper(message, true);
+
+			helper.setFrom(templateMessage.getFrom());
+			helper.setTo("cmholley97@gmail.com");
+			helper.setSubject(templateMessage.getSubject());
+			helper.setText("This is a test");
+			//This needs to be replaced with the pdf of the response
+			FileSystemResource file = new FileSystemResource("C:\\Users\\Christopher\\Desktop\\test.txt");
+			helper.addAttachment(file.getFilename(), file);
+
+		} catch (MessagingException e) {
+			throw new MailParseException(e);
+		}
+		mailSender.send(message);
 	}
 
 	@Override
@@ -135,9 +192,10 @@ public class FormResponseServiceDbAccessImpl extends ApplicationObjectSupport
 
 		return new FormResponse(formResponseDao.getFormResponseById(id));
 	}
-	
+
 	@Override
-	public List<FormResponse> getFormResponsesByFormId(Long id, int numberOfFormResponses, int page) throws AppException {
+	public List<FormResponse> getFormResponsesByFormId(Long id,
+			int numberOfFormResponses, int page) throws AppException {
 		List<FormResponseEntity> formResponsesByFormId = formResponseDao
 				.getFormResponsesByFormId(id, numberOfFormResponses, page);
 		if (formResponsesByFormId == null) {
@@ -148,7 +206,7 @@ public class FormResponseServiceDbAccessImpl extends ApplicationObjectSupport
 							+ id + " in the database",
 					AppConstants.DASH_POST_URL);
 		}
-		
+
 		return getFormResponsesFromEntities(formResponsesByFormId);
 	}
 
@@ -158,16 +216,15 @@ public class FormResponseServiceDbAccessImpl extends ApplicationObjectSupport
 		for (FormResponseEntity formResponseEntity : formResponseEntities) {
 			responses.add(new FormResponse(formResponseEntity));
 		}
-		
+
 		return responses;
 	}
 
 	/**
-	 *  save uploaded file to new location
+	 * save uploaded file to new location
 	 */
 	public void uploadFile(InputStream uploadedInputStream,
-			String uploadedFileLocation)
-			throws AppException {
+			String uploadedFileLocation) throws AppException {
 
 		try {
 			File file = new File(uploadedFileLocation);
@@ -233,7 +290,6 @@ public class FormResponseServiceDbAccessImpl extends ApplicationObjectSupport
 
 		formResponseDao.updateFormResponse(new FormResponseEntity(
 				verifyFormResponseExistenceById));
-
 	}
 
 	private void copyAllProperties(
@@ -328,54 +384,59 @@ public class FormResponseServiceDbAccessImpl extends ApplicationObjectSupport
 		}
 
 	}
-	
+
 	@Override
-	public void deleteUploadFile(String uploadedFileLocation) throws AppException {
+	public void deleteUploadFile(String uploadedFileLocation)
+			throws AppException {
 		Path path = Paths.get(uploadedFileLocation);
 		try {
-		    Files.delete(path);
+			Files.delete(path);
 		} catch (NoSuchFileException x) {
 			x.printStackTrace();
 			throw new AppException(Response.Status.NOT_FOUND.getStatusCode(),
-					404,
-					"NoSuchFileException thrown, Operation unsuccesful.", "Please ensure the file you are attempting to"
-					+ " delete exists at "+path+".", AppConstants.DASH_POST_URL);
-			
-					
+					404, "NoSuchFileException thrown, Operation unsuccesful.",
+					"Please ensure the file you are attempting to"
+							+ " delete exists at " + path + ".",
+					AppConstants.DASH_POST_URL);
+
 		} catch (DirectoryNotEmptyException x) {
 			x.printStackTrace();
-			throw new AppException(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),
+			throw new AppException(
+					Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),
 					404,
-					"DirectoryNotEmptyException thrown, operation unsuccesful.", "This method should not attempt to delete,"
-							+ " This should be considered a very serious error. Occured at "+path+".",
-					AppConstants.DASH_POST_URL);
+					"DirectoryNotEmptyException thrown, operation unsuccesful.",
+					"This method should not attempt to delete,"
+							+ " This should be considered a very serious error. Occured at "
+							+ path + ".", AppConstants.DASH_POST_URL);
 		} catch (IOException x) {
 			x.printStackTrace();
-			throw new AppException(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),
+			throw new AppException(
+					Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),
 					500,
-					"IOException thrown and the designated file was not deleted.", 
-					" Permission problems occured at "+path+".",
+					"IOException thrown and the designated file was not deleted.",
+					" Permission problems occured at " + path + ".",
 					AppConstants.DASH_POST_URL);
 		}
-		
+
 	}
 
 	@Override
 	public List<String> getFileNames(FormResponse formResponse) {
 		List<String> results = new ArrayList<String>();
-		
-		File[] files = new File(AppConstants.APPLICATION_UPLOAD_LOCATION_FOLDER+"/" + formResponse.getDocument_folder()).listFiles();
-		//If this pathname does not denote a directory, then listFiles() returns null. 
 
-		if(files != null){
+		File[] files = new File(AppConstants.APPLICATION_UPLOAD_LOCATION_FOLDER
+				+ "/" + formResponse.getDocument_folder()).listFiles();
+		// If this pathname does not denote a directory, then listFiles()
+		// returns null.
+
+		if (files != null) {
 			for (File file : files) {
-			    if (file.isFile()) {
-			        results.add(file.getName());
-			    }
+				if (file.isFile()) {
+					results.add(file.getName());
+				}
 			}
 		}
 		return results;
 	}
 
-	
 }

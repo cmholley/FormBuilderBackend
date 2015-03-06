@@ -99,6 +99,7 @@ public class FormEntity implements Serializable {
 	@Column(name = "closed_message")
 	private String closed_message;
 	
+	
 	public FormEntity(){
 		this.closed_message = "We're sorry, this form is closed";
 		this.completed_message = "Thank you for your submission, your response has been recorded";
