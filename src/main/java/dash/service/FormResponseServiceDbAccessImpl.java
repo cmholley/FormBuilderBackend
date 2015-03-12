@@ -103,8 +103,7 @@ public class FormResponseServiceDbAccessImpl extends ApplicationObjectSupport
 		aclController.createAce(formResponse, CustomPermission.WRITE);
 		aclController.createAce(formResponse, CustomPermission.DELETE);
 
-		if (formResponse.getSend_confirmation_to_responder()) //Sends Confirmation Email to Responder
-			this.sendConfirmationEmail(formResponse);
+
 		return formResponseId;
 	}
 
@@ -164,12 +163,12 @@ public class FormResponseServiceDbAccessImpl extends ApplicationObjectSupport
 			MimeMessageHelper helper = new MimeMessageHelper(message, true);
 
 			helper.setFrom(templateMessage.getFrom());
-			helper.setTo("cmholley97@gmail.com");
+			helper.setTo("carl_steven@live.com");
 			helper.setSubject(templateMessage.getSubject());
 			helper.setText("This is a test");
 			//This needs to be replaced with the pdf of the response
-			FileSystemResource file = new FileSystemResource("C:\\Users\\Christopher\\Desktop\\test.txt");
-			helper.addAttachment(file.getFilename(), file);
+//			FileSystemResource file = new FileSystemResource("C:\\Users\\Christopher\\Desktop\\test.txt");
+//			helper.addAttachment(file.getFilename(), file);
 
 		} catch (MessagingException e) {
 			throw new MailParseException(e);
@@ -287,7 +286,8 @@ public class FormResponseServiceDbAccessImpl extends ApplicationObjectSupport
 							+ formResponse.getId(), AppConstants.DASH_POST_URL);
 		}
 		copyAllProperties(verifyFormResponseExistenceById, formResponse);
-
+		if (formResponse.getSend_confirmation_to_responder()) //Sends Confirmation Email to Responder
+			this.sendConfirmationEmail(formResponse);
 		formResponseDao.updateFormResponse(new FormResponseEntity(
 				verifyFormResponseExistenceById));
 	}
