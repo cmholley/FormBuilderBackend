@@ -140,22 +140,20 @@ public class FormResponseServiceDbAccessImpl extends ApplicationObjectSupport
 
 	
 	//Sends a plain text email with confirmation. 
-	private void sendConfirmationEmail(FormResponse formResponse) {
+	private void sendReceiptEmail(FormResponse formResponse, Form form) {
 		SimpleMailMessage msg = new SimpleMailMessage(this.templateMessage);
 		msg.setTo(formResponse.getResponderEmail());
-		msg.setText("Confirmation Email"); // Replace with confirmation text.
-											// Can change in the bean or
-											// personalized confirmation- Chris
+		msg.setSubject("Confirmation Receipt for " + form.getName());
+		msg.setText(form.getEmail_message()); 
 		try {
 			this.mailSender.send(msg);
 		} catch (MailException ex) {
-			// simply log it and go on...
-			System.err.println(ex.getMessage());
+			System.err.println(ex.getMessage()); //Do we need a front end error if the sending fails?
 		}
 	}
 	
 	//Sends an email with text and attachment
-	private void sendResponseAlert(FormResponse formResponse, Form form) {
+	private void sendEmbeddedResponse(FormResponse formResponse, Form form) {
 
 		MimeMessage message = this.mailSender.createMimeMessage();
 
@@ -163,10 +161,11 @@ public class FormResponseServiceDbAccessImpl extends ApplicationObjectSupport
 			MimeMessageHelper helper = new MimeMessageHelper(message, true);
 
 			helper.setFrom(templateMessage.getFrom());
-			helper.setTo("carl_steven@live.com");
+			helper.setTo(form.getConfirmation_recipient_email());
 			helper.setSubject(templateMessage.getSubject());
-			helper.setText("This is a test");
-			//This needs to be replaced with the pdf of the response
+			helper.setText("Someone has submmitted a response to you form " + form.getName()
+					+ "\n The response is copied below.\n test");
+//			This needs to be replaced with the pdf of the response
 //			FileSystemResource file = new FileSystemResource("C:\\Users\\Christopher\\Desktop\\test.txt");
 //			helper.addAttachment(file.getFilename(), file);
 
@@ -286,10 +285,16 @@ public class FormResponseServiceDbAccessImpl extends ApplicationObjectSupport
 							+ formResponse.getId(), AppConstants.DASH_POST_URL);
 		}
 		copyAllProperties(verifyFormResponseExistenceById, formResponse);
-		if (formResponse.getSend_confirmation_to_responder()) //Sends Confirmation Email to Responder
-			this.sendConfirmationEmail(formResponse);
+		Form form = formService.getFormById(formResponse.getForm_id());	
+		
 		formResponseDao.updateFormResponse(new FormResponseEntity(
 				verifyFormResponseExistenceById));
+		if(formResponse.isIs_complete()){
+			if (formResponse.getSend_receipt()) //Sends Confirmation Email to Responder
+				this.sendReceiptEmail(formResponse, form);
+			if(form.getSend_notification())
+				this.sendEmbeddedResponse(formResponse, form);
+		}
 	}
 
 	private void copyAllProperties(

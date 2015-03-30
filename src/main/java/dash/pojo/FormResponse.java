@@ -58,8 +58,8 @@ public class FormResponse implements  IAclObject {
 	@XmlElement(name= "entries")
 	private Set<Entry> entries= new HashSet<Entry>();
 	
-	@XmlElement(name = "send_confirmation_to_responder")
-	private boolean send_confirmation_to_responder;
+	@XmlElement(name = "send_receipt")
+	private boolean send_receipt;
 
 	public FormResponse(FormResponseEntity objectEntity) {
 		try {
@@ -77,7 +77,7 @@ public class FormResponse implements  IAclObject {
 	}
 
 	public FormResponse(Long form_id, Long owner_id, boolean is_complete,
-			Set<Entry> entries, String document_folder, String responder_email, boolean send_confirmation_to_responder) {
+			Set<Entry> entries, String document_folder, String responder_email, boolean send_receipt) {
 		super();
 		this.form_id = form_id;
 		this.owner_id = owner_id;
@@ -85,7 +85,7 @@ public class FormResponse implements  IAclObject {
 		this.entries = entries;
 		this.document_folder= document_folder;
 		this.responder_email = responder_email;
-		this.send_confirmation_to_responder = send_confirmation_to_responder;
+		this.send_receipt = send_receipt;
 	}
 
 	public Long getId() {
@@ -160,11 +160,11 @@ public class FormResponse implements  IAclObject {
 		this.responder_email = responder_email;
 	}
 	
-	public boolean getSend_confirmation_to_responder(){
-		return send_confirmation_to_responder;
+	public boolean getSend_receipt(){
+		return send_receipt;
 	}
 	
-	public void setSend_confirmation_to_responder(boolean send_confirmation_to_responder){
-		this.send_confirmation_to_responder = send_confirmation_to_responder;
+	public void setSend_receipt(boolean send_receipt){
+		this.send_receipt = send_receipt;
 	}
 }

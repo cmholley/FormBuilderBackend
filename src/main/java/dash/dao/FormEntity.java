@@ -2,10 +2,8 @@ package dash.dao;
 
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CollectionTable;
@@ -22,9 +20,10 @@ import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlElement;
 
 import org.apache.commons.beanutils.BeanUtils;
+import org.springframework.security.core.context.SecurityContextHolder;
 
-import dash.pojo.Entry;
 import dash.pojo.Form;
+import dash.pojo.User;
 import dash.pojo.Form.THEME;
 import dash.pojo.Question;
 
@@ -32,6 +31,10 @@ import dash.pojo.Question;
  * This is an example implementation of an entity for a simple object (non-user)
  *
  * @author Tyler.swensen@gmail.com
+ *
+ */
+/**
+ * @author Christopher
  *
  */
 @Entity
@@ -75,16 +78,13 @@ public class FormEntity implements Serializable {
 	@Column(name = "redirect_to_url")
 	private boolean redirect_to_url;
 	
-	@Column(name = "alert_for_response")
-	private boolean alert_for_response;
-
-	@Column(name = "email_embedded_responses")
-	private boolean email_embedded_responses;
+	@Column(name = "send_notification")
+	private boolean send_notification;
 	
-	@Column(name = "send_confirmation_email")
-	private boolean send_confirmation_email; 
+	@Column(name = "send_receipt")
+	private boolean send_receipt; 
 	
-	@Column(name = "email_message")
+	@Column(name = "email_message")//Message for receipt email
 	private String email_message;
 	
 	@Column(name = "completed_message")
@@ -99,33 +99,44 @@ public class FormEntity implements Serializable {
 	@Column(name = "closed_message")
 	private String closed_message;
 	
+	@Column(name = "confirmation_recipient_email")
+	private String confirmation_recipient_email;
 	
 	public FormEntity(){
 		this.closed_message = "We're sorry, this form is closed";
 		this.completed_message = "Thank you for your submission, your response has been recorded";
+		this.email_message = "Thank you for completing this form. Your response has been recorded";
+		//User user = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		//this.confirmation_recipient_email = user.getUsername();
 	}
 
-	public FormEntity(String name, Set<Question> questions, boolean redirect_to_url,
-			boolean enabled, boolean publi, boolean alert_for_response,
-			boolean email_embedded_responses, boolean send_confirmation_email, 
-			String email_message, String completed_message, String redirect_url, 
-			Date expiration_date, String closed_message, THEME theme) {
+
+
+	public FormEntity(Long id, String name, String subtitle,
+			Date insertion_date, Set<Question> questions, boolean publi,
+			boolean enabled, THEME theme, boolean redirect_to_url,
+			boolean send_notification, 
+			boolean send_receipt, String email_message,
+			String completed_message, String redirect_url,
+			Date expiration_date, String closed_message, String confirmation_recipient_email) { 
 		super();
 		this.name = name;
 		this.questions = questions;
 		this.redirect_to_url = redirect_to_url;
 		this.enabled = enabled;
 		this.publi = publi;
-		this.alert_for_response = alert_for_response;
-		this.email_embedded_responses = email_embedded_responses;
-		this.send_confirmation_email = send_confirmation_email;
-		this.email_message = email_message;
-		this.completed_message = completed_message;
+		this.send_notification = send_notification;
+		this.send_receipt = send_receipt;
 		this.redirect_url = redirect_url;
 		this.expiration_date = expiration_date;
-		this.closed_message = closed_message;
 		this.theme = theme;
+		this.confirmation_recipient_email = confirmation_recipient_email;
+		this.closed_message = closed_message;
+		this.email_message = email_message;
+		this.completed_message = completed_message;
 	}
+
+
 
 	public FormEntity(Form form) {
 		try {
@@ -165,6 +176,18 @@ public class FormEntity implements Serializable {
 
 
 
+	public String getSubtitle() {
+		return subtitle;
+	}
+
+
+
+	public void setSubtitle(String subtitle) {
+		this.subtitle = subtitle;
+	}
+
+
+
 	public Date getInsertion_date() {
 		return insertion_date;
 	}
@@ -175,114 +198,166 @@ public class FormEntity implements Serializable {
 		this.insertion_date = insertion_date;
 	}
 
+
+
 	public Set<Question> getQuestions() {
 		return questions;
 	}
+
+
 
 	public void setQuestions(Set<Question> questions) {
 		this.questions = questions;
 	}
 
-	public boolean getPubli(){
+
+
+	public boolean isPubli() {
 		return publi;
 	}
-	
-	public void setPubli(boolean newPubli){
-		this.publi = newPubli;
+
+
+
+	public void setPubli(boolean publi) {
+		this.publi = publi;
 	}
-	
-	public boolean getEnabled(){
+
+
+
+	public boolean isEnabled() {
 		return enabled;
 	}
-	
-	public void setEnabled(boolean newEnabled){
-		this.enabled = newEnabled;
+
+
+
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
 	}
-	
-	public THEME getTheme(){
+
+
+
+	public THEME getTheme() {
 		return theme;
 	}
-	
-	public void setTheme(THEME newTheme){
-		this.theme = newTheme;
+
+
+
+	public void setTheme(THEME theme) {
+		this.theme = theme;
 	}
-	public boolean getRedirect_to_url(){
+
+
+
+	public boolean isRedirect_to_url() {
 		return redirect_to_url;
 	}
-	
-	public void setRedirect_to_url(boolean newRedirect_to_url){
-		this.redirect_to_url = newRedirect_to_url;
+
+
+
+	public void setRedirect_to_url(boolean redirect_to_url) {
+		this.redirect_to_url = redirect_to_url;
 	}
-	
-	public boolean getAlert_for_response(){
-		return alert_for_response;
+
+
+
+	public boolean isSend_notification() {
+		return send_notification;
 	}
-	
-	public void setAlert_for_response(boolean newAlert_for_response){
-		this.alert_for_response = newAlert_for_response;
+
+
+
+	public void setSend_notification(boolean send_notification) {
+		this.send_notification = send_notification;
 	}
-	
-	public boolean getEmail_embedded_responses(){
-		return email_embedded_responses;
+
+
+
+	public boolean isSend_receipt() {
+		return send_receipt;
 	}
-	
-	public void setEmail_embedded_responses(boolean newEmail_embedded_responses){
-		this.email_embedded_responses = newEmail_embedded_responses;
+
+
+
+	public void setSend_receipt(boolean send_receipt) {
+		this.send_receipt = send_receipt;
 	}
-	
-	public boolean getSend_confirmation_email(){
-		return send_confirmation_email;
-	}
-	
-	public void setSend_confirmation_email(boolean newSend_confirmation_email){
-		this.send_confirmation_email = newSend_confirmation_email;
-	}
-	
-	public String getEmail_message(){
+
+
+
+	public String getEmail_message() {
 		return email_message;
 	}
-	
-	public void setEmail_message(String newEmail_message){
-		this.email_message = newEmail_message;
+
+
+
+	public void setEmail_message(String email_message) {
+		this.email_message = email_message;
 	}
-	
-	public String getCompleted_message(){
+
+
+
+	public String getCompleted_message() {
 		return completed_message;
 	}
-	
-	public void setCompleted_message(String newCompleted_message){
-		this.completed_message = newCompleted_message;
+
+
+
+	public void setCompleted_message(String completed_message) {
+		this.completed_message = completed_message;
 	}
-	
-	public String getRedirect_url(){
+
+
+
+	public String getRedirect_url() {
 		return redirect_url;
 	}
-	
-	public void setRedirect_url(String newRedirect_url){
-		this.redirect_url = newRedirect_url;
+
+
+
+	public void setRedirect_url(String redirect_url) {
+		this.redirect_url = redirect_url;
 	}
-	
-	public Date getExpiration_date(){
+
+
+
+	public Date getExpiration_date() {
 		return expiration_date;
 	}
-	
-	public void setExpiration_date(Date newExpiration_date){
-		this.expiration_date = newExpiration_date;
+
+
+
+	public void setExpiration_date(Date expiration_date) {
+		this.expiration_date = expiration_date;
 	}
-	
-	public String getClosed_message(){
+
+
+
+	public String getClosed_message() {
 		return closed_message;
 	}
-	
-	public void setClosed_message(String newClosed_message){
-		this.closed_message = newClosed_message;
+
+
+
+	public void setClosed_message(String closed_message) {
+		this.closed_message = closed_message;
 	}
 
-	public String getSubtitle() {
-		return subtitle;
+
+
+	public static long getSerialversionuid() {
+		return serialVersionUID;
 	}
 
-	public void setSubtitle(String subtitle) {
-		this.subtitle = subtitle;
+
+
+	public String getConfirmation_recipient_email() {
+		return confirmation_recipient_email;
 	}
+
+
+
+	public void setConfirmation_recipient_email(String confirmation_recipient_email) {
+		this.confirmation_recipient_email = confirmation_recipient_email;
+	}
+
 }

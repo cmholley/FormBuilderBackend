@@ -35,9 +35,19 @@
 		</property>
 	</bean>
 
+<!-- 	For the server -->
+  	<!--<bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+		<property name="host" value="localhost" />
+		<property name="port" value="25" />
+		<property name="username" value="*****" />
+		<property name="password" value="*****" />
+		<property name="protocol" value="smtps" />-->
+	
+<!--For local development -->	
+		
 	<bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
 		<property name="host" value="smtp.gmail.com" />
-		<property name="port" value="465" />
+		<property name="port" value="465"/>
 		<property name="username" value="formbuildertest@gmail.com" />
 		<property name="password" value="test1234test" />
 		<property name="protocol" value="smtps" />

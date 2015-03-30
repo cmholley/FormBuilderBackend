@@ -7,7 +7,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -17,34 +16,35 @@ import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.apache.commons.beanutils.BeanUtils;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import dash.dao.FormEntity;
 import dash.helpers.DateISO8601Adapter;
 import dash.security.IAclObject;
 
 /**
- * Form object definition
- * Data representation of a collection of questions to be presented to a user
- * as a single document or Form to fill out.
+ * Form object definition Data representation of a collection of questions to be
+ * presented to a user as a single document or Form to fill out.
  *
  * @author tyler.swensen@gmail.com
  *
  */
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
-public class Form implements  IAclObject {
+public class Form implements IAclObject {
 
-	public static enum THEME {PLAIN};
-	
+	public static enum THEME {
+		PLAIN
+	};
+
 	/** id of the form */
 	@XmlElement(name = "id")
 	private Long id;
-	
 
 	/** name of the form */
 	@XmlElement(name = "name")
 	private String name;
-	
+
 	@XmlElement(name = "subtitle")
 	private String subtitle;
 
@@ -53,86 +53,86 @@ public class Form implements  IAclObject {
 	@XmlJavaTypeAdapter(DateISO8601Adapter.class)
 	private Date insertion_date;
 
-	
-	@XmlElement(name= "questions")
-	private Set<Question> questions= new HashSet<Question>();
+	@XmlElement(name = "questions")
+	private Set<Question> questions = new HashSet<Question>();
 
 	@XmlElement(name = "enabled")
 	private boolean enabled;
-	
+
 	@XmlElement(name = "public")
 	private boolean publi;
-	
+
 	@XmlElement(name = "theme")
-	private THEME theme= THEME.PLAIN;
-	
+	private THEME theme = THEME.PLAIN;
+
 	@XmlElement(name = "redirect_to_url")
 	private boolean redirect_to_url;
-	
-	@XmlElement(name = "alert_for_response")
-	private boolean alert_for_response;
 
-	@XmlElement(name = "email_embedded_resposes")
-	private boolean email_embedded_responses;
-	
-	@XmlElement(name = "send_confirmation_email")
-	private boolean send_confirmation_email; 
-	
-	@XmlElement(name = "email_message")
+	@XmlElement(name = "send_notification")
+	private boolean send_notification;
+
+	@XmlElement(name = "send_receipt")
+	private boolean send_receipt;
+
+	@XmlElement(name = "email_message")//Message for receipt email
 	private String email_message;
-	
+
 	@XmlElement(name = "completed_message")
 	private String completed_message;
-	
+
 	@XmlElement(name = "redirect_url")
 	private String redirect_url;
-	
+
 	@XmlElement(name = "expiration_date")
 	private Date expiration_date;
-	
+
 	@XmlElement(name = "closed_message")
 	private String closed_message;
 	
+	@XmlElement(name = "confirmation_recipient_email")
+	private String confirmation_recipient_email;
+
 	public Form(FormEntity formEntity) {
 		try {
 			BeanUtils.copyProperties(this, formEntity);
-		} catch ( IllegalAccessException e) {
+		} catch (IllegalAccessException e) {
 
 			e.printStackTrace();
-		} catch ( InvocationTargetException e) {
+		} catch (InvocationTargetException e) {
 
 			e.printStackTrace();
 		}
 	}
-	
-	public Form(String name , Set<Question> questions, boolean redirect_to_url,
-			boolean enabled, boolean publi, boolean alert_for_response,
-			boolean email_embedded_responses, boolean send_confirmation_email, 
-			String email_message, String completed_message, String redirect_url, 
-			Date expiration_date, String closed_message, THEME theme) {
+
+	public Form(String name, Set<Question> questions, boolean redirect_to_url,
+			boolean enabled, boolean publi, boolean send_notification, boolean send_receipt,
+			String email_message, String completed_message,
+			String redirect_url, Date expiration_date, String closed_message,
+			THEME theme, String receipt_message, String confirmation_recipient_email) {
 		super();
 		this.name = name;
 		this.questions = questions;
 		this.redirect_to_url = redirect_to_url;
 		this.enabled = enabled;
 		this.publi = publi;
-		this.alert_for_response = alert_for_response;
-		this.email_embedded_responses = email_embedded_responses;
-		this.send_confirmation_email = send_confirmation_email;
-		this.email_message = email_message;
-		this.completed_message = completed_message;
+		this.send_notification = send_notification;
+		this.send_receipt = send_receipt;
 		this.redirect_url = redirect_url;
 		this.expiration_date = expiration_date;
-		this.closed_message = closed_message;
 		this.theme = theme;
+		this.confirmation_recipient_email = confirmation_recipient_email;
+		this.closed_message = closed_message;
+		this.email_message = email_message;
+		this.completed_message = completed_message;	
 	}
 
-	public Form() {		
-	this.closed_message = "We're sorry, this form is closed";
-	this.completed_message = "Thank you for your submission, your response has been recorded";
+	public Form() {
+		this.closed_message = "We're sorry, this form is closed";
+		this.completed_message = "Thank you for your submission, your response has been recorded";
+		this.email_message = "Thank you for completing this form. Your response has been recorded"; 
+		//User user = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		//this.confirmation_recipient_email = user.getUsername();
 	}
-
-
 
 	public Set<Question> getQuestions() {
 		return questions;
@@ -146,15 +146,15 @@ public class Form implements  IAclObject {
 		return name;
 	}
 
-	public void setName( String name) {
+	public void setName(String name) {
 		this.name = name;
 	}
-	
+
 	public Long getId() {
 		return id;
 	}
 
-	public void setId( Long id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 
@@ -162,103 +162,95 @@ public class Form implements  IAclObject {
 		return insertion_date;
 	}
 
-	public void setinsertion_date( Date insertion_date) {
+	public void setinsertion_date(Date insertion_date) {
 		this.insertion_date = insertion_date;
 	}
-	
-	public boolean getEnabled(){
+
+	public boolean getEnabled() {
 		return enabled;
 	}
-	
-	public void setEnabled(boolean newEnabled){
+
+	public void setEnabled(boolean newEnabled) {
 		this.enabled = newEnabled;
 	}
-	
-	public boolean getPubli(){
+
+	public boolean getPubli() {
 		return publi;
 	}
-	
-	public void setPubli(boolean newPubli){
+
+	public void setPubli(boolean newPubli) {
 		this.publi = newPubli;
 	}
 
-	public THEME getTheme(){
+	public THEME getTheme() {
 		return theme;
 	}
 
-	public void setTheme( THEME newTheme){
+	public void setTheme(THEME newTheme) {
 		this.theme = newTheme;
 	}
-	
-	public boolean getRedirect_to_url(){
+
+	public boolean getRedirect_to_url() {
 		return redirect_to_url;
 	}
-	
-	public void setRedirect_to_url(boolean newRedirect_to_url){
+
+	public void setRedirect_to_url(boolean newRedirect_to_url) {
 		this.redirect_to_url = newRedirect_to_url;
 	}
-	
-	public boolean getAlert_for_response(){
-		return alert_for_response;
+
+	public boolean getSend_notification() {
+		return send_notification;
 	}
-	
-	public void setAlert_for_response(boolean newAlert_for_response){
-		this.alert_for_response = newAlert_for_response;
+
+	public void setSend_notification(boolean newSend_notification) {
+		this.send_notification = newSend_notification;
 	}
-	
-	public boolean getEmail_embedded_responses(){
-		return email_embedded_responses;
+
+	public boolean getSend_receipt() {
+		return send_receipt;
 	}
-	
-	public void setEmail_embedded_responses(boolean newEmail_embedded_responses){
-		this.email_embedded_responses = newEmail_embedded_responses;
+
+	public void setSend_receipt(boolean newSend_receipt) {
+		this.send_receipt = newSend_receipt;
 	}
-	
-	public boolean getSend_confirmation_email(){
-		return send_confirmation_email;
-	}
-	
-	public void setSend_confirmation_email(boolean newSend_confirmation_email){
-		this.send_confirmation_email = newSend_confirmation_email;
-	}
-	
-	public String getEmail_message(){
+
+	public String getEmail_message() {
 		return email_message;
 	}
-	
-	public void setEmail_message(String newEmail_message){
+
+	public void setEmail_message(String newEmail_message) {
 		this.email_message = newEmail_message;
 	}
-	
-	public String getCompleted_message(){
+
+	public String getCompleted_message() {
 		return completed_message;
 	}
-	
-	public void setCompleted_message(String newCompleted_message){
+
+	public void setCompleted_message(String newCompleted_message) {
 		this.completed_message = newCompleted_message;
 	}
-	
-	public String getRedirect_url(){
+
+	public String getRedirect_url() {
 		return redirect_url;
 	}
-	
-	public void setRedirect_url(String newRedirect_url){
+
+	public void setRedirect_url(String newRedirect_url) {
 		this.redirect_url = newRedirect_url;
 	}
-	
-	public Date getExpiration_date(){
+
+	public Date getExpiration_date() {
 		return expiration_date;
 	}
-	
-	public void setExpiration_date(Date newExpiration_date){
+
+	public void setExpiration_date(Date newExpiration_date) {
 		this.expiration_date = newExpiration_date;
 	}
-	
-	public String getClosed_message(){
+
+	public String getClosed_message() {
 		return closed_message;
 	}
-	
-	public void setClosed_message(String newClosed_message){
+
+	public void setClosed_message(String newClosed_message) {
 		this.closed_message = newClosed_message;
 	}
 
@@ -269,11 +261,25 @@ public class Form implements  IAclObject {
 	public void setSubtitle(String subtitle) {
 		this.subtitle = subtitle;
 	}
-	public boolean isExpired(){
-		if(expiration_date==null){return false;}
-		if(expiration_date.before(new Date())){
-			return true;
-		}else{return false;}
-	}
-}
 
+
+	public String getConfirmation_recipient_email() {
+		return confirmation_recipient_email;
+	}
+
+	public void setConfirmation_recipient_email(String confirmation_recipient_email) {
+		this.confirmation_recipient_email = confirmation_recipient_email;
+	}
+
+	public boolean isExpired() {
+		if (expiration_date == null) {
+			return false;
+		}
+		if (expiration_date.before(new Date())) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+}

@@ -81,9 +81,6 @@ public class FormResponseEntity implements Serializable {
 	@ElementCollection(fetch= FetchType.EAGER)
 	@CollectionTable(name = "form_response_entries", joinColumns = {@JoinColumn(name="form_response_id")})
     private Set<Entry> entries = new HashSet<Entry>();
-	
-	@Column(name = "send_confirmation_to_responder")
-	private boolean send_confirmation_to_responder;
 
 	public FormResponseEntity(){}
 
@@ -102,7 +99,7 @@ public class FormResponseEntity implements Serializable {
 
 	public FormResponseEntity(Long form_id, Long owner_id, Date insertion_date,
 			Date latest_update, boolean is_complete, Set<Entry> entries, 
-			String document_folder, String responder_email, boolean send_confirmation_to_responder) {
+			String document_folder, String responder_email, boolean send_receipt) {
 		super();
 		this.form_id = form_id;
 		this.owner_id = owner_id;
@@ -112,7 +109,6 @@ public class FormResponseEntity implements Serializable {
 		this.entries = entries;
 		this.document_folder=document_folder;
 		this.responder_email = responder_email;
-		this.send_confirmation_to_responder = send_confirmation_to_responder;
 	}
 
 
@@ -207,13 +203,6 @@ public class FormResponseEntity implements Serializable {
 	public void setResponderEmail(String responder_email){
 		this.responder_email = responder_email;
 	}
-	
-	public boolean getSend_confirmation_to_responder(){
-		return send_confirmation_to_responder;
-	}
-	
-	public void setSend_confirmation_to_responder(boolean send_confirmation_to_responder){
-		this.send_confirmation_to_responder = send_confirmation_to_responder;
-	}
+
 
 }
