@@ -11,7 +11,11 @@ import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -19,6 +23,7 @@ import java.util.Set;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.beanutils.BeanUtilsBean;
+import org.hibernate.annotations.Index;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.ApplicationObjectSupport;
 import org.springframework.mail.MailException;
@@ -143,7 +148,7 @@ public class FormResponseServiceDbAccessImpl extends ApplicationObjectSupport
 	private void sendReceiptEmail(FormResponse formResponse, Form form) {
 		SimpleMailMessage msg = new SimpleMailMessage(this.templateMessage);
 		msg.setTo(formResponse.getResponderEmail());
-		msg.setSubject("Confirmation Receipt for " + form.getName());
+		msg.setSubject("Confirmation Receipt for FormBuilder Form: " + form.getName());
 		msg.setText(form.getEmail_message()); 
 		try {
 			this.mailSender.send(msg);
@@ -156,18 +161,14 @@ public class FormResponseServiceDbAccessImpl extends ApplicationObjectSupport
 	private void sendEmbeddedResponse(FormResponse formResponse, Form form) {
 
 		MimeMessage message = this.mailSender.createMimeMessage();
-
 		try {
 			MimeMessageHelper helper = new MimeMessageHelper(message, true);
-
+			
 			helper.setFrom(templateMessage.getFrom());
 			helper.setTo(form.getConfirmation_recipient_email());
-			helper.setSubject(templateMessage.getSubject());
-			helper.setText("Someone has submmitted a response to you form " + form.getName()
-					+ "\n The response is copied below.\n test");
-//			This needs to be replaced with the pdf of the response
-//			FileSystemResource file = new FileSystemResource("C:\\Users\\Christopher\\Desktop\\test.txt");
-//			helper.addAttachment(file.getFilename(), file);
+			helper.setSubject("Response Alert for FormBuilder form: " + form.getName());
+			helper.setText(generateHTML(formResponse, form), true);
+			
 
 		} catch (MessagingException e) {
 			throw new MailParseException(e);
@@ -175,6 +176,96 @@ public class FormResponseServiceDbAccessImpl extends ApplicationObjectSupport
 		mailSender.send(message);
 	}
 
+	private String generateHTML(FormResponse formResponse, Form form){
+		String html= "";
+		html += ("<html><body><table><tr><td valign=\"top\" style=\"background-color:#ffffff;padding:20px 20px 20px 20px\"><table cellspacing=\"0\" border=\"0\" cellpadding=\"0\" width=\"100%\"><tbody><tr><td align=\"left\" valign=\"top\"><h2 style=\"font-size:20px;font-weight:bold;margin:10px 0 10px 0;font-family:Arial;color:#680606;padding:0\">"
+				+ form.getName() + "</h2>");
+		html += ("<table cellspacing=\"0\" border=\"0\" cellpadding=\"0\" width=\"100%\"><tbody>");
+		
+		HashMap<Integer, String> htmlList = new HashMap<Integer, String>();
+		for(Entry entry : formResponse.getEntries()){
+			long questionID = entry.getQuestion_id();
+			String component = null;
+			String temp;
+			int index = 0;
+			for(Question question : form.getQuestions()){
+				if(questionID == question.getQuestion_id()){
+					component = question.getComponent();
+					index = question.getIndex();
+					break;
+				}
+			}
+			if(component.equals("dateInput")){
+				String dateString;
+				try{
+					SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+					Date utilDate = format.parse(entry.getValue());
+					format = new SimpleDateFormat("MM/dd/yyyy");
+					dateString = format.format(utilDate);
+				}catch(ParseException e){
+					dateString = entry.getValue();
+				}
+				temp = ("<tr><td align=\"left\" valign=\"top\" width=\"300\" "
+						+ "style=\"background-color:#eeeeee;border-bottom:1px solid #cccccc\">"
+						+ "<p style=\"font-size:13px;font-weight:bold;margin:14px 0 14px 5px;"
+						+ "font-family:Arial;color:#333333;padding:0\">"
+						+ entry.getLabel() + "</p></td>"
+						+ "<td align=\"left\" valign=\"top\" width=\"300\" "
+						+ "style=\"background-color:#eeeeee;border-bottom:1px solid #cccccc\">"
+						+ "<p style=\"font-size:13px;font-weight:normal;margin:14px 0 14px 0;"
+						+ "font-family:Arial;color:#333333;padding:0\">"
+						+ dateString +"</p></td></tr>");
+			}
+			else if(component.equals("dateTimeInput")){
+				String dateString;
+				try{
+					SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+					Date utilDate = format.parse(entry.getValue());
+					format = new SimpleDateFormat("MM/dd/yyyy hh:mm a");
+					dateString = format.format(utilDate);
+					}catch (ParseException e){
+					dateString = entry.getValue();
+					}
+				temp = ("<tr><td align=\"left\" valign=\"top\" width=\"300\" "
+						+ "style=\"background-color:#eeeeee;border-bottom:1px solid #cccccc\">"
+						+ "<p style=\"font-size:13px;font-weight:bold;margin:14px 0 14px 5px;"
+						+ "font-family:Arial;color:#333333;padding:0\">"
+						+ entry.getLabel() + "</p></td>"
+						+ "<td align=\"left\" valign=\"top\" width=\"300\" "
+						+ "style=\"background-color:#eeeeee;border-bottom:1px solid #cccccc\">"
+						+ "<p style=\"font-size:13px;font-weight:normal;margin:14px 0 14px 0;"
+						+ "font-family:Arial;color:#333333;padding:0\">"
+						+ dateString +"</p></td></tr>");
+			}
+			//else if(component == "fileUpload"){}
+			else if(component.equals("section")){
+				temp = ("<tr><td colspan=\"2\" style=\"background-color:#5c6266;color:#ffffff\">"
+						+ "<h3 style=\"font-size:15px;font-weight:bold;margin:14px 14px 14px 10px;"
+						+ "font-family:Arial;color:#ffffff;padding:0\">"
+						+ entry.getLabel() +"</h3></td></tr>");
+			}
+			else{
+				temp = ("<tr><td align=\"left\" valign=\"top\" width=\"300\" "
+						+ "style=\"background-color:#eeeeee;border-bottom:1px solid #cccccc\">"
+						+ "<p style=\"font-size:13px;font-weight:bold;margin:14px 0 14px 5px;"
+						+ "font-family:Arial;color:#333333;padding:0\">"
+						+ entry.getLabel() + "</p></td>"
+						+ "<td align=\"left\" valign=\"top\" width=\"300\" "
+						+ "style=\"background-color:#eeeeee;border-bottom:1px solid #cccccc\">"
+						+ "<p style=\"font-size:13px;font-weight:normal;margin:14px 0 14px 0;"
+						+ "font-family:Arial;color:#333333;padding:0\">"
+						+ entry.getValue() +"</p></td></tr>");
+			}
+			htmlList.put(index, temp);
+		}
+		for(int i = 0; i < htmlList.size(); i++){
+			String temp = (String) htmlList.get(i);
+			html += temp;
+		}
+		html += ("</tbody></table></td></tr></tbody></table></table></body></html>");
+		return html;
+	}
+	
 	@Override
 	public FormResponse getFormResponseById(Long id) throws AppException {
 		FormResponseEntity formResponseById = formResponseDao

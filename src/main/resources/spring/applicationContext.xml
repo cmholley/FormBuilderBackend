@@ -39,13 +39,20 @@
   	<!--<bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
 		<property name="host" value="localhost" />
 		<property name="port" value="25" />
-		<property name="username" value="*****" />
-		<property name="password" value="*****" />
-		<property name="protocol" value="smtps" />-->
+		<property name="protocol" value="smtp" />
+		
+		<property name="javaMailProperties">
+			<props>
+				<prop key="mail.smtps.auth">false</prop>
+				<prop key="mail.smtp.ssl.enable">false</prop>
+				<prop key="mail.transport.protocol">smtp</prop>
+
+			</props>
+		</property>-->
 	
 <!--For local development -->	
 		
-	<bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+  		<bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
 		<property name="host" value="smtp.gmail.com" />
 		<property name="port" value="465"/>
 		<property name="username" value="formbuildertest@gmail.com" />
