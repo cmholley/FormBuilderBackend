@@ -178,9 +178,12 @@ public class FormResponseServiceDbAccessImpl extends ApplicationObjectSupport
 
 	private String generateHTML(FormResponse formResponse, Form form){
 		String html= "";
-		html += ("<html><body><table><tr><td valign=\"top\" style=\"background-color:#ffffff;padding:20px 20px 20px 20px\"><table cellspacing=\"0\" border=\"0\" cellpadding=\"0\" width=\"100%\"><tbody><tr><td align=\"left\" valign=\"top\"><h2 style=\"font-size:20px;font-weight:bold;margin:10px 0 10px 0;font-family:Arial;color:#680606;padding:0\">"
+		html += ("<html><body><table><tr><td valign=\"top\" style=\"background-color:#c8102e;padding:20px 20px 20px 20px\"><table cellspacing=\"0\" border=\"0\" cellpadding=\"0\" width=\"100%\"><tbody><tr><td align=\"left\" valign=\"top\"><h2 style=\"font-size:20px;font-weight:bold;margin:10px 0 10px 0;font-family:Arial;color:#ffffff;padding:0\">"
 				+ form.getName() + "</h2>");
-		html += ("<table cellspacing=\"0\" border=\"0\" cellpadding=\"0\" width=\"100%\"><tbody>");
+		if(form.getSubtitle() != null){
+			html += ("<h2 style=\"font-size:15px;font-weight:bold;margin:10px 0 10px 0;font-family:Arial;color:#ffffff;padding:0\">"
+				+ form.getSubtitle() + "</h2>");
+		}
 		
 		HashMap<Integer, String> htmlList = new HashMap<Integer, String>();
 		for(Entry entry : formResponse.getEntries()){
@@ -262,7 +265,7 @@ public class FormResponseServiceDbAccessImpl extends ApplicationObjectSupport
 			String temp = (String) htmlList.get(i);
 			html += temp;
 		}
-		html += ("</tbody></table></td></tr></tbody></table></table></body></html>");
+		html += ("</tbody></table></td></tr></tbody></table></body></html>");
 		return html;
 	}
 	
