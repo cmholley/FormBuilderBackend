@@ -178,7 +178,7 @@ public class FormResponseServiceDbAccessImpl extends ApplicationObjectSupport
 
 	private String generateHTML(FormResponse formResponse, Form form){
 		String html= "";
-		html += ("<html><body><table><tr><td valign=\"top\" style=\"background-color:#c8102e;padding:20px 20px 20px 20px\"><table cellspacing=\"0\" border=\"0\" cellpadding=\"0\" width=\"100%\"><tbody><tr><td align=\"left\" valign=\"top\"><h2 style=\"font-size:20px;font-weight:bold;margin:10px 0 10px 0;font-family:Arial;color:#ffffff;padding:0\">"
+		html += ("<html><body><table><tr><td valign=\"top\" style=\"background-color:#c8102e;padding:20px 20p	x 20px 20px\"><table cellspacing=\"0\" border=\"0\" cellpadding=\"0\" width=\"100%\"><tbody><tr><td align=\"left\" valign=\"top\"><h2 style=\"font-size:20px;font-weight:bold;margin:10px 0 10px 0;font-family:Arial;color:#ffffff;padding:0\">"
 				+ form.getName() + "</h2>");
 		if(form.getSubtitle() != null){
 			html += ("<h2 style=\"font-size:15px;font-weight:bold;margin:10px 0 10px 0;font-family:Arial;color:#ffffff;padding:0\">"
@@ -201,7 +201,7 @@ public class FormResponseServiceDbAccessImpl extends ApplicationObjectSupport
 			if(component.equals("dateInput")){
 				String dateString;
 				try{
-					SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+					SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mmZ");
 					Date utilDate = format.parse(entry.getValue());
 					format = new SimpleDateFormat("MM/dd/yyyy");
 					dateString = format.format(utilDate);
@@ -222,7 +222,7 @@ public class FormResponseServiceDbAccessImpl extends ApplicationObjectSupport
 			else if(component.equals("dateTimeInput")){
 				String dateString;
 				try{
-					SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+					SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mmZ");
 					Date utilDate = format.parse(entry.getValue());
 					format = new SimpleDateFormat("MM/dd/yyyy hh:mm a");
 					dateString = format.format(utilDate);
@@ -240,7 +240,32 @@ public class FormResponseServiceDbAccessImpl extends ApplicationObjectSupport
 						+ "font-family:Arial;color:#333333;padding:0\">"
 						+ dateString +"</p></td></tr>");
 			}
-			//else if(component == "fileUpload"){}
+			else if(component.equals("fileUpload")){
+				if(entry.getValue().equals("")){
+					temp = ("<tr><td align=\"left\" valign=\"top\" width=\"300\" "
+							+ "style=\"background-color:#eeeeee;border-bottom:1px solid #cccccc\">"
+							+ "<p style=\"font-size:13px;font-weight:bold;margin:14px 0 14px 5px;"
+							+ "font-family:Arial;color:#333333;padding:0\">"
+							+ entry.getLabel() + "</p></td>"
+							+ "<td align=\"left\" valign=\"top\" width=\"300\" "
+							+ "style=\"background-color:#eeeeee;border-bottom:1px solid #cccccc\">"
+							+ "<p style=\"font-size:13px;font-weight:normal;margin:14px 0 14px 0;"
+							+ "font-family:Arial;color:#333333;padding:0\">"
+							+ "No File Uploaded" +"</p></td></tr>");
+				}
+				else{	
+				temp = ("<tr><td align=\"left\" valign=\"top\" width=\"300\" "
+						+ "style=\"background-color:#eeeeee;border-bottom:1px solid #cccccc\">"
+						+ "<p style=\"font-size:13px;font-weight:bold;margin:14px 0 14px 5px;"
+						+ "font-family:Arial;color:#333333;padding:0\">"
+						+ entry.getLabel() + "</p></td>"
+						+ "<td align=\"left\" valign=\"top\" width=\"300\" "
+						+ "style=\"background-color:#eeeeee;border-bottom:1px solid #cccccc\">"
+						+ "<p style=\"font-size:13px;font-weight:normal;margin:14px 0 14px 0;"
+						+ "font-family:Arial;color:#333333;padding:0\">"
+						+ "http://housuggest.org/FormBuilder/#/file/"+ entry.getValue() +"</p></td></tr>");
+				}
+			}
 			else if(component.equals("section")){
 				temp = ("<tr><td colspan=\"2\" style=\"background-color:#5c6266;color:#ffffff\">"
 						+ "<h3 style=\"font-size:15px;font-weight:bold;margin:14px 14px 14px 10px;"
