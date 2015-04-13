@@ -147,6 +147,7 @@ public class FormResponseServiceDbAccessImpl extends ApplicationObjectSupport
 	//Sends a plain text email with confirmation. 
 	private void sendReceiptEmail(FormResponse formResponse, Form form) {
 		SimpleMailMessage msg = new SimpleMailMessage(this.templateMessage);
+		msg.setFrom("NOREPLY@Housuggest.org");
 		msg.setTo(formResponse.getResponderEmail());
 		msg.setSubject("Confirmation Receipt for FormBuilder Form: " + form.getName());
 		msg.setText(form.getEmail_message()); 
@@ -163,7 +164,7 @@ public class FormResponseServiceDbAccessImpl extends ApplicationObjectSupport
 		MimeMessage message = this.mailSender.createMimeMessage();
 		try {
 			MimeMessageHelper helper = new MimeMessageHelper(message, true);
-			
+			helper.setFrom("NOREPLY@Housuggest.org");
 			helper.setFrom(templateMessage.getFrom());
 			helper.setTo(form.getConfirmation_recipient_email());
 			helper.setSubject("Response Alert for FormBuilder form: " + form.getName());

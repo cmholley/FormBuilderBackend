@@ -36,7 +36,7 @@
 	</bean>
 
 <!-- 	For the server -->
-  	<!--<bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+  	<bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
 		<property name="host" value="localhost" />
 		<property name="port" value="25" />
 		<property name="protocol" value="smtp" />
@@ -48,11 +48,11 @@
 				<prop key="mail.transport.protocol">smtp</prop>
 
 			</props>
-		</property>-->
+		</property>
 	
 <!--For local development -->	
 		
-  		<bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+  	<!--<bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
 		<property name="host" value="smtp.gmail.com" />
 		<property name="port" value="465"/>
 		<property name="username" value="formbuildertest@gmail.com" />
@@ -66,7 +66,7 @@
 				<prop key="mail.transport.protocol">smtps</prop>
 
 			</props>
-		</property>
+		</property> -->
 	</bean>
 
 	<bean id="templateMessage" class="org.springframework.mail.SimpleMailMessage">

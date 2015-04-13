@@ -103,9 +103,9 @@ public class FormEntity implements Serializable {
 	private String confirmation_recipient_email;
 	
 	public FormEntity(){
-		this.closed_message = "We're sorry, this form is closed";
-		this.completed_message = "Thank you for your submission, your response has been recorded";
-		this.email_message = "Thank you for completing this form. Your response has been recorded";
+		this.closed_message = "We're sorry, this form is closed.";
+		this.completed_message = "Thank you for your submission, your response has been recorded.";
+		this.email_message = "Thank you for completing this form. Your response has been recorded.";
 		//User user = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		//this.confirmation_recipient_email = user.getUsername();
 	}
