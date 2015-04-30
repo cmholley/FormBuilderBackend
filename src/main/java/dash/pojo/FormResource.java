@@ -29,6 +29,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import dash.errorhandling.AppException;
 import dash.service.FormService;
+import dash.service.UserService;
 
 /**
  *
@@ -45,6 +46,8 @@ public class FormResource {
 	@Autowired
 	private FormService formService;
 	
+	@Autowired
+	private UserService userService;
 	
 
 	// ************************************* CREATE
@@ -241,5 +244,38 @@ public class FormResource {
 		formService.deleteForm(form);
 		return Response.status(Response.Status.NO_CONTENT)// 204
 				.entity("Form successfully removed from database").build();
+	}
+	
+	// *************************************
+	// Permissions**************************
+	
+	@POST
+	@Path("{id}/PERMISSION/{user}/{permission}")
+	@Produces({ MediaType.TEXT_HTML })
+	public Response addPermission(@PathParam("user") Long userId,
+			@PathParam("id") Long id, @PathParam("permission") String permission) throws AppException {
+		User user = userService.getUserById(userId);
+		Form form = formService.getFormById(id);
+		formService.addPermission(user, form, permission);
+		return Response
+				.status(Response.Status.OK)
+				.entity("PERMISSION ADDED: User " + user.getUsername()
+						+ " given permission " + permission + " for form "
+						+ form.getId()).build();
+	}
+	
+	@DELETE
+	@Path("{id}/PERMISSION/{user}/{permission}")
+	@Produces({ MediaType.TEXT_HTML })
+	public Response deletePermission(@PathParam("user") Long userId,
+			@PathParam("id") Long id, @PathParam("permission") String permission) throws AppException {
+		User user = userService.getUserById(userId);
+		Form form = formService.getFormById(id);
+		formService.deletePermission(user, form, permission);
+		return Response
+				.status(Response.Status.OK)
+				.entity("PERMISSION ADDED: User " + user.getUsername()
+						+ " given permission " + permission + " for form "
+						+ form.getId()).build();
 	}
 }

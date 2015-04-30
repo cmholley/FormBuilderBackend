@@ -8,6 +8,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 
 import dash.errorhandling.AppException;
 import dash.pojo.Form;
+import dash.pojo.User;
 
 /**
  * Example service interface for a basic object.
@@ -89,6 +90,15 @@ public interface FormService {
 	public void updatePartiallyForm(Form form) throws AppException;
 
 	/*
+	 * ******************** Permission related methods **********************
+	 */
+
+	public void addPermission(User user, Form form, String perission);
+	
+	public void deletePermission(User user, Form form, String perission);
+	
+	
+	/*
 	 * ******************** Delete related methods **********************
 	 */
 
@@ -112,5 +122,6 @@ public interface FormService {
 	public Form verifyFormExistenceById(Long id);
 
 	public int getNumberOfForms();
+	
 
 }

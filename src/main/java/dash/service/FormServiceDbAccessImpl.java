@@ -9,6 +9,9 @@ import javax.ws.rs.core.Response;
 import org.apache.commons.beanutils.BeanUtilsBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.ApplicationObjectSupport;
+import org.springframework.security.acls.domain.BasePermission;
+import org.springframework.security.acls.domain.PrincipalSid;
+import org.springframework.security.acls.model.Permission;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,7 +21,9 @@ import dash.errorhandling.AppException;
 import dash.filters.AppConstants;
 import dash.helpers.NullAwareBeanUtilsBean;
 import dash.pojo.Form;
+import dash.pojo.User;
 import dash.security.CustomPermission;
+import dash.security.CustomPermissionFactory;
 import dash.security.GenericAclController;
 
 /**
@@ -231,6 +236,21 @@ FormService {
 		}
 
 	}
+	
+	/********************* PERMISSION-related methods implementation ***********************/
 
+	public void addPermission(User user, Form form, String permission){
+		CustomPermissionFactory factory = new CustomPermissionFactory();
+		Permission permissionObject = factory.buildFromName(permission);
+		aclController.createAce(form, permissionObject,
+				new PrincipalSid(user.getUsername()));
+	}
+	
+	public void deletePermission(User user, Form form, String permission){
+		CustomPermissionFactory factory = new CustomPermissionFactory();
+		Permission permissionObject = factory.buildFromName(permission);
+		aclController.deleteACE(form, permissionObject,
+				new PrincipalSid(user.getUsername()));
+	}
 
 }
