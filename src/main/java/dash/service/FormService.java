@@ -55,7 +55,12 @@ public interface FormService {
 	//@PostFilter("hasPermission(filterObject, 'READ')")
 	public List<Form> getForms(int numberOfForms, Long startIndex) throws AppException;
 	
-	@PostFilter("hasPermission(filterObject, 'WRITE')")
+	//TODO:This is a temp fix, a more efficient method of organizing the forms that a particular user
+	//is interested in needs to be developed. This can be accomplished by using a clever
+	//SQL query that selects from the database based on the proper logic rather than
+	//loading the entire database into memory and filtering it.
+	@PostFilter("hasPermission(filterObject, 'WRITE') or hasPermission(filterObject, 'READ')"
+			+ "or hasPermission(filterObject, 'DELETE'))")
 	public List<Form> getMyForms(int numberOfForms, Long startIndex) throws AppException;
 	
 	/**
@@ -68,17 +73,19 @@ public interface FormService {
 	
 	//Enable the following line of code to restrict read access to a single object.
 	// and returnObject.getPubli()==true or returnObject.getEnabled()==true and hasRole('ROLE_USER')
-	@PostAuthorize("hasPermission(returnObject, 'read') or hasRole('ROLE_ADMIN') or returnObject.getEnabled()==true and returnObject.getPubli()==true and returnObject.isExpired()==false or returnObject.getEnabled()==true and hasRole('ROLE_USER') and returnObject.isExpired()==false" )
+	//This post authorize has been removed. We are preventing responses at response creation rather than at form request
+	//@PostAuthorize("hasPermission(returnObject, 'read') or hasRole('ROLE_ADMIN') or returnObject.getEnabled()==true and returnObject.getPubli()==true "
+	//		+ "and returnObject.isExpired()==false or returnObject.getEnabled()==true and hasRole('ROLE_USER') and returnObject.isExpired()==false")
 	public Form getFormById(Long id) throws AppException;
 	
 
 	/*
 	 * ******************** Update related methods **********************
 	 */
-	@PreAuthorize("hasPermission(#form, 'write') or hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasPermission(#form, 'WRITE') or hasRole('ROLE_ADMIN')")
 	public void updateFullyForm(Form form) throws AppException;
 
-	@PreAuthorize("hasPermission(#form, 'write') or hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasPermission(#form, 'WRITE') or hasRole('ROLE_ADMIN')")
 	public void updatePartiallyForm(Form form) throws AppException;
 
 	/*
@@ -86,7 +93,7 @@ public interface FormService {
 	 */
 
 
-	@PreAuthorize("hasPermission(#form, 'delete') or hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasPermission(#form, 'DELETE') or hasRole('ROLE_ADMIN')")
 	public void deleteForm(Form form);
 	/** removes all forms
 	 * DO NOT USE, IMPROPERLY UPDATES ACL_OBJECT table

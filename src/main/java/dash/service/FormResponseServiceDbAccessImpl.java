@@ -60,12 +60,11 @@ public class FormResponseServiceDbAccessImpl extends ApplicationObjectSupport
 	/********************* Create related methods implementation ***********************/
 	@Override
 	@Transactional
-	public Long createFormResponse(FormResponse formResponse)
+	public Long createFormResponse(FormResponse formResponse, Form form)
 			throws AppException {
 
 		//Generate empty form response entries for each question
 		Set<Entry> entries= new HashSet<Entry>();
-		Form form = formService.getFormById(formResponse.getForm_id());
 		Set<Question> questions= form.getQuestions();
 		
 		if(questions != null && formResponse.getEntries().isEmpty()){
@@ -94,8 +93,10 @@ public class FormResponseServiceDbAccessImpl extends ApplicationObjectSupport
 	@Transactional
 	public void createFormResponses(List<FormResponse> formResponses)
 			throws AppException {
+		Form form;
 		for (FormResponse formResponse : formResponses) {
-			createFormResponse(formResponse);
+			form = formService.getFormById(formResponse.getForm_id());
+			createFormResponse(formResponse, form);
 		}
 	}
 
@@ -264,7 +265,7 @@ public class FormResponseServiceDbAccessImpl extends ApplicationObjectSupport
 
 	@Override
 	@Transactional
-	public void deleteFormResponse(FormResponse formResponse) {
+	public void deleteFormResponse(FormResponse formResponse, Form form) {
 
 		formResponseDao.deleteFormResponseById(formResponse);
 		aclController.deleteACL(formResponse);
