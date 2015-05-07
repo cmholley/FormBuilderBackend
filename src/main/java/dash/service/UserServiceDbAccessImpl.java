@@ -199,10 +199,6 @@ public class UserServiceDbAccessImpl extends ApplicationObjectSupport implements
 		}
 	}
 
-	public User getUserByName(String username){
-		User user =  new User(userDao.getUserByName(username));
-		return user;
-	}
 
 	/********************* UPDATE-related methods implementation ***********************/
 	@Override
