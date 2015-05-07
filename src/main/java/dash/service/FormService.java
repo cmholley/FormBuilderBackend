@@ -60,8 +60,8 @@ public interface FormService {
 	//is interested in needs to be developed. This can be accomplished by using a clever
 	//SQL query that selects from the database based on the proper logic rather than
 	//loading the entire database into memory and filtering it.
-	@PostFilter("hasPermission(filterObject, 'WRITE') or hasPermission(filterObject, 'READ')"
-			+ "or hasPermission(filterObject, 'DELETE'))")
+//	@PostFilter("hasPermission(filterObject, 'WRITE') or hasPermission(filterObject, 'READ')"
+	//		+ "or hasPermission(filterObject, 'DELETE'))")
 	public List<Form> getMyForms(int numberOfForms, Long startIndex) throws AppException;
 	
 	/**

@@ -160,7 +160,7 @@ UserService {
 
 		return response;
 	}
-
+	
 	public List<User> getRecentUsers(int numberOfDaysToLookBack) {
 		List<UserEntity> recentUsers = userDao
 				.getRecentUsers(numberOfDaysToLookBack);
@@ -192,6 +192,11 @@ UserService {
 		} else {
 			return auth.getPrincipal().toString();
 		}
+	}
+
+	public User getUserByName(String username){
+		User user =  new User(userDao.getUserByName(username));
+		return user;
 	}
 
 	/********************* UPDATE-related methods implementation ***********************/

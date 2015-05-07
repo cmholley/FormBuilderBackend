@@ -2,6 +2,7 @@ package dash.pojo;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
@@ -19,13 +20,15 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import org.codehaus.jackson.JsonGenerationException;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import dash.errorhandling.AppException;
 import dash.service.FormService;
@@ -144,11 +147,26 @@ public class FormResource {
 				.getMyForms(numberOfForms, startIndex);
 		return forms;
 	}
-
+	
+	@GET
+	@Path("/test")
+	@Produces({MediaType.APPLICATION_JSON})
+	public HashMap<String, List<String>> hashMapTest() throws JsonGenerationException, org.codehaus.jackson.map.JsonMappingException, IOException, AppException{
+		HashMap<String, List<String>> test = new HashMap<String, List<String>>();
+		String tempString;
+		ObjectMapper mapper = new ObjectMapper();
+		tempString = mapper.writeValueAsString(formService.getFormById((long)220));
+		test.put(tempString, Arrays.asList("test1", "test2", "test3", "test4"));
+		tempString = mapper.writeValueAsString(formService.getFormById((long)221));
+		test.put(tempString, Arrays.asList("test1", "test2", "test3", "test4"));
+		return test;
+	}
+	
+	
 	@GET
 	@Path("{id}")
 	@Produces({ MediaType.APPLICATION_JSON })
-	public Response getFormById(@PathParam("id") Long id,
+	public Response getFormById(@PathParam("xid") Long id,
 			@QueryParam("detailed") boolean detailed) throws IOException,
 			AppException {
 		try{
@@ -267,9 +285,9 @@ public class FormResource {
 	@DELETE
 	@Path("{id}/PERMISSION/{user}/{permission}")
 	@Produces({ MediaType.TEXT_HTML })
-	public Response deletePermission(@PathParam("user") Long userId,
-			@PathParam("id") Long id, @PathParam("permission") String permission) throws AppException {
-		User user = userService.getUserById(userId);
+	public Response deletePermission(@PathParam("user") String username,
+			@PathParam("id") long id, @PathParam("permission") String permission) throws AppException {
+		User user = userService.getUserByName(username);
 		Form form = formService.getFormById(id);
 		formService.deletePermission(user, form, permission);
 		return Response

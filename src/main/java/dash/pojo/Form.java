@@ -1,11 +1,13 @@
 package dash.pojo;
 
+import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
 
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -32,15 +34,18 @@ import dash.security.IAclObject;
  */
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
-public class Form implements  IAclObject {
+public class Form implements  IAclObject, Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 6933222344401204286L;
 	public static enum THEME {PLAIN};
 	
 	/** id of the form */
 	@XmlElement(name = "id")
 	private Long id;
 	
-
 	/** name of the form */
 	@XmlElement(name = "name")
 	private String name;
@@ -52,7 +57,6 @@ public class Form implements  IAclObject {
 	@XmlElement(name = "insertion_date")
 	@XmlJavaTypeAdapter(DateISO8601Adapter.class)
 	private Date insertion_date;
-
 	
 	@XmlElement(name= "questions")
 	private Set<Question> questions= new HashSet<Question>();
@@ -69,14 +73,11 @@ public class Form implements  IAclObject {
 	@XmlElement(name = "redirect_to_url")
 	private boolean redirect_to_url;
 	
-	@XmlElement(name = "alert_for_response")
-	private boolean alert_for_response;
+	@XmlElement(name = "send_notification")
+	private boolean send_notification;
 
-	@XmlElement(name = "email_embedded_resposes")
-	private boolean email_embedded_responses;
-	
-	@XmlElement(name = "send_confirmation_email")
-	private boolean send_confirmation_email; 
+	@XmlElement(name = "send_receipt")
+	private boolean send_receipt; 
 	
 	@XmlElement(name = "email_message")
 	private String email_message;
@@ -106,8 +107,8 @@ public class Form implements  IAclObject {
 	}
 	
 	public Form(String name , Set<Question> questions, boolean redirect_to_url,
-			boolean enabled, boolean publi, boolean alert_for_response,
-			boolean email_embedded_responses, boolean send_confirmation_email, 
+			boolean enabled, boolean publi, boolean send_notification,
+			boolean email_embedded_responses, boolean send_receipt, 
 			String email_message, String completed_message, String redirect_url, 
 			Date expiration_date, String closed_message, THEME theme) {
 		super();
@@ -116,9 +117,8 @@ public class Form implements  IAclObject {
 		this.redirect_to_url = redirect_to_url;
 		this.enabled = enabled;
 		this.publi = publi;
-		this.alert_for_response = alert_for_response;
-		this.email_embedded_responses = email_embedded_responses;
-		this.send_confirmation_email = send_confirmation_email;
+		this.send_notification = send_notification;
+		this.send_receipt = send_receipt;
 		this.email_message = email_message;
 		this.completed_message = completed_message;
 		this.redirect_url = redirect_url;
@@ -198,28 +198,21 @@ public class Form implements  IAclObject {
 		this.redirect_to_url = newRedirect_to_url;
 	}
 	
-	public boolean getAlert_for_response(){
-		return alert_for_response;
+	public boolean getsend_notification(){
+		return send_notification;
 	}
 	
-	public void setAlert_for_response(boolean newAlert_for_response){
-		this.alert_for_response = newAlert_for_response;
+	public void setsend_notification(boolean newsend_notification){
+		this.send_notification = newsend_notification;
 	}
 	
-	public boolean getEmail_embedded_responses(){
-		return email_embedded_responses;
+	
+	public boolean getsend_receipt(){
+		return send_receipt;
 	}
 	
-	public void setEmail_embedded_responses(boolean newEmail_embedded_responses){
-		this.email_embedded_responses = newEmail_embedded_responses;
-	}
-	
-	public boolean getSend_confirmation_email(){
-		return send_confirmation_email;
-	}
-	
-	public void setSend_confirmation_email(boolean newSend_confirmation_email){
-		this.send_confirmation_email = newSend_confirmation_email;
+	public void setsend_receipt(boolean newsend_receipt){
+		this.send_receipt = newsend_receipt;
 	}
 	
 	public String getEmail_message(){
