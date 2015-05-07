@@ -262,11 +262,13 @@ FormService {
 				Permission permissionObject = factory.buildFromName(permission);
 				aclController.createAce(form, permissionObject,
 						new PrincipalSid(user.getUsername()));
+				System.out.println("Permission Granted: " + permission);
 			} else {
 				CustomPermissionFactory factory = new CustomPermissionFactory();
 				Permission permissionObject = factory.buildFromName(permission);
 				aclController.deleteACE(form, permissionObject,
 						new PrincipalSid(user.getUsername()));
+				System.out.println("Permission Deleted: " + permission);
 			}
 		}
 		

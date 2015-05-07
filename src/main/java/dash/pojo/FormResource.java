@@ -244,17 +244,17 @@ public class FormResource {
 	// Permissions**************************
 	
 	@POST
-	@Path("{id}/PERMISSION/{username}/{permissions}")
+	@Path("{id}/PERMISSION/{username}")
 	@Produces({ MediaType.TEXT_HTML })
 	public Response updatePermission(@PathParam("username") String username,
-			@PathParam("id") Long id, @PathParam("permissions") List<String> permissions) throws AppException {
+			@PathParam("id") Long id, @QueryParam("permissions") List<String> permissions) throws AppException {
 		User user = userService.getUserByName(username);
 		if(user != null) {
-		Form form = formService.getFormById(id);
-		formService.updatePermission(user, form, permissions);
-		return Response
+			Form form = formService.getFormById(id);
+			formService.updatePermission(user, form, permissions);
+			return Response
 				.status(Response.Status.OK)
-				.entity("PERMISSION ADDED: User " + user.getUsername()
+				.entity("PERMISSION UPDATED: User " + user.getUsername()
 						+ " given permission " + permissions + " for form "
 						+ form.getId()).build();
 		} else {
