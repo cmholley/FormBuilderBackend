@@ -2,19 +2,16 @@ package dash.service;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-
 import javax.ws.rs.core.Response;
-
 import org.apache.commons.beanutils.BeanUtilsBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.ApplicationObjectSupport;
-import org.springframework.security.acls.domain.BasePermission;
 import org.springframework.security.acls.domain.PrincipalSid;
 import org.springframework.security.acls.model.Permission;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-
 import dash.dao.FormDao;
 import dash.dao.FormEntity;
 import dash.errorhandling.AppException;
@@ -253,6 +250,26 @@ FormService {
 		Permission permissionObject = factory.buildFromName(permission);
 		aclController.deleteACE(form, permissionObject,
 				new PrincipalSid(user.getUsername()));
+	}
+
+	@Override
+	public void updatePermission(User user, Form form, List<String> permissions) {
+		String[] strArray = {"READ", "WRITE", "DELETE", "CREATE", "DELETE_RESPONSES"};
+		List<String> masterPermissions = new ArrayList<String>(Arrays.asList(strArray));
+		for(String permission : masterPermissions){
+			if(permissions.contains(permission)) {
+				CustomPermissionFactory factory = new CustomPermissionFactory();
+				Permission permissionObject = factory.buildFromName(permission);
+				aclController.createAce(form, permissionObject,
+						new PrincipalSid(user.getUsername()));
+			} else {
+				CustomPermissionFactory factory = new CustomPermissionFactory();
+				Permission permissionObject = factory.buildFromName(permission);
+				aclController.deleteACE(form, permissionObject,
+						new PrincipalSid(user.getUsername()));
+			}
+		}
+		
 	}
 
 }

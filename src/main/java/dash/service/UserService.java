@@ -1,6 +1,5 @@
 package dash.service;
 
-
 import java.util.List;
 
 import org.springframework.security.access.prepost.PostFilter;
@@ -42,10 +41,10 @@ public interface UserService {
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public List<User> getUsers(String orderByInsertionDate,
 			Integer numberDaysToLookBack) throws AppException;
-	
+
 	@PostFilter("hasPermission(filterObject, 'READ')")
 	public List<User> getMyUser() throws AppException;
-	
+
 	/**
 	 * Returns a user given its id
 	 *
@@ -54,7 +53,7 @@ public interface UserService {
 	 * @throws AppException
 	 */
 	public User getUserById(Long id) throws AppException;
-	
+
 	public List<String> getRole(User user);
 	
 	public User getUserByName(String username);
@@ -67,22 +66,23 @@ public interface UserService {
 
 	@PreAuthorize("hasPermission(#user, 'WRITE') or hasRole('ROLE_ADMIN')")
 	public void updatePartiallyUser(User user) throws AppException;
-	
+
 	@PreAuthorize("hasPermission(#user, 'WRITE') or hasRole('ROLE_ADMIN')")
 	public void resetPassword(User user) throws AppException;
-	
+
 	@PreAuthorize("hasPermission(#user, 'WRITE') and hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
 	public void setRoleUser(User user);
 
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public void setRoleModerator(User user);
-	
+
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public void setRoleAdmin(User user);
-	
+
 	/*
 	 * ******************** Helper methods **********************
 	 */
 	public int getNumberOfUsers();
-}
 
+	public User getUserByName(String username);
+}

@@ -1,11 +1,8 @@
 package dash.service;
 
 import java.util.List;
-
-import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
-
 import dash.errorhandling.AppException;
 import dash.pojo.Form;
 import dash.pojo.User;
@@ -60,8 +57,8 @@ public interface FormService {
 	//is interested in needs to be developed. This can be accomplished by using a clever
 	//SQL query that selects from the database based on the proper logic rather than
 	//loading the entire database into memory and filtering it.
-//	@PostFilter("hasPermission(filterObject, 'WRITE') or hasPermission(filterObject, 'READ')"
-	//		+ "or hasPermission(filterObject, 'DELETE'))")
+	@PostFilter("hasPermission(filterObject, 'WRITE') or hasPermission(filterObject, 'READ')"
+			+ "or hasPermission(filterObject, 'DELETE')")
 	public List<Form> getMyForms(int numberOfForms, Long startIndex) throws AppException;
 	
 	/**
@@ -122,6 +119,6 @@ public interface FormService {
 	public Form verifyFormExistenceById(Long id);
 
 	public int getNumberOfForms();
-	
 
+	public void updatePermission(User user, Form form, List<String> permissions);
 }
