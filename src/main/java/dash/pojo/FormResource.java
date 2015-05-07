@@ -1,9 +1,7 @@
 package dash.pojo;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
-
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
@@ -18,15 +16,11 @@ import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Component;
-
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import dash.errorhandling.AppException;
 import dash.service.FormService;
 import dash.service.UserService;
@@ -123,7 +117,7 @@ public class FormResource {
 	 * @throws AppException
 	 */
 	@GET
-	@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+	@Produces({ MediaType.APPLICATION_JSON })
 	public List<Form> getForms(
 			@QueryParam("numberOfForms") @DefaultValue("25") int numberOfForms,
 			@QueryParam("startIndex") @DefaultValue("0") Long startIndex)
@@ -135,7 +129,7 @@ public class FormResource {
 	
 	@GET
 	@Path("/myForms")
-	@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+	@Produces({ MediaType.APPLICATION_JSON })
 	public List<Form> getMyForms(
 			@QueryParam("numberOfForms") @DefaultValue("25") int numberOfForms,
 			@QueryParam("startIndex") @DefaultValue("0") Long startIndex)
@@ -250,18 +244,45 @@ public class FormResource {
 	// Permissions**************************
 	
 	@POST
-	@Path("{id}/PERMISSION/{user}/{permission}")
+	@Path("{id}/PERMISSION/{username}/{permissions}")
+	@Produces({ MediaType.TEXT_HTML })
+	public Response updatePermission(@PathParam("username") String username,
+			@PathParam("id") Long id, @PathParam("permissions") List<String> permissions) throws AppException {
+		User user = userService.getUserByName(username);
+		if(user != null) {
+		Form form = formService.getFormById(id);
+		formService.updatePermission(user, form, permissions);
+		return Response
+				.status(Response.Status.OK)
+				.entity("PERMISSION ADDED: User " + user.getUsername()
+						+ " given permission " + permissions + " for form "
+						+ form.getId()).build();
+		} else {
+			return Response.
+					status(Response.Status.NOT_FOUND)
+					.entity("USER NOT FOUND!").build();
+		}
+	}
+	
+	@POST
+	@Path("{id}/PERMISSIONADD/{user}/{permission}")
 	@Produces({ MediaType.TEXT_HTML })
 	public Response addPermission(@PathParam("user") Long userId,
 			@PathParam("id") Long id, @PathParam("permission") String permission) throws AppException {
 		User user = userService.getUserById(userId);
-		Form form = formService.getFormById(id);
-		formService.addPermission(user, form, permission);
-		return Response
-				.status(Response.Status.OK)
-				.entity("PERMISSION ADDED: User " + user.getUsername()
-						+ " given permission " + permission + " for form "
-						+ form.getId()).build();
+		if(user != null) {
+			Form form = formService.getFormById(id);
+			formService.addPermission(user, form, permission);
+			return Response
+					.status(Response.Status.OK)
+					.entity("PERMISSION ADDED: User " + user.getUsername()
+							+ " given permission " + permission + " for form "
+							+ form.getId()).build();
+		} else {
+			return Response.
+					status(Response.Status.NOT_FOUND)
+					.entity("USER NOT FOUND!").build();
+		}
 	}
 	
 	@DELETE
