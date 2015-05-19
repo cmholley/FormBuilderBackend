@@ -1,8 +1,12 @@
 package dash.service;
 
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+
 import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
+
 import dash.errorhandling.AppException;
 import dash.pojo.Form;
 import dash.pojo.User;
@@ -53,13 +57,11 @@ public interface FormService {
 	//@PostFilter("hasPermission(filterObject, 'READ')")
 	public List<Form> getForms(int numberOfForms, Long startIndex) throws AppException;
 	
-	//TODO:This is a temp fix, a more efficient method of organizing the forms that a particular user
-	//is interested in needs to be developed. This can be accomplished by using a clever
-	//SQL query that selects from the database based on the proper logic rather than
-	//loading the entire database into memory and filtering it.
-	@PostFilter("hasPermission(filterObject, 'WRITE') or hasPermission(filterObject, 'READ')"
-			+ "or hasPermission(filterObject, 'DELETE')")
-	public List<Form> getMyForms(int numberOfForms, Long startIndex) throws AppException;
+	//This filter was a temp fix that has been replaced with an SQL query which 
+	//Returns a list of all the forms with the permissions
+	//@PostFilter("hasPermission(filterObject, 'WRITE') or hasPermission(filterObject, 'READ')"
+	//		+ "or hasPermission(filterObject, 'DELETE')")
+	public LinkedHashMap<Form, List<Integer>> getMyForms(int numberOfForms, Long startIndex) throws AppException;
 	
 	/**
 	 * Returns a form given its id

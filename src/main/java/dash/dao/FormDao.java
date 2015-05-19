@@ -1,6 +1,12 @@
 package dash.dao;
 
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+
+
+
+
 
 
 import dash.pojo.Form;
@@ -32,5 +38,7 @@ public interface FormDao {
 
 	/** removes all forms */
 	public void deleteForms();
+
+	public List<Object[]> getMyForms(int numberOfForms, Long startIndex);
 
 }

@@ -3,8 +3,12 @@ package dash.service;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.HashMap;
+
 import javax.ws.rs.core.Response;
+
 import org.apache.commons.beanutils.BeanUtilsBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.ApplicationObjectSupport;
@@ -12,6 +16,10 @@ import org.springframework.security.acls.domain.PrincipalSid;
 import org.springframework.security.acls.model.Permission;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+
+
+
+
 import dash.dao.FormDao;
 import dash.dao.FormEntity;
 import dash.errorhandling.AppException;
@@ -75,13 +83,35 @@ FormService {
 	}
 	
 	@Override
-	public List<Form> getMyForms(int numberOfForms, Long startIndex) throws AppException{
+	public LinkedHashMap<Form, List<Integer>> getMyForms(int numberOfForms, Long startIndex) throws AppException{
 		
-		//TODO: Instead of returning the getAll function we should do a lookup
-				// in the ACL tables to compile a list of all objects where the user has
-				// the required permission and then do a select query to build a collection
-				// of only those objects.
-		return getForms(numberOfForms, startIndex);
+		//A lookup in the ACL tables to compile a list of all objects where the user has
+		// the required permission and then do a select query to build a collection
+		// of only those objects.
+		//return getForms(numberOfForms, startIndex);
+		List<Object[]> resultList = formDao.getMyForms(numberOfForms, startIndex);
+		LinkedHashMap<Long, List<Integer>> formIds = new LinkedHashMap<Long, List<Integer>>();
+		long formId = -1;
+		List<Integer> permissionsTemp = new ArrayList<Integer>();
+		//This for loop consolidates all the permissions for each form
+		//Since the permissions are stored in multiple ACEs, we need to consolidate
+		//Them into a list that is matched with just one form
+		for(Object[] entry: resultList){
+			if(formId == -1 || formId != (Long)entry[1]){
+				if(formId != -1){//If -1, this is the first iteration and permissionsTemp should not be added 
+					formIds.put(formId, permissionsTemp);
+				}
+				permissionsTemp = new ArrayList<Integer>();//Erases previous permissionsTemp list
+			}
+			permissionsTemp.add((Integer)entry[0]);
+			formId = (Long)entry[1];
+		}
+		LinkedHashMap<Form, List<Integer>> forms = new LinkedHashMap<Form, List<Integer>>();
+		for(HashMap.Entry<Long, List<Integer>> entry: formIds.entrySet()){
+			Form form = new Form(formDao.getFormById(entry.getKey()));
+			forms.put(form, entry.getValue());
+		}
+		return forms;
 	}
 	
 

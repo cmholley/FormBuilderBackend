@@ -17,7 +17,7 @@ public class CustomPermission extends BasePermission {
 	 
 	private static final long serialVersionUID = -8963735762723530908L;
 	
-	public static final Permission DELETE_RESPONSES    = new CustomPermission(1<<7,'r');
+	public static final Permission DELETE_RESPONSES    = new CustomPermission(1<<7,'r'); //128
 	
 	
 	 protected CustomPermission(int mask) {

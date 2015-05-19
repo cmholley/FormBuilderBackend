@@ -1,7 +1,11 @@
 package dash.pojo;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
@@ -16,11 +20,15 @@ import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+
+import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Component;
+
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
+
 import dash.errorhandling.AppException;
 import dash.service.FormService;
 import dash.service.UserService;
@@ -130,13 +138,20 @@ public class FormResource {
 	@GET
 	@Path("/myForms")
 	@Produces({ MediaType.APPLICATION_JSON })
-	public List<Form> getMyForms(
+	public LinkedHashMap<String, List<Integer>> getMyForms(
 			@QueryParam("numberOfForms") @DefaultValue("25") int numberOfForms,
 			@QueryParam("startIndex") @DefaultValue("0") Long startIndex)
 			throws IOException, AppException {
-		List<Form> forms = formService
+		LinkedHashMap<Form, List<Integer>> forms = formService
 				.getMyForms(numberOfForms, startIndex);
-		return forms;
+		LinkedHashMap<String, List<Integer>> returnForms = new LinkedHashMap<String, List<Integer>>();
+		ObjectMapper mapper = new ObjectMapper();
+		String tempString;
+		for(Map.Entry<Form, List<Integer>> entry: forms.entrySet()){
+			tempString = mapper.writeValueAsString(entry.getKey());
+			returnForms.put(tempString, entry.getValue());
+		}
+		return returnForms; 
 	}
 
 	@GET
