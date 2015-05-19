@@ -1,10 +1,7 @@
 package dash.dao;
 
 import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -18,11 +15,11 @@ import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.service.ServiceRegistry;
 import org.hibernate.service.ServiceRegistryBuilder;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import dash.pojo.Form;
-import dash.pojo.User;
 
 /**
  * This is an example of a JPA implementation of the DAO layer for a simple
@@ -113,8 +110,9 @@ public class FormDaoJPA2Impl implements FormDao {
 		}
 	}
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
-	public List<Object[]> getMyForms(int numberOfForms, Long startIndex) {
+	public List getMyForms(int numberOfForms, Long startIndex) {
 		try {
 			Configuration configuration = new Configuration().configure();
 			ServiceRegistry serviceRegistry = new ServiceRegistryBuilder()
@@ -123,23 +121,21 @@ public class FormDaoJPA2Impl implements FormDao {
 			SessionFactory sessionFactory = configuration
 					.buildSessionFactory(serviceRegistry);
 			Session session = sessionFactory.openSession();
-			String queryString = "SELECT e.mask, o.object_id_identity "
-					+ "FROM acl_entry e JOIN acl_object_identity o "
-					+ "ON e.acl_object_identity = o.id JOIN acl_sid s "
-					+ "ON s.id = e.sid "
-					+ "WHERE s.sid = 'underoath9777@yahoo.com' AND o.object_id_class = '11' "
-					+ "ORDER BY o.object_id_identity DESC, e.mask DESC";
-
+			String queryString = "SELECT acl_entry.mask, acl_object_identity.object_id_identity "
+					+ "FROM acl_entry JOIN acl_object_identity "
+					+ "ON acl_entry.acl_object_identity = acl_object_identity.id JOIN acl_sid "
+					+ "ON acl_sid.id = acl_entry.sid "
+					+ "WHERE acl_sid.sid = \"underoath9777@yahoo.com\" AND acl_object_identity.object_id_class = '11' "
+					+ "ORDER BY acl_object_identity.object_id_identity DESC, acl_entry.mask DESC";
+			Authentication auth = SecurityContextHolder.getContext() 
+					.getAuthentication();
+			Object name = (auth.getPrincipal());
 			SQLQuery query = session.createSQLQuery(queryString);
-			User user = (User) SecurityContextHolder.getContext()
-					.getAuthentication().getPrincipal();
-			String name = user.getUsername(); // get logged in username
-			query.setParameter(1, name);
-			List<Object[]> resultList = query.list();
-			return resultList;
+			//query.setParameter("username", name);
+			//Query query = entityManager.createQuery(queryString).setParameter("username", name);
+			return query.list();
 		} catch (NoResultException e) {
 			return null;
 		}
 	}
-
 }
