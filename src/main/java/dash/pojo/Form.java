@@ -2,14 +2,19 @@ package dash.pojo;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
 import org.apache.commons.beanutils.BeanUtils;
+
 import dash.dao.FormEntity;
 import dash.helpers.DateISO8601Adapter;
 import dash.security.IAclObject;
@@ -83,6 +88,8 @@ public class Form implements IAclObject {
 
 	@XmlElement(name = "closed_message")
 	private String closed_message;
+
+	private HashMap<String, List<Integer>> permissions;
 
 	public Form(FormEntity formEntity) {
 		try {
@@ -258,6 +265,14 @@ public class Form implements IAclObject {
 
 	public void setSubtitle(String subtitle) {
 		this.subtitle = subtitle;
+	}
+
+	public HashMap<String, List<Integer>> getPermissions() {
+		return permissions;
+	}
+
+	public void setPermissions(HashMap<String, List<Integer>> permissions) {
+		this.permissions = permissions;
 	}
 
 	public boolean isExpired() {

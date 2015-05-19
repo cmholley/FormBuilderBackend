@@ -158,11 +158,16 @@ public class FormResource {
 	@Path("{id}")
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getFormById(@PathParam("id") Long id,
-			@QueryParam("detailed") boolean detailed) throws IOException,
+			@QueryParam("detailed") boolean detailed, @QueryParam("permissions") 
+			@DefaultValue("false") boolean permissions) throws IOException,
 			AppException {
 		try{
 		Form formById = formService
 				.getFormById(id);
+		if(permissions){
+			HashMap<String, List<Integer>> permissionsMap = formService.getPermissionsForm(id);
+			formById.setPermissions(permissionsMap);
+		}
 		return Response.status(200)
 				.entity(new GenericEntity<Form>(formById) {
 				}).header("Access-Control-Allow-Headers", "X-extra-header")
@@ -178,6 +183,8 @@ public class FormResource {
 		}
 		
 	}
+	
+	
 	
 	
 	// ************************************* UPDATE

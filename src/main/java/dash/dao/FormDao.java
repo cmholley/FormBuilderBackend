@@ -41,4 +41,5 @@ public interface FormDao {
 
 	public List<Object[]> getMyForms(int numberOfForms, Long startIndex);
 
+	public List<Object[]> getPermissionsForm(long id);
 }

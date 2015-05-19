@@ -309,4 +309,26 @@ public class FormServiceDbAccessImpl extends ApplicationObjectSupport implements
 
 	}
 
+	@Override
+	public HashMap<String, List<Integer>> getPermissionsForm(long id) {
+		List<Object[]> resultList = formDao.getPermissionsForm(id);
+		LinkedHashMap<String, List<Integer>> permissions = new LinkedHashMap<String, List<Integer>>();
+		String username = "";
+		List<Integer> permissionsTemp = new ArrayList<Integer>();
+		for (Object[] entry : resultList) {
+			if (username.equals("") || !username.equals((String) entry[1])) {
+				if (!username.equals("")) {
+					permissions.put(username, permissionsTemp);
+				}
+				permissionsTemp = new ArrayList<Integer>();
+			}
+			permissionsTemp.add((Integer) entry[0]);
+			username = (String) entry[1];
+		}
+		if (!username.equals("")) {
+			permissions.put(username, permissionsTemp);
+		}
+		return permissions;
+	}
+
 }

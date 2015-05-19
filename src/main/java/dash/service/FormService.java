@@ -96,6 +96,7 @@ public interface FormService {
 	
 	public void deletePermission(User user, Form form, String perission);
 	
+	public HashMap<String, List<Integer>> getPermissionsForm(long id);
 	
 	/*
 	 * ******************** Delete related methods **********************

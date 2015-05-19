@@ -112,7 +112,7 @@ public class FormDaoJPA2Impl implements FormDao {
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
-	public List getMyForms(int numberOfForms, Long startIndex) {
+	public List<Object[]> getMyForms(int numberOfForms, Long startIndex) {
 		try {
 			Configuration configuration = new Configuration().configure();
 			ServiceRegistry serviceRegistry = new ServiceRegistryBuilder()
@@ -127,12 +127,45 @@ public class FormDaoJPA2Impl implements FormDao {
 					+ "ON acl_sid.id = acl_entry.sid "
 					+ "WHERE acl_sid.sid = \"underoath9777@yahoo.com\" AND acl_object_identity.object_id_class = '11' "
 					+ "ORDER BY acl_object_identity.object_id_identity DESC, acl_entry.mask DESC";
-			Authentication auth = SecurityContextHolder.getContext() 
+			Authentication auth = SecurityContextHolder.getContext()
 					.getAuthentication();
 			Object name = (auth.getPrincipal());
 			SQLQuery query = session.createSQLQuery(queryString);
-			//query.setParameter("username", name);
-			//Query query = entityManager.createQuery(queryString).setParameter("username", name);
+			// query.setParameter("username", name);
+			// Query query =
+			// entityManager.createQuery(queryString).setParameter("username",
+			// name);
+			return query.list();
+		} catch (NoResultException e) {
+			return null;
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Object[]> getPermissionsForm(long id) {
+		try {
+			Configuration configuration = new Configuration().configure();
+			ServiceRegistry serviceRegistry = new ServiceRegistryBuilder()
+					.applySettings(configuration.getProperties())
+					.buildServiceRegistry();
+			SessionFactory sessionFactory = configuration
+					.buildSessionFactory(serviceRegistry);
+			Session session = sessionFactory.openSession();
+			String queryString = "SELECT acl_entry.mask, acl_sid.sid FROM acl_entry "
+					+ "JOIN acl_object_identity ON acl_entry.acl_object_identity = acl_object_identity.id "
+					+ "JOIN acl_sid ON acl_sid.id = acl_entry.sid "
+					+ "WHERE acl_object_identity.object_id_identity = '221' "
+					+ "AND acl_object_identity.object_id_class = 11 "
+					+ "ORDER BY acl_sid.sid DESC, acl_entry.mask DESC";
+			Authentication auth = SecurityContextHolder.getContext()
+					.getAuthentication();
+			Object name = (auth.getPrincipal());
+			SQLQuery query = session.createSQLQuery(queryString);
+			// query.setParameter("username", name);
+			// Query query =
+			// entityManager.createQuery(queryString).setParameter("username",
+			// name);
 			return query.list();
 		} catch (NoResultException e) {
 			return null;
