@@ -110,14 +110,6 @@ public class FormEntity implements Serializable {
 		//this.confirmation_recipient_email = user.getUsername();
 	}
 
-<<<<<<< HEAD
-	public FormEntity(String name, Set<Question> questions, boolean redirect_to_url,
-			boolean enabled, boolean publi, boolean send_notification,
-			boolean email_embedded_responses, boolean send_receipt, 
-			String email_message, String completed_message, String redirect_url, 
-			Date expiration_date, String closed_message, THEME theme) {
-=======
-
 
 	public FormEntity(Long id, String name, String subtitle,
 			Date insertion_date, Set<Question> questions, boolean publi,
@@ -126,7 +118,7 @@ public class FormEntity implements Serializable {
 			boolean send_receipt, String email_message,
 			String completed_message, String redirect_url,
 			Date expiration_date, String closed_message, String confirmation_recipient_email) { 
->>>>>>> 555e97c789d228ca3d234cdb1ba92cd55ee93b1f
+
 		super();
 		this.name = name;
 		this.questions = questions;
@@ -135,11 +127,8 @@ public class FormEntity implements Serializable {
 		this.publi = publi;
 		this.send_notification = send_notification;
 		this.send_receipt = send_receipt;
-<<<<<<< HEAD
 		this.email_message = email_message;
 		this.completed_message = completed_message;
-=======
->>>>>>> 555e97c789d228ca3d234cdb1ba92cd55ee93b1f
 		this.redirect_url = redirect_url;
 		this.expiration_date = expiration_date;
 		this.theme = theme;
@@ -264,7 +253,6 @@ public class FormEntity implements Serializable {
 	public boolean isRedirect_to_url() {
 		return redirect_to_url;
 	}
-<<<<<<< HEAD
 	
 	public void setRedirect_to_url(boolean newRedirect_to_url){
 		this.redirect_to_url = newRedirect_to_url;
@@ -285,46 +273,11 @@ public class FormEntity implements Serializable {
 	
 	public void setsend_receipt(boolean newsend_receipt){
 		this.send_receipt = newsend_receipt;
-=======
-
-
-
-	public void setRedirect_to_url(boolean redirect_to_url) {
-		this.redirect_to_url = redirect_to_url;
 	}
-
-
-
-	public boolean isSend_notification() {
-		return send_notification;
-	}
-
-
-
-	public void setSend_notification(boolean send_notification) {
-		this.send_notification = send_notification;
-	}
-
-
-
-	public boolean isSend_receipt() {
-		return send_receipt;
-	}
-
-
-
-	public void setSend_receipt(boolean send_receipt) {
-		this.send_receipt = send_receipt;
->>>>>>> 555e97c789d228ca3d234cdb1ba92cd55ee93b1f
-	}
-
-
 
 	public String getEmail_message() {
 		return email_message;
 	}
-
-
 
 	public void setEmail_message(String email_message) {
 		this.email_message = email_message;
