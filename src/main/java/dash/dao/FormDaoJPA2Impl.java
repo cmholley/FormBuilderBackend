@@ -17,6 +17,7 @@ import org.hibernate.service.ServiceRegistry;
 import org.hibernate.service.ServiceRegistryBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import dash.pojo.Form;
@@ -110,7 +111,7 @@ public class FormDaoJPA2Impl implements FormDao {
 		}
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({ "unchecked" })
 	@Override
 	public List<Object[]> getMyForms(int numberOfForms, Long startIndex) {
 		try {
@@ -125,16 +126,14 @@ public class FormDaoJPA2Impl implements FormDao {
 					+ "FROM acl_entry JOIN acl_object_identity "
 					+ "ON acl_entry.acl_object_identity = acl_object_identity.id JOIN acl_sid "
 					+ "ON acl_sid.id = acl_entry.sid "
-					+ "WHERE acl_sid.sid = \"underoath9777@yahoo.com\" AND acl_object_identity.object_id_class = '11' "
+					+ "WHERE acl_sid.sid = :username AND acl_object_identity.object_id_class = '11' "
 					+ "ORDER BY acl_object_identity.object_id_identity DESC, acl_entry.mask DESC";
 			Authentication auth = SecurityContextHolder.getContext()
 					.getAuthentication();
-			Object name = (auth.getPrincipal());
+			String name = ((UserDetails) auth.getPrincipal()).getUsername();
+			//name = "\"" + name +"\"";
 			SQLQuery query = session.createSQLQuery(queryString);
-			// query.setParameter("username", name);
-			// Query query =
-			// entityManager.createQuery(queryString).setParameter("username",
-			// name);
+			query.setString("username", name);
 			return query.list();
 		} catch (NoResultException e) {
 			return null;
@@ -155,17 +154,14 @@ public class FormDaoJPA2Impl implements FormDao {
 			String queryString = "SELECT acl_entry.mask, acl_sid.sid FROM acl_entry "
 					+ "JOIN acl_object_identity ON acl_entry.acl_object_identity = acl_object_identity.id "
 					+ "JOIN acl_sid ON acl_sid.id = acl_entry.sid "
-					+ "WHERE acl_object_identity.object_id_identity = '221' "
+					+ "WHERE acl_object_identity.object_id_identity = :formId "
 					+ "AND acl_object_identity.object_id_class = 11 "
 					+ "ORDER BY acl_sid.sid DESC, acl_entry.mask DESC";
 			Authentication auth = SecurityContextHolder.getContext()
 					.getAuthentication();
 			Object name = (auth.getPrincipal());
 			SQLQuery query = session.createSQLQuery(queryString);
-			// query.setParameter("username", name);
-			// Query query =
-			// entityManager.createQuery(queryString).setParameter("username",
-			// name);
+			query.setLong("formId", id);
 			return query.list();
 		} catch (NoResultException e) {
 			return null;
