@@ -14,6 +14,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.apache.commons.beanutils.BeanUtils;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import dash.dao.FormEntity;
 import dash.helpers.DateISO8601Adapter;
@@ -65,16 +66,13 @@ public class Form implements IAclObject {
 	@XmlElement(name = "redirect_to_url")
 	private boolean redirect_to_url;
 
-	@XmlElement(name = "alert_for_response")
-	private boolean alert_for_response;
+	@XmlElement(name = "send_notification")
+	private boolean send_notification;
 
-	@XmlElement(name = "email_embedded_resposes")
-	private boolean email_embedded_responses;
+	@XmlElement(name = "send_receipt")
+	private boolean send_receipt;
 
-	@XmlElement(name = "send_confirmation_email")
-	private boolean send_confirmation_email;
-
-	@XmlElement(name = "email_message")
+	@XmlElement(name = "email_message")//Message for receipt email
 	private String email_message;
 
 	@XmlElement(name = "completed_message")
@@ -90,6 +88,9 @@ public class Form implements IAclObject {
 	private String closed_message;
 
 	private HashMap<String, List<Integer>> permissions;
+	
+	@XmlElement(name = "confirmation_recipient_email")
+	private String confirmation_recipient_email;
 
 	public Form(FormEntity formEntity) {
 		try {
@@ -104,31 +105,33 @@ public class Form implements IAclObject {
 	}
 
 	public Form(String name, Set<Question> questions, boolean redirect_to_url,
-			boolean enabled, boolean publi, boolean alert_for_response,
-			boolean email_embedded_responses, boolean send_confirmation_email,
+			boolean enabled, boolean publi, boolean send_notification, boolean send_receipt,
 			String email_message, String completed_message,
 			String redirect_url, Date expiration_date, String closed_message,
-			THEME theme) {
+			THEME theme, String receipt_message, String confirmation_recipient_email) {
 		super();
 		this.name = name;
 		this.questions = questions;
 		this.redirect_to_url = redirect_to_url;
 		this.enabled = enabled;
 		this.publi = publi;
-		this.alert_for_response = alert_for_response;
-		this.email_embedded_responses = email_embedded_responses;
-		this.send_confirmation_email = send_confirmation_email;
-		this.email_message = email_message;
-		this.completed_message = completed_message;
+		this.send_notification = send_notification;
+		this.send_receipt = send_receipt;
 		this.redirect_url = redirect_url;
 		this.expiration_date = expiration_date;
-		this.closed_message = closed_message;
 		this.theme = theme;
+		this.confirmation_recipient_email = confirmation_recipient_email;
+		this.closed_message = closed_message;
+		this.email_message = email_message;
+		this.completed_message = completed_message;	
 	}
 
 	public Form() {
 		this.closed_message = "We're sorry, this form is closed";
 		this.completed_message = "Thank you for your submission, your response has been recorded";
+		this.email_message = "Thank you for completing this form. Your response has been recorded"; 
+		//User user = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		//this.confirmation_recipient_email = user.getUsername();
 	}
 
 	public Set<Question> getQuestions() {
@@ -195,28 +198,20 @@ public class Form implements IAclObject {
 		this.redirect_to_url = newRedirect_to_url;
 	}
 
-	public boolean getAlert_for_response() {
-		return alert_for_response;
+	public boolean getSend_notification() {
+		return send_notification;
 	}
 
-	public void setAlert_for_response(boolean newAlert_for_response) {
-		this.alert_for_response = newAlert_for_response;
+	public void setSend_notification(boolean newSend_notification) {
+		this.send_notification = newSend_notification;
 	}
 
-	public boolean getEmail_embedded_responses() {
-		return email_embedded_responses;
+	public boolean getSend_receipt() {
+		return send_receipt;
 	}
 
-	public void setEmail_embedded_responses(boolean newEmail_embedded_responses) {
-		this.email_embedded_responses = newEmail_embedded_responses;
-	}
-
-	public boolean getSend_confirmation_email() {
-		return send_confirmation_email;
-	}
-
-	public void setSend_confirmation_email(boolean newSend_confirmation_email) {
-		this.send_confirmation_email = newSend_confirmation_email;
+	public void setSend_receipt(boolean newSend_receipt) {
+		this.send_receipt = newSend_receipt;
 	}
 
 	public String getEmail_message() {
@@ -273,6 +268,13 @@ public class Form implements IAclObject {
 
 	public void setPermissions(HashMap<String, List<Integer>> permissions) {
 		this.permissions = permissions;
+	}
+	public String getConfirmation_recipient_email() {
+		return confirmation_recipient_email;
+	}
+
+	public void setConfirmation_recipient_email(String confirmation_recipient_email) {
+		this.confirmation_recipient_email = confirmation_recipient_email;
 	}
 
 	public boolean isExpired() {

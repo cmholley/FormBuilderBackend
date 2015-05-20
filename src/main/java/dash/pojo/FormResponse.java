@@ -52,9 +52,14 @@ public class FormResponse implements  IAclObject {
 	@XmlElement(name = "document_folder")
 	private String document_folder;
 	
+	@XmlElement(name = "responder_email")
+	private String responder_email;
 	
 	@XmlElement(name= "entries")
 	private Set<Entry> entries= new HashSet<Entry>();
+	
+	@XmlElement(name = "send_receipt")
+	private boolean send_receipt;
 
 	public FormResponse(FormResponseEntity objectEntity) {
 		try {
@@ -72,13 +77,15 @@ public class FormResponse implements  IAclObject {
 	}
 
 	public FormResponse(Long form_id, Long owner_id, boolean is_complete,
-			Set<Entry> entries, String document_folder) {
+			Set<Entry> entries, String document_folder, String responder_email, boolean send_receipt) {
 		super();
 		this.form_id = form_id;
 		this.owner_id = owner_id;
 		this.is_complete = is_complete;
 		this.entries = entries;
 		this.document_folder= document_folder;
+		this.responder_email = responder_email;
+		this.send_receipt = send_receipt;
 	}
 
 	public Long getId() {
@@ -145,7 +152,19 @@ public class FormResponse implements  IAclObject {
 		this.document_folder = document_folder;
 	}
 	
+	public String getResponderEmail(){
+		return responder_email;
+	}
 	
+	public void setResponderEmail(String responder_email){
+		this.responder_email = responder_email;
+	}
 	
-
+	public boolean getSend_receipt(){
+		return send_receipt;
+	}
+	
+	public void setSend_receipt(boolean send_receipt){
+		this.send_receipt = send_receipt;
+	}
 }

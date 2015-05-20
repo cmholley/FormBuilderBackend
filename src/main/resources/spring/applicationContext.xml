@@ -1,7 +1,6 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-	xmlns:context="http://www.springframework.org/schema/context"
-	xmlns:tx="http://www.springframework.org/schema/tx"	
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:tx="http://www.springframework.org/schema/tx"
 	xsi:schemaLocation="
 		http://www.springframework.org/schema/beans	
 		http://www.springframework.org/schema/beans/spring-beans.xsd
@@ -11,34 +10,75 @@
 		 
 		http://www.springframework.org/schema/context
 		http://www.springframework.org/schema/context/spring-context.xsd">
-		
-		<import resource="webSecurityConfig.xml" />
- 
+
+	<import resource="webSecurityConfig.xml" />
+
 	<context:component-scan base-package="dash.*" />
- 
+
 	<!-- ************ JPA configuration *********** -->
-	<tx:annotation-driven transaction-manager="transactionManager" />  
-    <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
-        <property name="entityManagerFactory" ref="entityManagerFactory" />
-    </bean>
-       
-    <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
-        <property name="persistenceXmlLocation" value="classpath:config/persistence-dash.xml" />
-        <property name="persistenceUnitName" value="dashPersistence" />        
-        <property name="dataSource" ref="dashDS" />
-        <property name="packagesToScan" value="dash.*" />
-        <property name="jpaVendorAdapter">
-            <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
-                <property name="showSql" value="true" />
-                <property name="databasePlatform" value="org.hibernate.dialect.MySQLDialect" />
-            </bean>
-        </property>
-    </bean>  
-   
-      
-    <bean id="dashDS" class="org.springframework.jndi.JndiObjectFactoryBean" scope="singleton">
-	    <property name="jndiName" value="java:comp/env/jdbc/dashDB" />
-	    <property name="resourceRef" value="true" />        
+	<tx:annotation-driven transaction-manager="transactionManager" />
+	<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+		<property name="entityManagerFactory" ref="entityManagerFactory" />
 	</bean>
+
+	<bean id="entityManagerFactory"
+		class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+		<property name="persistenceXmlLocation" value="classpath:config/persistence-dash.xml" />
+		<property name="persistenceUnitName" value="dashPersistence" />
+		<property name="dataSource" ref="dashDS" />
+		<property name="packagesToScan" value="dash.*" />
+		<property name="jpaVendorAdapter">
+			<bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
+				<property name="showSql" value="true" />
+				<property name="databasePlatform" value="org.hibernate.dialect.MySQLDialect" />
+			</bean>
+		</property>
+	</bean>
+
+<!-- 	For the server -->
+  	<bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+		<property name="host" value="localhost" />
+		<property name="port" value="25" />
+		<property name="protocol" value="smtp" />
+		
+		<property name="javaMailProperties">
+			<props>
+				<prop key="mail.smtps.auth">false</prop>
+				<prop key="mail.smtp.ssl.enable">false</prop>
+				<prop key="mail.transport.protocol">smtp</prop>
+
+			</props>
+		</property>
 	
+<!--For local development -->	
+		
+  	<!--<bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+		<property name="host" value="smtp.gmail.com" />
+		<property name="port" value="465"/>
+		<property name="username" value="formbuildertest@gmail.com" />
+		<property name="password" value="test1234test" />
+		<property name="protocol" value="smtps" />
+
+		<property name="javaMailProperties">
+			<props>
+				<prop key="mail.smtps.auth">true</prop>
+				<prop key="mail.smtp.ssl.enable">true</prop>
+				<prop key="mail.transport.protocol">smtps</prop>
+
+			</props>
+		</property> -->
+	</bean>
+
+	<bean id="templateMessage" class="org.springframework.mail.SimpleMailMessage">
+		<property name="from" value="formbuildertest@gmail.com" />
+		<property name="subject" value="Test" />
+	</bean>
+
+
+	<bean id="dashDS" class="org.springframework.jndi.JndiObjectFactoryBean"
+		scope="singleton">
+		<property name="jndiName" value="java:comp/env/jdbc/dashDB" />
+		<property name="resourceRef" value="true" />
+	</bean>
+
 </beans>
