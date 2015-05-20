@@ -1,4 +1,4 @@
- package dash.service;
+package dash.service;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -32,7 +32,7 @@ import dash.pojo.User;
 import dash.security.UserLoginController;
 
 /**
- * Implementation of the business logic for our User object. Users are also used 
+ * Implementation of the business logic for our User object. Users are also used
  * by SpringSecurity and the ACL's to determine authorization.
  * 
  * @author Tyler.swensen@gmail.com
@@ -40,7 +40,7 @@ import dash.security.UserLoginController;
  */
 @Component("userService")
 public class UserServiceDbAccessImpl extends ApplicationObjectSupport implements
-UserService {
+		UserService {
 
 	@Autowired
 	UserDao userDao;
@@ -60,7 +60,7 @@ UserService {
 
 		validateInputForCreation(user);
 
-		//verify existence of resource in the db (feed must be unique)
+		// verify existence of resource in the db (feed must be unique)
 		UserEntity userByName = userDao.getUserByName(user.getUsername());
 		if (userByName != null) {
 			throw new AppException(
@@ -68,8 +68,8 @@ UserService {
 					409,
 					"User with username already existing in the database with the id "
 							+ userByName.getId(),
-							"Please verify that the username and password are properly generated",
-							AppConstants.DASH_POST_URL);
+					"Please verify that the username and password are properly generated",
+					AppConstants.DASH_POST_URL);
 		}
 
 		long userId = userDao.createUser(new UserEntity(user));
@@ -81,16 +81,22 @@ UserService {
 
 	private void validateInputForCreation(User user) throws AppException {
 		if (user.getUsername() == null) {
-			throw new AppException(Response.Status.BAD_REQUEST.getStatusCode(), 400, "Provided data not sufficient for insertion",
+			throw new AppException(
+					Response.Status.BAD_REQUEST.getStatusCode(),
+					400,
+					"Provided data not sufficient for insertion",
 					"Please verify that the username is properly generated/set",
 					AppConstants.DASH_POST_URL);
 		}
 		if (user.getPassword() == null) {
-			throw new AppException(Response.Status.BAD_REQUEST.getStatusCode(), 400, "Provided data not sufficient for insertion",
+			throw new AppException(
+					Response.Status.BAD_REQUEST.getStatusCode(),
+					400,
+					"Provided data not sufficient for insertion",
 					"Please verify that the password is properly generated/set",
 					AppConstants.DASH_POST_URL);
-		} 
-		//etc...
+		}
+		// etc...
 	}
 
 	@Override
@@ -101,20 +107,19 @@ UserService {
 		}
 	}
 
-
 	/******************** Read related methods implementation **********************/
 	@Override
 	public List<User> getUsers(String orderByInsertionDate,
 			Integer numberDaysToLookBack) throws AppException {
 
-		//verify optional parameter numberDaysToLookBack first
-		if(numberDaysToLookBack!=null){
+		// verify optional parameter numberDaysToLookBack first
+		if (numberDaysToLookBack != null) {
 			List<UserEntity> recentUsers = userDao
 					.getRecentUsers(numberDaysToLookBack);
 			return getUsersFromEntities(recentUsers);
 		}
 
-		if(isOrderByInsertionDateParameterValid(orderByInsertionDate)){
+		if (isOrderByInsertionDateParameterValid(orderByInsertionDate)) {
 			throw new AppException(
 					Response.Status.BAD_REQUEST.getStatusCode(),
 					400,
@@ -125,7 +130,7 @@ UserService {
 
 		return getUsersFromEntities(users);
 	}
-	
+
 	@Override
 	public List<User> getMyUser() throws AppException {
 		return getUsers(null, null);
@@ -133,8 +138,9 @@ UserService {
 
 	private boolean isOrderByInsertionDateParameterValid(
 			String orderByInsertionDate) {
-		return orderByInsertionDate!=null
-				&& !("ASC".equalsIgnoreCase(orderByInsertionDate) || "DESC".equalsIgnoreCase(orderByInsertionDate));
+		return orderByInsertionDate != null
+				&& !("ASC".equalsIgnoreCase(orderByInsertionDate) || "DESC"
+						.equalsIgnoreCase(orderByInsertionDate));
 	}
 
 	@Override
@@ -142,11 +148,10 @@ UserService {
 		UserEntity userById = userDao.getUserById(id);
 		if (userById == null) {
 			throw new AppException(Response.Status.NOT_FOUND.getStatusCode(),
-					404,
-					"The user you requested with id " + id
-					+ " was not found in the database",
+					404, "The user you requested with id " + id
+							+ " was not found in the database",
 					"Verify the existence of the user with the id " + id
-					+ " in the database", AppConstants.DASH_POST_URL);
+							+ " in the database", AppConstants.DASH_POST_URL);
 		}
 
 		return new User(userDao.getUserById(id));
@@ -160,7 +165,7 @@ UserService {
 
 		return response;
 	}
-
+	
 	public List<User> getRecentUsers(int numberOfDaysToLookBack) {
 		List<UserEntity> recentUsers = userDao
 				.getRecentUsers(numberOfDaysToLookBack);
@@ -182,7 +187,7 @@ UserService {
 		tempRole.add(userDao.getRoleByName(user.getUsername()));
 		return tempRole;
 	}
-	
+
 	protected String getUsername() {
 		Authentication auth = SecurityContextHolder.getContext()
 				.getAuthentication();
@@ -194,29 +199,27 @@ UserService {
 		}
 	}
 
+
 	/********************* UPDATE-related methods implementation ***********************/
 	@Override
 	@Transactional
 	public void updateFullyUser(User user) throws AppException {
-		//do a validation to verify FULL update with PUT
-		
-		User verifyUserExistenceById = verifyUserExistenceById(user
-				.getId());
+		// do a validation to verify FULL update with PUT
+
+		User verifyUserExistenceById = verifyUserExistenceById(user.getId());
 		if (verifyUserExistenceById == null) {
-			throw new AppException(Response.Status.NOT_FOUND.getStatusCode(),
+			throw new AppException(
+					Response.Status.NOT_FOUND.getStatusCode(),
 					404,
 					"The resource you are trying to update does not exist in the database",
 					"Please verify existence of data in the database for the id - "
-							+ user.getId(),
-							AppConstants.DASH_POST_URL);
+							+ user.getId(), AppConstants.DASH_POST_URL);
 		}
-		
+
 		copyAllProperties(verifyUserExistenceById, user);
 		userDao.updateUser(new UserEntity(verifyUserExistenceById));
 	}
 
-	
-	
 	/**
 	 * Allows for merging bean with object does not ignore null properties.
 	 * 
@@ -224,15 +227,22 @@ UserService {
 	 */
 	private void copyAllProperties(User verifyUserExistenceById, User user) {
 
-		BeanUtilsBean withNull=new BeanUtilsBean();
+		BeanUtilsBean withNull = new BeanUtilsBean();
 		try {
-			withNull.copyProperty(verifyUserExistenceById, "firstName", user.getFirstName());
-			withNull.copyProperty(verifyUserExistenceById, "lastName", user.getLastName());
-			withNull.copyProperty(verifyUserExistenceById, "city", user.getCity());
-			withNull.copyProperty(verifyUserExistenceById, "homePhone", user.getHomePhone());
-			withNull.copyProperty(verifyUserExistenceById, "cellPhone", user.getCellPhone());
-			withNull.copyProperty(verifyUserExistenceById, "email", user.getEmail());
-			withNull.copyProperty(verifyUserExistenceById, "picture", user.getPicture());
+			withNull.copyProperty(verifyUserExistenceById, "firstName",
+					user.getFirstName());
+			withNull.copyProperty(verifyUserExistenceById, "lastName",
+					user.getLastName());
+			withNull.copyProperty(verifyUserExistenceById, "city",
+					user.getCity());
+			withNull.copyProperty(verifyUserExistenceById, "homePhone",
+					user.getHomePhone());
+			withNull.copyProperty(verifyUserExistenceById, "cellPhone",
+					user.getCellPhone());
+			withNull.copyProperty(verifyUserExistenceById, "email",
+					user.getEmail());
+			withNull.copyProperty(verifyUserExistenceById, "picture",
+					user.getPicture());
 		} catch (IllegalAccessException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -255,10 +265,11 @@ UserService {
 	@Override
 	@Transactional
 	public void updatePartiallyUser(User user) throws AppException {
-		//do a validation to verify existence of the resource
+		// do a validation to verify existence of the resource
 		User verifyUserExistenceById = verifyUserExistenceById(user.getId());
 		if (verifyUserExistenceById == null) {
-			throw new AppException(Response.Status.NOT_FOUND.getStatusCode(),
+			throw new AppException(
+					Response.Status.NOT_FOUND.getStatusCode(),
 					404,
 					"The resource you are trying to update does not exist in the database",
 					"Please verify existence of data in the database for the id - "
@@ -271,7 +282,7 @@ UserService {
 
 	private void copyPartialProperties(User verifyUserExistenceById, User user) {
 
-		BeanUtilsBean notNull=new NullAwareBeanUtilsBean();
+		BeanUtilsBean notNull = new NullAwareBeanUtilsBean();
 		try {
 			notNull.copyProperties(verifyUserExistenceById, user);
 		} catch (IllegalAccessException e) {
@@ -283,23 +294,22 @@ UserService {
 		}
 
 	}
-	
+
 	@Override
 	@Transactional
-	public void resetPassword(User user) throws AppException{
+	public void resetPassword(User user) throws AppException {
 		User verifyUserExistenceById = verifyUserExistenceById(user.getId());
 		if (verifyUserExistenceById == null) {
-			throw new AppException(Response.Status.NOT_FOUND.getStatusCode(),
+			throw new AppException(
+					Response.Status.NOT_FOUND.getStatusCode(),
 					404,
 					"The resource you are trying to update does not exist in the database",
 					"Please verify existence of data in the database for the id - "
 							+ user.getId(), AppConstants.DASH_POST_URL);
-		}else
-		{
+		} else {
 			authoritiesController.passwordReset(user);
 		}
-		
-		
+
 	}
 
 	/****************** Methods for Acl *****************/
@@ -308,8 +318,7 @@ UserService {
 	// Is also an example of how to implement class specific ACL helper methods.
 	public void createUserACL(User user, Sid recipient) {
 		MutableAcl acl;
-		ObjectIdentity oid = new ObjectIdentityImpl(User.class,
-				user.getId());
+		ObjectIdentity oid = new ObjectIdentityImpl(User.class, user.getId());
 
 		try {
 			acl = (MutableAcl) mutableAclService.readAclById(oid);
@@ -327,8 +336,7 @@ UserService {
 		mutableAclService.updateAcl(acl);
 
 		logger.debug("Added permission " + "Read, Write, Delete" + " for Sid "
-				+ recipient
-				+ " contact " + user);
+				+ recipient + " contact " + user);
 	}
 
 	@Override
@@ -346,6 +354,16 @@ UserService {
 	@Override
 	@Transactional
 	public void setRoleAdmin(User user) {
-		userDao.updateUserRole("ROLE_ADMIN", user.getUsername());		
+		userDao.updateUserRole("ROLE_ADMIN", user.getUsername());
+	}
+
+	@Override
+	public User getUserByName(String username) {
+		List<UserEntity> uel = new ArrayList<UserEntity>();
+		UserEntity ue = userDao.getUserByName(username);
+		if(ue != null) {
+			uel.add(ue);
+			return getUsersFromEntities(uel).get(0);
+		} else return null;
 	}
 }

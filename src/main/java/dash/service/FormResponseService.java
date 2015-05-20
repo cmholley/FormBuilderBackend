@@ -32,7 +32,8 @@ public interface FormResponseService {
 	 * @return
 	 * @throws AppException
 	 */
-	public Long createFormResponse(FormResponse formResponse) throws AppException;
+	@PostAuthorize("hasPermission(#form, 'CREATE') or form.getPubli() or hasRole('ROLE_ADMIN')")
+	public Long createFormResponse(FormResponse formResponse, Form form) throws AppException;
 
 	/*
 	 * Create multiple formResponses as ROOT, testing purposes only.
@@ -69,20 +70,20 @@ public interface FormResponseService {
 	 */
 	
 	//Enable the following line of code to restrict read access to a single object.
-	@PostAuthorize("hasPermission(returnObject, 'read') or hasRole('ROLE_ADMIN')")
+	@PostAuthorize("hasPermission(returnObject, 'READ') or hasRole('ROLE_ADMIN')")
 	public FormResponse getFormResponseById(Long id) throws AppException;
 	
 	//@PostFilter("hasPermission(filterObject, 'read') or hasRole('ROLE_ADMIN')")
-	@PostFilter("hasPermission(#form, 'write') or hasRole('ROLE_ADMIN')")
+	@PostFilter("hasPermission(#form, 'WRITE') or hasRole('ROLE_ADMIN')")
 	public List<FormResponse> getFormResponsesByFormId(Long id, int numberOfFormResponses, int page, Form form) throws AppException;
 
 	/*
 	 * ******************** Update related methods **********************
 	 */
-	@PreAuthorize("hasPermission(#formResponse, 'write') or hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasPermission(#formResponse, 'WRITE') or hasRole('ROLE_ADMIN')")
 	public void updateFullyFormResponse(FormResponse formResponse) throws AppException;
 
-	@PreAuthorize("hasPermission(#formResponse, 'write') or hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasPermission(#formResponse, 'WRITE') or hasRole('ROLE_ADMIN')")
 	public void updatePartiallyFormResponse(FormResponse formResponse) throws AppException;
 
 	/*
@@ -90,8 +91,9 @@ public interface FormResponseService {
 	 */
 
 
-	@PreAuthorize("hasPermission(#formResponse, 'delete') or hasRole('ROLE_ADMIN')")
-	public void deleteFormResponse(FormResponse formResponse);
+	@PreAuthorize("hasPermission(#formResponse, 'delete') or hasPermission(#form, "
+			+ "'DELETE_RESPONSES	') or hasRole('ROLE_ADMIN')")
+	public void deleteFormResponse(FormResponse formResponse, Form form);
 	/** removes all formResponses
 	 * DO NOT USE, IMPROPERLY UPDATES ACL_OBJECT table
 	 * Functional but does not destroy old acl's which doesnt hurt anything

@@ -1,13 +1,15 @@
 package dash.service;
 
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 
-import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
 
 import dash.errorhandling.AppException;
 import dash.pojo.Form;
+import dash.pojo.User;
 
 /**
  * Example service interface for a basic object.
@@ -55,8 +57,11 @@ public interface FormService {
 	//@PostFilter("hasPermission(filterObject, 'READ')")
 	public List<Form> getForms(int numberOfForms, Long startIndex) throws AppException;
 	
-	@PostFilter("hasPermission(filterObject, 'WRITE')")
-	public List<Form> getMyForms(int numberOfForms, Long startIndex) throws AppException;
+	//This filter was a temp fix that has been replaced with an SQL query which 
+	//Returns a list of all the forms with the permissions
+	//@PostFilter("hasPermission(filterObject, 'WRITE') or hasPermission(filterObject, 'READ')"
+	//		+ "or hasPermission(filterObject, 'DELETE')")
+	public LinkedHashMap<Form, List<Integer>> getMyForms(int numberOfForms, Long startIndex) throws AppException;
 	
 	/**
 	 * Returns a form given its id
@@ -68,25 +73,37 @@ public interface FormService {
 	
 	//Enable the following line of code to restrict read access to a single object.
 	// and returnObject.getPubli()==true or returnObject.getEnabled()==true and hasRole('ROLE_USER')
-	@PostAuthorize("hasPermission(returnObject, 'read') or hasRole('ROLE_ADMIN') or returnObject.getEnabled()==true and returnObject.getPubli()==true and returnObject.isExpired()==false or returnObject.getEnabled()==true and hasRole('ROLE_USER') and returnObject.isExpired()==false" )
+	//This post authorize has been removed. We are preventing responses at response creation rather than at form request
+	//@PostAuthorize("hasPermission(returnObject, 'read') or hasRole('ROLE_ADMIN') or returnObject.getEnabled()==true and returnObject.getPubli()==true "
+	//		+ "and returnObject.isExpired()==false or returnObject.getEnabled()==true and hasRole('ROLE_USER') and returnObject.isExpired()==false")
 	public Form getFormById(Long id) throws AppException;
 	
 
 	/*
 	 * ******************** Update related methods **********************
 	 */
-	@PreAuthorize("hasPermission(#form, 'write') or hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasPermission(#form, 'WRITE') or hasRole('ROLE_ADMIN')")
 	public void updateFullyForm(Form form) throws AppException;
 
-	@PreAuthorize("hasPermission(#form, 'write') or hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasPermission(#form, 'WRITE') or hasRole('ROLE_ADMIN')")
 	public void updatePartiallyForm(Form form) throws AppException;
 
+	/*
+	 * ******************** Permission related methods **********************
+	 */
+
+	public void addPermission(User user, Form form, String perission);
+	
+	public void deletePermission(User user, Form form, String perission);
+	
+	public HashMap<String, List<Integer>> getPermissionsForm(long id);
+	
 	/*
 	 * ******************** Delete related methods **********************
 	 */
 
 
-	@PreAuthorize("hasPermission(#form, 'delete') or hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasPermission(#form, 'DELETE') or hasRole('ROLE_ADMIN')")
 	public void deleteForm(Form form);
 	/** removes all forms
 	 * DO NOT USE, IMPROPERLY UPDATES ACL_OBJECT table
@@ -106,4 +123,5 @@ public interface FormService {
 
 	public int getNumberOfForms();
 
+	public void updatePermission(User user, Form form, List<String> permissions);
 }

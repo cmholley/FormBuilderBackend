@@ -76,8 +76,8 @@ public class FormResponseResource {
 	public Response createFormResponse(FormResponse formResponse)
 			throws AppException, JsonParseException, JsonMappingException, IOException
 	{
-		
-		Long createFormResponseId = formResponseService.createFormResponse(formResponse);
+		Form form = formService.getFormById(formResponse.getForm_id());
+		Long createFormResponseId = formResponseService.createFormResponse(formResponse, form);
 		
 		
 		return Response
@@ -207,8 +207,9 @@ public class FormResponseResource {
 		if (formResponseById == null) {
 			// resource not existent yet, and should be created under the
 			// specified URI
+			Form form = formService.getFormById(formResponse.getForm_id());
 			Long createFormResponseId = formResponseService
-					.createFormResponse(formResponse);
+					.createFormResponse(formResponse, form);
 			return Response
 					.status(Response.Status.CREATED)
 					// 201
@@ -252,8 +253,8 @@ public class FormResponseResource {
 				.entity("There was no formResponse found with this Id, please ensure this response exists in the database")
 				.build();
 		}
-		
-		formResponseService.deleteFormResponse(formResponse);
+		Form form = formService.getFormById(formResponse.getForm_id());
+		formResponseService.deleteFormResponse(formResponse, form);
 		return Response.status(Response.Status.NO_CONTENT)// 204
 				.entity("FormResponse successfully removed from database").build();
 	}

@@ -75,14 +75,11 @@ public class FormEntity implements Serializable {
 	@Column(name = "redirect_to_url")
 	private boolean redirect_to_url;
 	
-	@Column(name = "alert_for_response")
-	private boolean alert_for_response;
-
-	@Column(name = "email_embedded_responses")
-	private boolean email_embedded_responses;
+	@Column(name = "send_notification")
+	private boolean send_notification;
 	
-	@Column(name = "send_confirmation_email")
-	private boolean send_confirmation_email; 
+	@Column(name = "send_receipt")
+	private boolean send_receipt; 
 	
 	@Column(name = "email_message")
 	private String email_message;
@@ -105,8 +102,8 @@ public class FormEntity implements Serializable {
 	}
 
 	public FormEntity(String name, Set<Question> questions, boolean redirect_to_url,
-			boolean enabled, boolean publi, boolean alert_for_response,
-			boolean email_embedded_responses, boolean send_confirmation_email, 
+			boolean enabled, boolean publi, boolean send_notification,
+			boolean email_embedded_responses, boolean send_receipt, 
 			String email_message, String completed_message, String redirect_url, 
 			Date expiration_date, String closed_message, THEME theme) {
 		super();
@@ -115,9 +112,8 @@ public class FormEntity implements Serializable {
 		this.redirect_to_url = redirect_to_url;
 		this.enabled = enabled;
 		this.publi = publi;
-		this.alert_for_response = alert_for_response;
-		this.email_embedded_responses = email_embedded_responses;
-		this.send_confirmation_email = send_confirmation_email;
+		this.send_notification = send_notification;
+		this.send_receipt = send_receipt;
 		this.email_message = email_message;
 		this.completed_message = completed_message;
 		this.redirect_url = redirect_url;
@@ -213,28 +209,21 @@ public class FormEntity implements Serializable {
 		this.redirect_to_url = newRedirect_to_url;
 	}
 	
-	public boolean getAlert_for_response(){
-		return alert_for_response;
+	public boolean getsend_notification(){
+		return send_notification;
 	}
 	
-	public void setAlert_for_response(boolean newAlert_for_response){
-		this.alert_for_response = newAlert_for_response;
+	public void setsend_notification(boolean newsend_notification){
+		this.send_notification = newsend_notification;
 	}
 	
-	public boolean getEmail_embedded_responses(){
-		return email_embedded_responses;
+	
+	public boolean getsend_receipt(){
+		return send_receipt;
 	}
 	
-	public void setEmail_embedded_responses(boolean newEmail_embedded_responses){
-		this.email_embedded_responses = newEmail_embedded_responses;
-	}
-	
-	public boolean getSend_confirmation_email(){
-		return send_confirmation_email;
-	}
-	
-	public void setSend_confirmation_email(boolean newSend_confirmation_email){
-		this.send_confirmation_email = newSend_confirmation_email;
+	public void setsend_receipt(boolean newsend_receipt){
+		this.send_receipt = newsend_receipt;
 	}
 	
 	public String getEmail_message(){
