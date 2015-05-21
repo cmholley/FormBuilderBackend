@@ -1,88 +1,81 @@
-package dash.pojo;
+package dash.dao;
 
+import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Date;
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import javax.persistence.CollectionTable;
+import javax.persistence.Column;
+import javax.persistence.ElementCollection;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 
 import org.apache.commons.beanutils.BeanUtils;
 
-import dash.dao.FormEntity;
-import dash.dao.StudyEntity;
-import dash.helpers.DateISO8601Adapter;
+import dash.pojo.Form;
+import dash.pojo.Study;
+import dash.pojo.Study.TIMERANGE;
 
-@XmlRootElement
-@XmlAccessorType(XmlAccessType.FIELD)
-public class Study {
-	public static enum TIMERANGE{
-				MORNING, AFTERNOON, EVENING, NIGHT
-	};
+public class StudyEntity implements Serializable {
 	
-	@XmlElement(name = "participants")
-	private List<String> participants;
+	private static final long serialVersionUID = -2453192655669468348L;
+
+	@Id
+	@GeneratedValue
+	@Column(name="id")
+	private Long id;
 	
-	@XmlElement(name = "fixedTimes")
-	@XmlJavaTypeAdapter(DateISO8601Adapter.class)
+	@ElementCollection (fetch= FetchType.EAGER)
+	@CollectionTable(name = "participants", joinColumns = {@JoinColumn(name="study_id")})
+	private List<String> Participants;
+	
+	@ElementCollection (fetch= FetchType.EAGER)
+	@CollectionTable(name = "fixedTimes", joinColumns = {@JoinColumn(name="study_id")})
 	private List<Date> fixedTimes;
 	
-	@XmlElement(name = "ranges")
+	@ElementCollection (fetch= FetchType.EAGER)
+	@CollectionTable(name = "ranges", joinColumns = {@JoinColumn(name="study_id")})
 	private List<TIMERANGE> ranges;
 	
-	@XmlElement(name = "startTime")
-	@XmlJavaTypeAdapter(DateISO8601Adapter.class)
+	@Column(name = "startTime")
 	private Date startTime;
 	
-	@XmlElement(name = "endTime")
-	@XmlJavaTypeAdapter(DateISO8601Adapter.class)
+	@Column(name = "endTime")
 	private Date endTime;
 	
-	@XmlElement(name = "sunday")
+	@Column(name = "sunday")
 	private boolean sunday;
 	
-	@XmlElement(name = "monday")
+	@Column(name = "monday")
 	private boolean monday;
 	
-	@XmlElement(name = "tuesday")
+	@Column(name = "tuesday")
 	private boolean tuesday; 
 	
-	@XmlElement(name = "wednesday")
+	@Column(name = "wednesday")
 	private boolean wednesday;
 	
-	@XmlElement(name = "thursday")
+	@Column(name = "thursday")
 	private boolean thursday; 
 	
-	@XmlElement(name = "friday")
+	@Column(name = "friday")
 	private boolean friday; 
 	
-	@XmlElement(name = "saturday")
+	@Column(name = "saturday")
 	private boolean saturday;
 	
-	@XmlElement(name = "formId")
+	@Column(name = "formId")
 	private long formId;
 
-	public Study(StudyEntity studyEntity) {
-		try {
-			BeanUtils.copyProperties(this, studyEntity);
-		} catch (IllegalAccessException e) {
-
-			e.printStackTrace();
-		} catch (InvocationTargetException e) {
-
-			e.printStackTrace();
-		}
-	}
-	
-	public Study(List<String> participants, List<Date> fixedTimes,
+	public StudyEntity(List<String> participants, List<Date> fixedTimes,
 			List<TIMERANGE> ranges, Date startTime, Date endTime,
 			boolean sunday, boolean monday, boolean tuesday, boolean wednesday,
 			boolean thursday, boolean friday, boolean saturday, long formId) {
 		super();
-		this.participants = participants;
+		Participants = participants;
 		this.fixedTimes = fixedTimes;
 		this.ranges = ranges;
 		this.startTime = startTime;
@@ -96,13 +89,25 @@ public class Study {
 		this.saturday = saturday;
 		this.formId = formId;
 	}
+	
+	public StudyEntity(Study form) {
+		try {
+			BeanUtils.copyProperties(this, form);
+		} catch ( IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch ( InvocationTargetException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 
 	public List<String> getParticipants() {
-		return participants;
+		return Participants;
 	}
 
 	public void setParticipants(List<String> participants) {
-		this.participants = participants;
+		Participants = participants;
 	}
 
 	public List<Date> getFixedTimes() {
@@ -201,6 +206,4 @@ public class Study {
 		this.formId = formId;
 	}
 	
-	
 }
- 
