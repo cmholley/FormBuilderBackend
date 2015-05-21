@@ -69,6 +69,9 @@ public class StudyEntity implements Serializable {
 	
 	@Column(name = "formId")
 	private long formId;
+	
+	@Column(name = "insertionDate")
+	private Date insertionDate;
 
 	public StudyEntity(List<String> participants, List<Date> fixedTimes,
 			List<TIMERANGE> ranges, Date startTime, Date endTime,
@@ -204,6 +207,22 @@ public class StudyEntity implements Serializable {
 
 	public void setFormId(long formId) {
 		this.formId = formId;
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public Date getInsertionDate() {
+		return insertionDate;
+	}
+
+	public void setInsertionDate(Date insertionDate) {
+		this.insertionDate = insertionDate;
 	}
 	
 }

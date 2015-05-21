@@ -4,6 +4,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.GeneratedValue;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -15,13 +16,23 @@ import org.apache.commons.beanutils.BeanUtils;
 import dash.dao.FormEntity;
 import dash.dao.StudyEntity;
 import dash.helpers.DateISO8601Adapter;
+import dash.security.IAclObject;
 
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
-public class Study {
+public class Study implements IAclObject {
 	public static enum TIMERANGE{
 				MORNING, AFTERNOON, EVENING, NIGHT
 	};
+	
+	@GeneratedValue
+	@XmlElement(name = "Id")
+	private long id;
+	
+	/** insertion date in the database */
+	@XmlElement(name = "insertion_date")
+	@XmlJavaTypeAdapter(DateISO8601Adapter.class)
+	private Date insertion_date;
 	
 	@XmlElement(name = "participants")
 	private List<String> participants;
@@ -199,6 +210,24 @@ public class Study {
 
 	public void setFormId(long formId) {
 		this.formId = formId;
+	}
+
+	public void setId(long studyId) {
+		this.id = studyId;
+	}
+
+	@Override
+	public Long getId() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public Date getInsertion_date() {
+		return insertion_date;
+	}
+
+	public void setInsertion_date(Date insertion_date) {
+		this.insertion_date = insertion_date;
 	}
 	
 	

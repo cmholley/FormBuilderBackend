@@ -32,7 +32,7 @@ public interface FormResponseService {
 	 * @return
 	 * @throws AppException
 	 */
-	@PostAuthorize("hasPermission(#form, 'CREATE') or form.getPubli() or hasRole('ROLE_ADMIN')")
+	@PostAuthorize("form.getEnabled() and (hasPermission(#form, 'CREATE') or form.getPubli()) or hasRole('ROLE_ADMIN')")
 	public Long createFormResponse(FormResponse formResponse, Form form) throws AppException;
 
 	/*
