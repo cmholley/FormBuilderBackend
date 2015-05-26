@@ -40,11 +40,11 @@ public class StudyEntity implements Serializable {
 	@CollectionTable(name = "ranges", joinColumns = {@JoinColumn(name="study_id")})
 	private List<TIMERANGE> ranges;
 	
-	@Column(name = "startTime")
-	private Date startTime;
+	@Column(name = "startDate")
+	private Date startDate;
 	
-	@Column(name = "endTime")
-	private Date endTime;
+	@Column(name = "endDate")
+	private Date endDate;
 	
 	@Column(name = "sunday")
 	private boolean sunday;
@@ -74,15 +74,15 @@ public class StudyEntity implements Serializable {
 	private Date insertionDate;
 
 	public StudyEntity(List<String> participants, List<Date> fixedTimes,
-			List<TIMERANGE> ranges, Date startTime, Date endTime,
+			List<TIMERANGE> ranges, Date startDate, Date endDate,
 			boolean sunday, boolean monday, boolean tuesday, boolean wednesday,
 			boolean thursday, boolean friday, boolean saturday, long formId) {
 		super();
 		Participants = participants;
 		this.fixedTimes = fixedTimes;
 		this.ranges = ranges;
-		this.startTime = startTime;
-		this.endTime = endTime;
+		this.startDate = startDate;
+		this.endDate = endDate;
 		this.sunday = sunday;
 		this.monday = monday;
 		this.tuesday = tuesday;
@@ -130,19 +130,19 @@ public class StudyEntity implements Serializable {
 	}
 
 	public Date getStartTime() {
-		return startTime;
+		return startDate;
 	}
 
-	public void setStartTime(Date startTime) {
-		this.startTime = startTime;
+	public void setStartTime(Date startDate) {
+		this.startDate = startDate;
 	}
 
 	public Date getEndTime() {
-		return endTime;
+		return endDate;
 	}
 
-	public void setEndTime(Date endTime) {
-		this.endTime = endTime;
+	public void setEndTime(Date endDate) {
+		this.endDate = endDate;
 	}
 
 	public boolean isSunday() {

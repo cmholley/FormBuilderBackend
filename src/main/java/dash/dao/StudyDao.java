@@ -35,4 +35,6 @@ public interface StudyDao {
 
 	public List<StudyEntity> getStudiesForForm(long formId);
 
+	public List<StudyEntity> getTodaysStudies();
+
 }

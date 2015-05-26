@@ -108,4 +108,14 @@ public class StudyDaoJPA2Impl implements StudyDao {
 		List<StudyEntity> studies = query.getResultList();
 		return studies;
 	}
+
+	@Override
+	public List<StudyEntity> getTodaysStudies() {
+		String sqlString = "SELECT u FROM StudyEntity u WHERE u.startdate = :startdate";
+		TypedQuery<StudyEntity> query = entityManager.createQuery(sqlString,
+				StudyEntity.class);
+		query.setParameter("startdate", new Date());
+		List<StudyEntity> studies = query.getResultList();
+		return studies;
+	}
 }

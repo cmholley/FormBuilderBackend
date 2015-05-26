@@ -18,6 +18,12 @@ import dash.dao.StudyEntity;
 import dash.helpers.DateISO8601Adapter;
 import dash.security.IAclObject;
 
+/*
+ * WARNING: This class is serialized by Quartz. If this class is changed,
+ * 			you must check to be sure the Job implementations for Quartz
+ * 			scheduling are still accurate and work. 
+ * */
+
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Study implements IAclObject {
@@ -44,13 +50,13 @@ public class Study implements IAclObject {
 	@XmlElement(name = "ranges")
 	private List<TIMERANGE> ranges;
 	
-	@XmlElement(name = "startTime")
+	@XmlElement(name = "startDate")
 	@XmlJavaTypeAdapter(DateISO8601Adapter.class)
-	private Date startTime;
+	private Date startDate;
 	
-	@XmlElement(name = "endTime")
+	@XmlElement(name = "endDate")
 	@XmlJavaTypeAdapter(DateISO8601Adapter.class)
-	private Date endTime;
+	private Date endDate;
 	
 	@XmlElement(name = "sunday")
 	private boolean sunday;
@@ -89,15 +95,15 @@ public class Study implements IAclObject {
 	}
 	
 	public Study(List<String> participants, List<Date> fixedTimes,
-			List<TIMERANGE> ranges, Date startTime, Date endTime,
+			List<TIMERANGE> ranges, Date startDate, Date endDate,
 			boolean sunday, boolean monday, boolean tuesday, boolean wednesday,
 			boolean thursday, boolean friday, boolean saturday, long formId) {
 		super();
 		this.participants = participants;
 		this.fixedTimes = fixedTimes;
 		this.ranges = ranges;
-		this.startTime = startTime;
-		this.endTime = endTime;
+		this.startDate = startDate;
+		this.endDate = endDate;
 		this.sunday = sunday;
 		this.monday = monday;
 		this.tuesday = tuesday;
@@ -133,19 +139,19 @@ public class Study implements IAclObject {
 	}
 
 	public Date getStartTime() {
-		return startTime;
+		return startDate;
 	}
 
-	public void setStartTime(Date startTime) {
-		this.startTime = startTime;
+	public void setStartTime(Date startDate) {
+		this.startDate = startDate;
 	}
 
 	public Date getEndTime() {
-		return endTime;
+		return endDate;
 	}
 
-	public void setEndTime(Date endTime) {
-		this.endTime = endTime;
+	public void setEndTime(Date endDate) {
+		this.endDate = endDate;
 	}
 
 	public boolean isSunday() {
