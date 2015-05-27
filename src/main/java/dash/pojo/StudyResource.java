@@ -65,7 +65,8 @@ public class StudyResource {
 	@Consumes({ MediaType.APPLICATION_JSON })
 	@Produces({ MediaType.TEXT_HTML })
 	public Response createStudy(Study study) throws AppException {
-		Long createStudyId = studyService.createStudy(study);
+		Form form = formService.getFormById(study.getFormId());
+		Long createStudyId = studyService.createStudy(study, form);
 		return Response
 				.status(Response.Status.CREATED)
 				// 201
@@ -86,7 +87,10 @@ public class StudyResource {
 	@Path("list")
 	@Consumes({ MediaType.APPLICATION_JSON })
 	public Response createStudies(List<Study> studies) throws AppException {
-		studyService.createStudies(studies);
+		for(Study study: studies){
+			Form form = formService.getFormById(study.getFormId());
+			studyService.createStudy(study, form);	
+		}
 		return Response.status(Response.Status.CREATED)
 		// 201
 				.entity("List of studies was successfully created").build();
@@ -160,11 +164,11 @@ public class StudyResource {
 			throws AppException {
 
 		Study studyById = studyService.verifyStudyExistenceById(id);
-
+		Form form = formService.getFormById(study.getFormId());
 		if (studyById == null) {
 			// resource not existent yet, and should be created under the
 			// specified URI
-			Long createStudyId = studyService.createStudy(study);
+			Long createStudyId = studyService.createStudy(study, form);
 			return Response
 					.status(Response.Status.CREATED)
 					// 201
@@ -172,7 +176,7 @@ public class StudyResource {
 					.header("Location", String.valueOf(createStudyId)).build();
 		} else {
 			// resource is existent and a full update should occur
-			studyService.updateFullyStudy(study);
+			studyService.updateFullyStudy(study, form);
 			return Response
 					.status(Response.Status.OK)
 					// 200
@@ -189,7 +193,8 @@ public class StudyResource {
 	public Response partialUpdateStudy(@PathParam("id") Long id, Study study)
 			throws AppException {
 		study.setId(id);
-		studyService.updatePartiallyStudy(study);
+		Form form = formService.getFormById(study.getFormId());
+		studyService.updatePartiallyStudy(study, form);
 		return Response
 				.status(Response.Status.OK)
 				// 200
@@ -200,14 +205,33 @@ public class StudyResource {
 	@PUT
 	@Path("/updatestudies")
 	@Consumes({ MediaType.APPLICATION_JSON })
-	public Response updateStudies(List<Study> studies) {
-
-		FormServiceDbAccessImpl formService = new FormServiceDbAccessImpl();
-		studyService.updateStudies(studies, formService);
+	public Response updateStudies(List<Study> studies) throws AppException {
+		for(Study study : studies){
+			Form form = formService.getFormById(study.getFormId());
+			if(studyService.getStudyById(study.getId()) == null){
+				studyService.createStudy(study, form);
+			}else{
+				studyService.updateFullyStudy(study, form);
+			}
+		}
 		return Response.status(Response.Status.OK)
 		// 20
 				.entity("List of studies was successfully created").build();
 	}
+	
+	@DELETE
+	@Path("{id}")
+	@Produces({ MediaType.TEXT_HTML })
+	public Response deletePost(@PathParam("id") Long id)
+			throws AppException {
+		Study study = studyService.verifyStudyExistenceById(id);
+		Form form = formService.getFormById(id);
+		studyService.deleteStudy(study, form);
+		return Response.status(Response.Status.NO_CONTENT)// 204
+				.entity("Form successfully removed from database").build();
+	}
+	
+	
 
 	// ************************************* FILE UPLOAD
 	// ************************************

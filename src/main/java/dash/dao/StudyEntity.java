@@ -8,10 +8,12 @@ import java.util.List;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.Table;
 
 import org.apache.commons.beanutils.BeanUtils;
 
@@ -19,6 +21,8 @@ import dash.pojo.Form;
 import dash.pojo.Study;
 import dash.pojo.Study.TIMERANGE;
 
+@Entity
+@Table(name = "studies")
 public class StudyEntity implements Serializable {
 	
 	private static final long serialVersionUID = -2453192655669468348L;
@@ -33,18 +37,18 @@ public class StudyEntity implements Serializable {
 	private List<String> Participants;
 	
 	@ElementCollection (fetch= FetchType.EAGER)
-	@CollectionTable(name = "fixedTimes", joinColumns = {@JoinColumn(name="study_id")})
+	@CollectionTable(name = "fixed_Times", joinColumns = {@JoinColumn(name="study_id")})
 	private List<Date> fixedTimes;
 	
 	@ElementCollection (fetch= FetchType.EAGER)
 	@CollectionTable(name = "ranges", joinColumns = {@JoinColumn(name="study_id")})
 	private List<TIMERANGE> ranges;
 	
-	@Column(name = "startTime")
-	private Date startTime;
+	@Column(name = "start_Date")
+	private Date startDate;
 	
-	@Column(name = "endTime")
-	private Date endTime;
+	@Column(name = "end_Date")
+	private Date endDate;
 	
 	@Column(name = "sunday")
 	private boolean sunday;
@@ -70,19 +74,19 @@ public class StudyEntity implements Serializable {
 	@Column(name = "formId")
 	private long formId;
 	
-	@Column(name = "insertionDate")
+	@Column(name = "insertion_Date")
 	private Date insertionDate;
 
 	public StudyEntity(List<String> participants, List<Date> fixedTimes,
-			List<TIMERANGE> ranges, Date startTime, Date endTime,
+			List<TIMERANGE> ranges, Date startDate, Date endDate,
 			boolean sunday, boolean monday, boolean tuesday, boolean wednesday,
 			boolean thursday, boolean friday, boolean saturday, long formId) {
 		super();
 		Participants = participants;
 		this.fixedTimes = fixedTimes;
 		this.ranges = ranges;
-		this.startTime = startTime;
-		this.endTime = endTime;
+		this.startDate = startDate;
+		this.endDate = endDate;
 		this.sunday = sunday;
 		this.monday = monday;
 		this.tuesday = tuesday;
@@ -129,20 +133,20 @@ public class StudyEntity implements Serializable {
 		this.ranges = ranges;
 	}
 
-	public Date getStartTime() {
-		return startTime;
+	public Date getStartDate() {
+		return startDate;
 	}
 
-	public void setStartTime(Date startTime) {
-		this.startTime = startTime;
+	public void setStartDate(Date startDate) {
+		this.startDate = startDate;
 	}
 
-	public Date getEndTime() {
-		return endTime;
+	public Date getEndDate() {
+		return endDate;
 	}
 
-	public void setEndTime(Date endTime) {
-		this.endTime = endTime;
+	public void setEndDate(Date endDate) {
+		this.endDate = endDate;
 	}
 
 	public boolean isSunday() {

@@ -53,7 +53,7 @@ public class StudyServiceDbAccessImpl extends ApplicationObjectSupport
 	/********************* Create related methods implementation ***********************/
 	@Override
 	@Transactional
-	public Long createStudy(Study study)
+	public Long createStudy(Study study, Form form)
 			throws AppException {
 
 		long studyId = studyDao
@@ -71,7 +71,9 @@ public class StudyServiceDbAccessImpl extends ApplicationObjectSupport
 	public void createStudies(List<Study> studies)
 			throws AppException {
 		for (Study study : studies) {
-			createStudy(study);
+			Form form = new FormServiceDbAccessImpl()
+				.getFormById(study.getFormId());
+			createStudy(study, form);
 		}
 	}
 
@@ -166,7 +168,7 @@ public class StudyServiceDbAccessImpl extends ApplicationObjectSupport
 
 	@Override
 	@Transactional
-	public void updateFullyStudy(Study study)
+	public void updateFullyStudy(Study study, Form form)
 			throws AppException {
 
 		Study verifyStudyExistenceById = verifyStudyExistenceById(study
@@ -214,8 +216,7 @@ public class StudyServiceDbAccessImpl extends ApplicationObjectSupport
 
 	@Override
 	@Transactional
-	public void deleteStudy(Study study) {
-
+	public void deleteStudy(Study study, Form form) {
 		studyDao.deleteStudyById(study);
 		aclController.deleteACL(study);
 
@@ -242,7 +243,7 @@ public class StudyServiceDbAccessImpl extends ApplicationObjectSupport
 
 	@Override
 	@Transactional
-	public void updatePartiallyStudy(Study study)
+	public void updatePartiallyStudy(Study study, Form form)
 			throws AppException {
 		// do a validation to verify existence of the resource
 		Study verifyStudyExistenceById = verifyStudyExistenceById(study
@@ -310,17 +311,6 @@ public class StudyServiceDbAccessImpl extends ApplicationObjectSupport
 		
 	}
 
-	@Override
-	public void updateStudies(List<Study> studies, FormService formService) {
-		for (Study study : studies) {
-			try {
-				updatePartiallyStudy(study);
-			} catch (AppException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-	}
 
 	@Override
 	public List<Study> getStudiesForForm(long formId, Form form) {

@@ -31,7 +31,10 @@ public interface StudyService {
 	 * @return
 	 * @throws AppException
 	 */
-	public Long createStudy(Study study) throws AppException;
+	
+	@PreAuthorize("hasPermission(#study, 'WRITE') or hasPermissions(#form, 'WRITE')"
+			+ " or hasRole('ROLE_ADMIN')")
+	public Long createStudy(Study study, Form form) throws AppException;
 	
 	@PreAuthorize("hasPermission(#study, 'WRITE') or hasRole('ROLE_ADMIN')")
 	public void uploadFile(InputStream uploadedInputStream,
@@ -82,22 +85,22 @@ public interface StudyService {
 	/*
 	 * ******************** Update related methods **********************
 	 */
-	@PreAuthorize("hasPermission(#study, 'WRITE') or hasRole('ROLE_ADMIN')")
-	public void updateFullyStudy(Study study) throws AppException;
+	@PreAuthorize("hasPermission(#study, 'WRITE') or hasPermissions(#form, 'WRITE')"
+			+ " or hasRole('ROLE_ADMIN')")
+	public void updateFullyStudy(Study study, Form form) throws AppException;
 
-	@PreAuthorize("hasPermission(#study, 'WRITE') or hasRole('ROLE_ADMIN')")
-	public void updatePartiallyStudy(Study study) throws AppException;
+	@PreAuthorize("hasPermission(#study, 'WRITE') or hasPermissions(#form, 'WRITE) "
+			+ "or hasRole('ROLE_ADMIN')")
+	public void updatePartiallyStudy(Study study, Form form) throws AppException;
 
-	@PreFilter("hasPermission(#formService.getFormById(filterObject.getFormId()),"
-			+ " 'WRITE') or hasRole('ROLE_ADMIN')")
-	public void updateStudies(List<Study> studies, FormService formService);
 	
 	/*
 	 * ******************** Delete related methods **********************
 	 */
 
-	@PreAuthorize("hasPermission(#study, 'DELETE') or hasRole('ROLE_ADMIN')")
-	public void deleteStudy(Study study);
+	@PreAuthorize("hasPermission(#study, 'DELETE') or hasPermission(#form, 'WRITE')"
+			+ " or hasRole('ROLE_ADMIN')")
+	public void deleteStudy(Study study, Form form);
 	/** removes all studies
 	 * DO NOT USE, IMPROPERLY UPDATES ACL_OBJECT table
 	 * Functional but does not destroy old acl's which doesnt hurt anything
