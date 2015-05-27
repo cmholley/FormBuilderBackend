@@ -18,12 +18,6 @@ import dash.dao.StudyEntity;
 import dash.helpers.DateISO8601Adapter;
 import dash.security.IAclObject;
 
-/*
- * WARNING: This class is serialized by Quartz. If this class is changed,
- * 			you must check to be sure the Job implementations for Quartz
- * 			scheduling are still accurate and work. 
- * */
-
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Study implements IAclObject {
@@ -113,6 +107,9 @@ public class Study implements IAclObject {
 		this.saturday = saturday;
 		this.formId = formId;
 	}
+	
+	public Study(){
+	}
 
 	public List<String> getParticipants() {
 		return participants;
@@ -138,20 +135,20 @@ public class Study implements IAclObject {
 		this.ranges = ranges;
 	}
 
-	public Date getStartTime() {
+	public Date getStartDate() {
 		return startDate;
 	}
 
-	public void setStartTime(Date startDate) {
+	public void setStartDate(Date startDate) {
 		this.startDate = startDate;
 	}
 
-	public Date getEndTime() {
+	public Date getEndDate() {
 		return endDate;
 	}
 
-	public void setEndTime(Date endDate) {
-		this.endDate = endDate;
+	public void setEndDate(Date endDate) {
+		this.endDate= endDate;
 	}
 
 	public boolean isSunday() {
