@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
@@ -34,15 +35,15 @@ public class StudyEntity implements Serializable {
 	
 	@ElementCollection (fetch= FetchType.EAGER)
 	@CollectionTable(name = "participants", joinColumns = {@JoinColumn(name="study_id")})
-	private List<String> Participants;
+	private Set<String> Participants;
 	
 	@ElementCollection (fetch= FetchType.EAGER)
 	@CollectionTable(name = "fixed_Times", joinColumns = {@JoinColumn(name="study_id")})
-	private List<Date> fixedTimes;
+	private Set<Date> fixedTimes;
 	
 	@ElementCollection (fetch= FetchType.EAGER)
 	@CollectionTable(name = "ranges", joinColumns = {@JoinColumn(name="study_id")})
-	private List<TIMERANGE> ranges;
+	private Set<TIMERANGE> ranges;
 	
 	@Column(name = "start_Date")
 	private Date startDate;
@@ -71,14 +72,14 @@ public class StudyEntity implements Serializable {
 	@Column(name = "saturday")
 	private boolean saturday;
 	
-	@Column(name = "formId")
+	@Column(name = "form_id")
 	private long formId;
 	
 	@Column(name = "insertion_Date")
 	private Date insertionDate;
 
-	public StudyEntity(List<String> participants, List<Date> fixedTimes,
-			List<TIMERANGE> ranges, Date startDate, Date endDate,
+	public StudyEntity(Set<String> participants, Set<Date> fixedTimes,
+			Set<TIMERANGE> ranges, Date startDate, Date endDate,
 			boolean sunday, boolean monday, boolean tuesday, boolean wednesday,
 			boolean thursday, boolean friday, boolean saturday, long formId) {
 		super();
@@ -109,27 +110,27 @@ public class StudyEntity implements Serializable {
 		}
 	}
 
-	public List<String> getParticipants() {
+	public Set<String> getParticipants() {
 		return Participants;
 	}
 
-	public void setParticipants(List<String> participants) {
+	public void setParticipants(Set<String> participants) {
 		Participants = participants;
 	}
 
-	public List<Date> getFixedTimes() {
+	public Set<Date> getFixedTimes() {
 		return fixedTimes;
 	}
 
-	public void setFixedTimes(List<Date> fixedTimes) {
+	public void setFixedTimes(Set<Date> fixedTimes) {
 		this.fixedTimes = fixedTimes;
 	}
 
-	public List<TIMERANGE> getRanges() {
+	public Set<TIMERANGE> getRanges() {
 		return ranges;
 	}
 
-	public void setRanges(List<TIMERANGE> ranges) {
+	public void setRanges(Set<TIMERANGE> ranges) {
 		this.ranges = ranges;
 	}
 

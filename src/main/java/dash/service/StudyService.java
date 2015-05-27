@@ -32,7 +32,7 @@ public interface StudyService {
 	 * @throws AppException
 	 */
 	
-	@PreAuthorize("hasPermission(#study, 'WRITE') or hasPermissions(#form, 'WRITE')"
+	@PreAuthorize("hasPermission(#study, 'WRITE')"
 			+ " or hasRole('ROLE_ADMIN')")
 	public Long createStudy(Study study, Form form) throws AppException;
 	
@@ -79,7 +79,7 @@ public interface StudyService {
 	@PreAuthorize("hasPermission(#study, 'WRITE') or hasRole('ROLE_ADMIN')")
 	public File getUploadFile(String uploadedFileLocation) throws AppException;
 
-	@PreAuthorize("hasPermission(#form, 'WRITE' or hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasPermission(#form, 'WRITE' or hasRole('ROLE_ADMIN')) ")
 	public List<Study> getStudiesForForm(long formId, Form form);
 	
 	/*

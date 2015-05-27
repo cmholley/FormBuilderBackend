@@ -1,8 +1,10 @@
 package dash.pojo;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.GeneratedValue;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -13,7 +15,6 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.apache.commons.beanutils.BeanUtils;
 
-import dash.dao.FormEntity;
 import dash.dao.StudyEntity;
 import dash.helpers.DateISO8601Adapter;
 import dash.security.IAclObject;
@@ -26,7 +27,7 @@ public class Study implements IAclObject {
 	};
 	
 	@GeneratedValue
-	@XmlElement(name = "Id")
+	@XmlElement(name = "id")
 	private long id;
 	
 	/** insertion date in the database */
@@ -35,14 +36,14 @@ public class Study implements IAclObject {
 	private Date insertion_date;
 	
 	@XmlElement(name = "participants")
-	private List<String> participants;
+	private Set<String> participants;
 	
 	@XmlElement(name = "fixedTimes")
 	@XmlJavaTypeAdapter(DateISO8601Adapter.class)
-	private List<Date> fixedTimes;
+	private Set<Date> fixedTimes;
 	
 	@XmlElement(name = "ranges")
-	private List<TIMERANGE> ranges;
+	private Set<TIMERANGE> ranges;
 	
 	@XmlElement(name = "startDate")
 	@XmlJavaTypeAdapter(DateISO8601Adapter.class)
@@ -88,8 +89,8 @@ public class Study implements IAclObject {
 		}
 	}
 	
-	public Study(List<String> participants, List<Date> fixedTimes,
-			List<TIMERANGE> ranges, Date startDate, Date endDate,
+	public Study(Set<String> participants, Set<Date> fixedTimes,
+			Set<TIMERANGE> ranges, Date startDate, Date endDate,
 			boolean sunday, boolean monday, boolean tuesday, boolean wednesday,
 			boolean thursday, boolean friday, boolean saturday, long formId) {
 		super();
@@ -111,27 +112,43 @@ public class Study implements IAclObject {
 	public Study(){
 	}
 
-	public List<String> getParticipants() {
+	public Set<String> generateCronStrings(){
+		//CronString Format
+		//SECONDS MINUTES HOURS DAYOFMONTH MONTH DAYOFWEEK {YEAR}
+		Set<String> cronStrings = null;
+		for(Date time : fixedTimes){
+			String cronString = "";
+			Calendar cal = Calendar.getInstance();
+			//cal.setTime(time);
+			//cronString += cal.;
+			
+			
+		}
+			
+		return cronStrings;
+	}
+	
+	public Set<String> getParticipants() {
 		return participants;
 	}
 
-	public void setParticipants(List<String> participants) {
+	public void setParticipants(Set<String> participants) {
 		this.participants = participants;
 	}
 
-	public List<Date> getFixedTimes() {
+	public Set<Date> getFixedTimes() {
 		return fixedTimes;
 	}
 
-	public void setFixedTimes(List<Date> fixedTimes) {
+	public void setFixedTimes(Set<Date> fixedTimes) {
 		this.fixedTimes = fixedTimes;
 	}
 
-	public List<TIMERANGE> getRanges() {
+	public Set<TIMERANGE> getRanges() {
 		return ranges;
 	}
 
-	public void setRanges(List<TIMERANGE> ranges) {
+	public void setRanges(Set<TIMERANGE> ranges) {
 		this.ranges = ranges;
 	}
 
@@ -215,14 +232,13 @@ public class Study implements IAclObject {
 		this.formId = formId;
 	}
 
-	public void setId(long studyId) {
-		this.id = studyId;
+	public void setId(long id) {
+		this.id = id;
 	}
 
 	@Override
 	public Long getId() {
-		// TODO Auto-generated method stub
-		return null;
+		return id;
 	}
 
 	public Date getInsertion_date() {

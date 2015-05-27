@@ -208,7 +208,7 @@ public class StudyResource {
 	public Response updateStudies(List<Study> studies) throws AppException {
 		for(Study study : studies){
 			Form form = formService.getFormById(study.getFormId());
-			if(studyService.getStudyById(study.getId()) == null){
+			if(studyService.verifyStudyExistenceById(study.getId()) == null){
 				studyService.createStudy(study, form);
 			}else{
 				studyService.updateFullyStudy(study, form);
