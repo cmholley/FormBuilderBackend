@@ -3,6 +3,8 @@ package dash.pojo;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -67,6 +69,9 @@ public class User implements Serializable {
 	@XmlElement(name = "picturePath")
 	private String picturePath;
 
+	@XmlElement(name = "activeStudies")
+	private Map<Long, Long> activeStudies = new HashMap<Long, Long>();
+	
 	/** insertion date in the database */
 	@XmlElement(name = "insertionDate")
 	@XmlJavaTypeAdapter(DateISO8601Adapter.class)
@@ -189,6 +194,22 @@ public class User implements Serializable {
 
 	public void setInsertionDate( Date insertionDate) {
 		this.insertionDate = insertionDate;
+	}
+
+	public String getPicturePath() {
+		return picturePath;
+	}
+
+	public void setPicturePath(String picturePath) {
+		this.picturePath = picturePath;
+	}
+
+	public Map<Long, Long> getActiveStudies() {
+		return activeStudies;
+	}
+
+	public void setActiveStudies(Map<Long, Long> activeStudies) {
+		this.activeStudies = activeStudies;
 	}
 
 

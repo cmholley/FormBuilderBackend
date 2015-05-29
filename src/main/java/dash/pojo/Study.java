@@ -52,14 +52,13 @@ public class Study implements IAclObject {
 				}
 	};
 	
-	@GeneratedValue
 	@XmlElement(name = "id")
-	private long id;
+	private Long id;
 	
 	/** insertion date in the database */
 	@XmlElement(name = "insertion_date")
 	@XmlJavaTypeAdapter(DateISO8601Adapter.class)
-	private Date insertion_date;
+	private Date insertionDate;
 	
 	@XmlElement(name = "studyName")
 	private String studyName;
@@ -309,21 +308,21 @@ public class Study implements IAclObject {
 		this.formId = formId;
 	}
 
-	public void setId(long id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 
-	@Override
+	
 	public Long getId() {
 		return id;
 	}
 
-	public Date getInsertion_date() {
-		return insertion_date;
+	public Date getInsertionDate() {
+		return insertionDate;
 	}
 
-	public void setInsertion_date(Date insertion_date) {
-		this.insertion_date = insertion_date;
+	public void setInsertionDate(Date insertion_date) {
+		this.insertionDate = insertion_date;
 	}
 
 	public String getStudyName() {
@@ -333,7 +332,5 @@ public class Study implements IAclObject {
 	public void setStudyName(String studyName) {
 		this.studyName = studyName;
 	}
-	
-	
 }
  

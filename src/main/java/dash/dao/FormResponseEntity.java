@@ -63,6 +63,9 @@ public class FormResponseEntity implements Serializable {
 	@Column(name = "owner_id")
 	private Long owner_id;
 	
+	@Column(name = "study_id")
+	private Long studyId;
+	
 	@Column(name = "insertion_date")
 	private Date insertion_date;
 	
@@ -202,6 +205,16 @@ public class FormResponseEntity implements Serializable {
 	
 	public void setResponderEmail(String responder_email){
 		this.responder_email = responder_email;
+	}
+
+
+	public Long getStudyId() {
+		return studyId;
+	}
+
+
+	public void setStudyId(Long studyId) {
+		this.studyId = studyId;
 	}
 
 

@@ -2,6 +2,7 @@ package dash.pojo;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
@@ -17,6 +18,9 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -144,14 +148,12 @@ public class UsersResource {
 	@GET
 	@Path("myUser")
 	@Produces({ MediaType.APPLICATION_JSON })
-	public User getMyUser()
-			throws AppException {
-		List<User> users = userService.getMyUser();
-		if (!users.isEmpty()) {
-			return users.get(0);
-		}
-		else
-			return null;
+	public User getMyUser(){
+		Authentication auth = SecurityContextHolder.getContext()
+				.getAuthentication();
+		String username = ((UserDetails)auth.getPrincipal()).getUsername();		
+		User user = userService.getUserByName(username);
+		return user;
 	}
 
 	@GET
@@ -297,5 +299,16 @@ public class UsersResource {
 				// 200
 				.entity("The user you specified has been successfully updated")
 				.build();
+	}
+	
+	@GET
+	@Path("/activestudies")
+	@Produces({ MediaType.APPLICATION_JSON })
+	public Map<Long, Long> getActiveStudes(){
+		Authentication auth = SecurityContextHolder.getContext()
+				.getAuthentication();
+		String username = ((UserDetails)auth.getPrincipal()).getUsername();		
+		User user = userService.getUserByName(username);
+		return user.getActiveStudies();
 	}
 }

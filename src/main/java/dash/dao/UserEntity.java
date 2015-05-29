@@ -3,11 +3,18 @@ package dash.dao;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
+import javax.persistence.CollectionTable;
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.MapKeyColumn;
 import javax.persistence.Table;
 
 import org.apache.commons.beanutils.BeanUtils;
@@ -64,6 +71,13 @@ public class UserEntity implements Serializable {
 	@Column(name = "picture")
 	private String picturePath;
 
+	@ElementCollection (fetch= FetchType.EAGER)
+	@CollectionTable(name = "active_studies", joinColumns = {@JoinColumn(name="user_id")})
+//	@MapKeyColumn(name="study_id")
+	@Column(name = "value")
+	private Map<Long, Long> activeStudies = new HashMap<Long, Long>();
+	
+	
 	/** insertion date in the database */
 	@Column(name = "insertion_date")
 	private Date insertionDate;
@@ -177,6 +191,22 @@ public class UserEntity implements Serializable {
 
 	public void setInsertionDate(Date insertionDate) {
 		this.insertionDate = insertionDate;
+	}
+
+	public String getPicturePath() {
+		return picturePath;
+	}
+
+	public void setPicturePath(String picturePath) {
+		this.picturePath = picturePath;
+	}
+
+	public Map<Long, Long> getActiveStudies() {
+		return activeStudies;
+	}
+
+	public void setActiveStudies(Map<Long, Long> activeStudies) {
+		this.activeStudies = activeStudies;
 	}
 
 }

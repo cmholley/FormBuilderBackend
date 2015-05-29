@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.Column;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -37,6 +38,9 @@ public class FormResponse implements  IAclObject {
 	
 	@XmlElement(name = "owner_id")
 	private Long owner_id;
+	
+	@XmlElement(name = "study_id")
+	private Long studyId;
 	
 	@XmlElement(name = "insertion_date")
 	@XmlJavaTypeAdapter(DateISO8601Adapter.class)
@@ -166,5 +170,13 @@ public class FormResponse implements  IAclObject {
 	
 	public void setSend_receipt(boolean send_receipt){
 		this.send_receipt = send_receipt;
+	}
+
+	public Long getStudyId() {
+		return studyId;
+	}
+
+	public void setStudyId(Long studyId) {
+		this.studyId = studyId;
 	}
 }

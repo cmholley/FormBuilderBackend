@@ -102,9 +102,10 @@ public class StudyDaoJPA2Impl implements StudyDao {
 
 	@Override
 	public List<StudyEntity> getStudiesForForm(long formId) {
-		String sqlString = "SELECT u FROM StudyEntity u WHERE u.formId = ?1 ORDER BY u.insertionDate DESC";
+		String sqlString = "SELECT u FROM StudyEntity u WHERE u.formId = :formId ORDER BY u.insertionDate DESC";
 		TypedQuery<StudyEntity> query = entityManager.createQuery(sqlString,
 				StudyEntity.class);
+		query.setParameter("formId", formId);
 		List<StudyEntity> studies = query.getResultList();
 		return studies;
 	}

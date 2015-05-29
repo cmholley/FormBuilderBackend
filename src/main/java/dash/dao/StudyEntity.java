@@ -27,7 +27,7 @@ import dash.pojo.Study.TIMERANGE;
 @Table(name = "studies")
 public class StudyEntity implements Serializable {
 	
-	private static final long serialVersionUID = -2453192655669468348L;
+	private static final Long serialVersionUID = -2453192655669468348L;
 
 	@Id
 	@GeneratedValue
@@ -77,7 +77,7 @@ public class StudyEntity implements Serializable {
 	private boolean saturday;
 	
 	@Column(name = "form_id")
-	private long formId;
+	private Long formId;
 	
 	@Column(name = "insertion_Date")
 	private Date insertionDate;
@@ -85,7 +85,7 @@ public class StudyEntity implements Serializable {
 	public StudyEntity(Set<String> participants, Set<Date> fixedTimes,
 			Set<TIMERANGE> ranges, Date startDate, Date endDate,
 			boolean sunday, boolean monday, boolean tuesday, boolean wednesday,
-			boolean thursday, boolean friday, boolean saturday, long formId) {
+			boolean thursday, boolean friday, boolean saturday, Long formId) {
 		super();
 		Participants = participants;
 		this.fixedTimes = fixedTimes;
@@ -112,6 +112,10 @@ public class StudyEntity implements Serializable {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+	
+	public StudyEntity(){
+		
 	}
 
 	public Set<String> getParticipants() {
@@ -210,11 +214,11 @@ public class StudyEntity implements Serializable {
 		this.saturday = saturday;
 	}
 
-	public long getFormId() {
+	public Long getFormId() {
 		return formId;
 	}
 
-	public void setFormId(long formId) {
+	public void setFormId(Long formId) {
 		this.formId = formId;
 	}
 

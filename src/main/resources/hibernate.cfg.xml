@@ -20,6 +20,5 @@
 		<property name="hibernate.connection.password">
 			hs@SQL2011
 		</property>
-
 	</session-factory>
 </hibernate-configuration>
