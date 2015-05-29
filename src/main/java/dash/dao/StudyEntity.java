@@ -15,6 +15,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.Table;
+import javax.xml.bind.annotation.XmlElement;
 
 import org.apache.commons.beanutils.BeanUtils;
 
@@ -32,6 +33,9 @@ public class StudyEntity implements Serializable {
 	@GeneratedValue
 	@Column(name="id")
 	private Long id;
+	
+	@Column(name = "study_name")
+	private String studyName;
 	
 	@ElementCollection (fetch= FetchType.EAGER)
 	@CollectionTable(name = "participants", joinColumns = {@JoinColumn(name="study_id")})
@@ -228,6 +232,14 @@ public class StudyEntity implements Serializable {
 
 	public void setInsertionDate(Date insertionDate) {
 		this.insertionDate = insertionDate;
+	}
+
+	public String getStudyName() {
+		return studyName;
+	}
+
+	public void setStudyName(String studyName) {
+		this.studyName = studyName;
 	}
 	
 }
