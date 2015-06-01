@@ -42,7 +42,7 @@ public class StudyEntity implements Serializable {
 	private Set<String> Participants;
 	
 	@ElementCollection (fetch= FetchType.EAGER)
-	@CollectionTable(name = "fixed_Times", joinColumns = {@JoinColumn(name="study_id")})
+	@CollectionTable(name = "fixed_times", joinColumns = {@JoinColumn(name="study_id")})
 	private Set<Date> fixedTimes;
 	
 	@ElementCollection (fetch= FetchType.EAGER)

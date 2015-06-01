@@ -35,6 +35,7 @@
 		</property>
 	</bean>
 
+
 <!-- 	For the server -->
   	<!--<bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
 		<property name="host" value="localhost" />
@@ -73,7 +74,7 @@
 		<property name="from" value="formbuildertest@gmail.com" />
 		<property name="subject" value="Test" />
 	</bean>
-
+	
 
 	<bean id="dashDS" class="org.springframework.jndi.JndiObjectFactoryBean"
 		scope="singleton">

@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimerTask;
 
+import javax.servlet.ServletContextEvent;
+
 import org.quartz.CronScheduleBuilder;
 import org.quartz.JobBuilder;
 import org.quartz.JobDetail;
@@ -17,9 +19,12 @@ import org.quartz.SchedulerException;
 import org.quartz.Trigger;
 import org.quartz.TriggerBuilder;
 import org.quartz.impl.StdSchedulerFactory;
+import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Component;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import dash.dao.StudyDao;
-import dash.dao.StudyDaoJPA2Impl;
 import dash.dao.StudyEntity;
 import dash.pojo.Study;
 
@@ -27,12 +32,23 @@ import dash.pojo.Study;
 //It will retrieve all of the studies with a start date
 //Of the current day and then initialize the job for them based of off the survey.
 
-public class DailyInitJob extends TimerTask {
+public class DailyInitJob extends TimerTask{
+	
+	private ServletContextEvent servletContextEvent;
 
+	public DailyInitJob(ServletContextEvent servletContextEvent){
+		this.servletContextEvent = servletContextEvent;
+	}
+	
+	
+	
 	@Override
-	public void run() {
+	public void run() {	
+		ApplicationContext springContext = WebApplicationContextUtils.getRequiredWebApplicationContext(servletContextEvent.getServletContext());
+		AutowireCapableBeanFactory factory = springContext.getAutowireCapableBeanFactory();
 		
-		StudyDao studyDao = new StudyDaoJPA2Impl(); 
+		StudyDao studyDao = (StudyDao) factory.getBean(StudyDao.class);
+		
 		List<StudyEntity> todaysStudyEntities = studyDao.getTodaysStudies();
 		List<Study>	todaysStudies = new ArrayList<Study>();
 		for(StudyEntity studyEntity : todaysStudyEntities){

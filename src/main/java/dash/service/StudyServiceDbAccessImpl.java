@@ -19,6 +19,9 @@ import javax.ws.rs.core.Response;
 import org.apache.commons.beanutils.BeanUtilsBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.ApplicationObjectSupport;
+import org.springframework.mail.MailException;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -49,6 +52,12 @@ public class StudyServiceDbAccessImpl extends ApplicationObjectSupport
 
 	@Autowired
 	private GenericAclController<Study> aclController;
+	
+	@Autowired
+	private JavaMailSender mailSender;
+	
+	@Autowired
+	private SimpleMailMessage templateMessage;
 
 	/********************* Create related methods implementation ***********************/
 	@Override
@@ -317,5 +326,20 @@ public class StudyServiceDbAccessImpl extends ApplicationObjectSupport
 		List<StudyEntity> studies = studyDao
 				.getStudiesForForm(formId);
 		return getStudiesFromEntities(studies);
+	}
+
+	public void sendStudyNotificationEmail(String email, long formId,
+			long studyId) {
+		SimpleMailMessage msg = new SimpleMailMessage(this.templateMessage);
+		msg.setFrom("NOREPLY@Housuggest.org");
+		msg.setTo(email);
+		msg.setSubject("Scheduling Test");
+		msg.setText("Form Id: " + formId + "StudyId: " + studyId); 
+		try {
+			this.mailSender.send(msg);
+		} catch (MailException ex) {
+			System.err.println(ex.getMessage()); 
+		}
+		
 	}
 }
