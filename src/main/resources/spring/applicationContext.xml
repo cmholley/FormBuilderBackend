@@ -49,7 +49,8 @@
 				<prop key="mail.transport.protocol">smtp</prop>
 
 			</props>
-		</property>-->
+		</property>
+		</bean>-->
 	
 <!--For local development -->	
 		
