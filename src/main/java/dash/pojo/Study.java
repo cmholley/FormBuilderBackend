@@ -1,6 +1,7 @@
 package dash.pojo;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -30,21 +31,21 @@ public class Study implements IAclObject {
 					String timeString = "";
 					Random rn = new Random();
 					int second = 0;
-					int minute = (rn.nextInt() % 60);
+					int minute = rn.nextInt(60);
 					int hour = 0;
 					
 					switch(range){
 					case MORNING://6-11
-						hour = ((rn.nextInt() % 6) + 6);
+						hour = (rn.nextInt(6)  + 6);
 						break;
 					case AFTERNOON://12-16
-						hour = (((rn.nextInt()) % 5 ) + 12);
+						hour = (rn.nextInt(5) + 12);
 						break;
 					case EVENING://17-20
-						hour = (((rn.nextInt()) % 4) + 17);
+						hour = (rn.nextInt(4) + 17);
 						break;
 					case NIGHT://20-23
-						hour = (((rn.nextInt()) % 4 + 20));
+						hour = (rn.nextInt(4) + 20);
 						break;				
 					}
 					timeString += (second + " " + minute + " " + hour + " ");					
@@ -145,21 +146,19 @@ public class Study implements IAclObject {
 	public List<String> generateCronStrings(){
 		//CronString Format
 		//SECONDS MINUTES HOURS DAYOFMONTH MONTH DAYOFWEEK {YEAR}
-		List<String> cronStrings = null;
+		List<String> cronStrings = new ArrayList<String>();
 		String cronString;
 		Calendar cal = Calendar.getInstance();
 		Calendar start = Calendar.getInstance();
 		Calendar end = Calendar.getInstance();
 		start.setTime(startDate);
 		end.setTime(endDate);
-		String dateString = "";
-		dateString += (start.get(Calendar.DAY_OF_MONTH) 
-				+ "-" + end.get(Calendar.DAY_OF_MONTH));
+		String dateString = "? ";
 		if(start.get(Calendar.MONTH) == end.get(Calendar.MONTH)){
-			dateString += start.get(Calendar.MONTH);
+			dateString += (start.get(Calendar.MONTH) + 1);
 		}else{
-			dateString += (start.get(Calendar.MONTH) + "-"
-					+ end.get(Calendar.MONTH));
+			dateString += ((start.get(Calendar.MONTH) + 1) + "-"
+					+ (end.get(Calendar.MONTH) + 1));
 		}
 		dateString += " ";
 		if(sunday)

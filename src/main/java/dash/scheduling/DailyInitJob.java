@@ -13,6 +13,7 @@ import javax.servlet.ServletContextEvent;
 
 import org.quartz.CronScheduleBuilder;
 import org.quartz.JobBuilder;
+import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
@@ -26,6 +27,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import dash.dao.StudyDao;
 import dash.dao.StudyEntity;
+import dash.dao.UserDao;
 import dash.pojo.Study;
 
 //This TimerTask is designed to run every day at midnight. 
@@ -78,8 +80,11 @@ public class DailyInitJob extends TimerTask{
 				Trigger cronTrigger = TriggerBuilder.newTrigger()
 						.withIdentity("trigger_" + study.getId() + "_" + count, 
 								"triggerStudy" + study.getId())
+						.endAt(study.getEndDate())
+						.startAt(study.getStartDate())
 						.withSchedule(CronScheduleBuilder.cronSchedule(cronString))
 						.build();
+				
 				triggers.add(cronTrigger);
 			}
 			jobs.put(job, triggers);

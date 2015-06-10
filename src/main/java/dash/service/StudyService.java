@@ -120,6 +120,9 @@ public interface StudyService {
 	public Study verifyStudyExistenceById(Long id);
 
 	public int getNumberOfStudies();
+
+	public void sendStudyNotificationEmail(String email, long formId,
+			long studyId);
 	
 	
 	

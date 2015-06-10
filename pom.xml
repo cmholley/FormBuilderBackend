@@ -9,7 +9,7 @@
 	<description>REST-FUL web services for DASH backend</description>
 
 	<properties>
-		<spring.version>4.0.3.RELEASE</spring.version>
+		<spring.version>4.0.6.RELEASE</spring.version>
 		<org.springframework.security.version>3.2.4.RELEASE</org.springframework.security.version>
 		<jersey.version>2.9</jersey.version>
 		<jackson.version>1.9.13</jackson.version>
@@ -20,7 +20,7 @@
 		<commons-beanutils.version>1.9.1</commons-beanutils.version>
 		<mysql-connector-java.version>5.1.27</mysql-connector-java.version>
 		<tomcat-jdbc.version>7.0.35</tomcat-jdbc.version>
-
+		<quartz.version>2.1.7</quartz.version>
 		<maven-compiler-plugin.version>3.1</maven-compiler-plugin.version>
 
 	</properties>
@@ -249,7 +249,7 @@
 		<dependency>
 			<groupId>org.quartz-scheduler</groupId>
 			<artifactId>quartz</artifactId>
-			<version>2.1.7</version>
+			<version>${quartz.version}</version>
 		</dependency>
 
 

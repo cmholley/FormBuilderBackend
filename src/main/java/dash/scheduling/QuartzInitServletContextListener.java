@@ -29,7 +29,7 @@ public class QuartzInitServletContextListener implements ServletContextListener{
 		cal.set(Calendar.MINUTE,5);//Scheduling at 12:05am removes midnight ambiguity
 		cal.set(Calendar.SECOND,0);
 		cal.set(Calendar.MILLISECOND,0);*/
-		cal.add(Calendar.SECOND, 7);
+		cal.add(Calendar.SECOND, 15);
 		Date midnightDate = cal.getTime();
 		dailyTimer.scheduleAtFixedRate(new DailyInitJob(sce), midnightDate, 
 				TimeUnit.MILLISECONDS.convert(1, TimeUnit.DAYS)); //Executes daily

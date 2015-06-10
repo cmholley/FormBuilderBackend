@@ -1,5 +1,6 @@
 package dash.dao;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -112,10 +113,19 @@ public class StudyDaoJPA2Impl implements StudyDao {
 
 	@Override
 	public List<StudyEntity> getTodaysStudies() {
-		String sqlString = "SELECT u FROM StudyEntity u WHERE u.startDate = :startdate";
+		String sqlString = "SELECT u FROM StudyEntity u WHERE u.startDate BETWEEN :startDate AND :endDate";
 		TypedQuery<StudyEntity> query = entityManager.createQuery(sqlString,
 				StudyEntity.class);
-		query.setParameter("startdate", new Date());
+		Calendar cal = Calendar.getInstance();
+		cal.set(Calendar.MILLISECOND, 0);
+		cal.set(Calendar.SECOND, 0);
+		cal.set(Calendar.MINUTE, 0);
+		cal.set(Calendar.HOUR, 0);
+		Date endDate = cal.getTime();
+		cal.add(Calendar.DAY_OF_MONTH, -1);
+		Date startDate = cal.getTime();
+		query.setParameter("startDate", startDate);
+		query.setParameter("endDate", endDate);
 		List<StudyEntity> studies = query.getResultList();
 		return studies;
 	}
