@@ -35,20 +35,28 @@
 		</property>
 	</bean>
 
-	<!-- JavaMail Beans -->
 
-	<!-- For the server -->
-	<!--<bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl"> 
-		<property name="host" value="localhost" /> <property name="port" value="25" 
-		/> <property name="protocol" value="smtp" /> <property name="javaMailProperties"> 
-		<props> <prop key="mail.smtps.auth">false</prop> <prop key="mail.smtp.ssl.enable">false</prop> 
-		<prop key="mail.transport.protocol">smtp</prop> </props> </property> -->
+<!-- 	For the server -->
+  	<!--<bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+		<property name="host" value="localhost" />
+		<property name="port" value="25" />
+		<property name="protocol" value="smtp" />
+		
+		<property name="javaMailProperties">
+			<props>
+				<prop key="mail.smtps.auth">false</prop>
+				<prop key="mail.smtp.ssl.enable">false</prop>
+				<prop key="mail.transport.protocol">smtp</prop>
 
-	<!--For local development -->
-
-	<bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+			</props>
+		</property>
+		</bean>-->
+	
+<!--For local development -->	
+		
+  		<bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
 		<property name="host" value="smtp.gmail.com" />
-		<property name="port" value="465" />
+		<property name="port" value="465"/>
 		<property name="username" value="formbuildertest@gmail.com" />
 		<property name="password" value="test1234test" />
 		<property name="protocol" value="smtps" />
@@ -58,6 +66,7 @@
 				<prop key="mail.smtps.auth">true</prop>
 				<prop key="mail.smtp.ssl.enable">true</prop>
 				<prop key="mail.transport.protocol">smtps</prop>
+
 			</props>
 		</property>
 	</bean>
@@ -66,22 +75,7 @@
 		<property name="from" value="formbuildertest@gmail.com" />
 		<property name="subject" value="Test" />
 	</bean>
-
-	<!-- Quartz Beans -->
-
-	<bean id="scheduler"
-		class="org.springframework.scheduling.quartz.SchedulerFactoryBean"
-		lazy-init="false">
-		<property name="autoStartup" value="true" />
-		<property name="applicationContextSchedulerContextKey" value="applicationContext" />
-		<property name="waitForJobsToCompleteOnShutdown" value="true" />
-		<property name="overwriteExistingJobs" value="true" />
-		<property name="transactionManager">
-			<ref bean="transactionManager" />
-		</property>
-	</bean>
-
-	<!-- JNDI Beans -->
+	
 
 	<bean id="dashDS" class="org.springframework.jndi.JndiObjectFactoryBean"
 		scope="singleton">

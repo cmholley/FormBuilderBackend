@@ -157,9 +157,6 @@ public class FormDaoJPA2Impl implements FormDao {
 					+ "WHERE acl_object_identity.object_id_identity = :formId "
 					+ "AND acl_object_identity.object_id_class = 11 "
 					+ "ORDER BY acl_sid.sid DESC, acl_entry.mask DESC";
-			Authentication auth = SecurityContextHolder.getContext()
-					.getAuthentication();
-			Object name = (auth.getPrincipal());
 			SQLQuery query = session.createSQLQuery(queryString);
 			query.setLong("formId", id);
 			return query.list();
