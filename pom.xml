@@ -9,11 +9,11 @@
 	<description>REST-FUL web services for DASH backend</description>
 
 	<properties>
-		<spring.version>4.0.6.RELEASE</spring.version>
+		<spring.version>4.0.3.RELEASE</spring.version>
 		<org.springframework.security.version>3.2.4.RELEASE</org.springframework.security.version>
 		<jersey.version>2.9</jersey.version>
 		<jackson.version>1.9.13</jackson.version>
-		<hibernate.version>4.3.10.Final</hibernate.version>
+		<hibernate.version>4.2.7.Final</hibernate.version>
 		<jetty.version>9.0.7.v20131107</jetty.version> <!-- Adapt this to a version found on http://repo.maven.apache.org/maven2/org/eclipse/jetty/jetty-maven-plugin/ -->
 		<logback.version>1.1.1</logback.version>
 		<jcloverslf4j.version>1.7.6</jcloverslf4j.version>

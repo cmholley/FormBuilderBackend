@@ -12,6 +12,7 @@ import java.util.TimerTask;
 import javax.servlet.ServletContextEvent;
 
 import org.quartz.CronScheduleBuilder;
+import org.quartz.CronTrigger;
 import org.quartz.JobBuilder;
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
@@ -37,9 +38,12 @@ import dash.pojo.Study;
 public class DailyInitJob extends TimerTask{
 	
 	private ServletContextEvent servletContextEvent;
+	
+	private Scheduler scheduler;
 
-	public DailyInitJob(ServletContextEvent servletContextEvent){
+	public DailyInitJob(ServletContextEvent servletContextEvent, Scheduler scheduler){
 		this.servletContextEvent = servletContextEvent;
+		this.scheduler = scheduler;
 	}
 	
 	
@@ -77,21 +81,19 @@ public class DailyInitJob extends TimerTask{
 			List<Trigger> triggers = new ArrayList<Trigger>();
 			for(String cronString : cronStrings){
 				int count = 0;
-				Trigger cronTrigger = TriggerBuilder.newTrigger()
+				CronTrigger cronTrigger = TriggerBuilder.newTrigger()
 						.withIdentity("trigger_" + study.getId() + "_" + count, 
 								"triggerStudy" + study.getId())
 						.endAt(study.getEndDate())
 						.startAt(study.getStartDate())
-						.withSchedule(CronScheduleBuilder.cronSchedule(cronString))
+						.withSchedule(CronScheduleBuilder.cronSchedule(cronString)
+								.withMisfireHandlingInstructionFireAndProceed())
 						.build();
-				
 				triggers.add(cronTrigger);
 			}
 			jobs.put(job, triggers);
 		}
 		try {
-			Scheduler scheduler = new StdSchedulerFactory().getScheduler();
-			scheduler.start();
 			scheduler.scheduleJobs(jobs, true);
 		} catch (SchedulerException e) {
 			// TODO Auto-generated catch block

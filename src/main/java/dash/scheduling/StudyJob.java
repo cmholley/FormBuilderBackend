@@ -33,7 +33,7 @@ public class StudyJob extends QuartzJobBean{
 	StudyService studyService;
 	
 	@Transactional
-	protected void executeInternal(JobExecutionContext arg0)
+	public void executeInternal(JobExecutionContext arg0)
 			throws JobExecutionException {
 		
 		SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
