@@ -69,20 +69,19 @@ public class DailyInitJob extends TimerTask{
 		String groupName;
 		Map<JobDetail, List<Trigger>> jobs = new HashMap<JobDetail, List<Trigger>>();
 		for(Study study : todaysStudies){
-			studyName = (dateString + counter);
+			studyName = (dateString + counter++);
 			groupName = ("group_" + dateString);
 			JobDetail job = JobBuilder.newJob(StudyJob.class)
 					.withIdentity(studyName, groupName)
 					.usingJobData("formId", study.getFormId())
 					.usingJobData("studyId", study.getId())
 					.build();
-			job.getJobDataMap().put("participants", study.getParticipants());
 			List<String>cronStrings = study.generateCronStrings();
 			List<Trigger> triggers = new ArrayList<Trigger>();
 			for(String cronString : cronStrings){
 				int count = 0;
 				CronTrigger cronTrigger = TriggerBuilder.newTrigger()
-						.withIdentity("trigger_" + study.getId() + "_" + count, 
+						.withIdentity("trigger_study:" + study.getId() + "_" + count++, 
 								"triggerStudy" + study.getId())
 						.endAt(study.getEndDate())
 						.startAt(study.getStartDate())

@@ -2,7 +2,9 @@ package dash.service;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.ws.rs.core.Response;
 
@@ -243,6 +245,8 @@ public class UserServiceDbAccessImpl extends ApplicationObjectSupport implements
 					user.getEmail());
 			withNull.copyProperty(verifyUserExistenceById, "picture",
 					user.getPicture());
+			withNull.copyProperty(verifyUserExistenceById, "activeStudies",
+					user.getActiveStudies());
 		} catch (IllegalAccessException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -365,5 +369,16 @@ public class UserServiceDbAccessImpl extends ApplicationObjectSupport implements
 			uel.add(ue);
 			return getUsersFromEntities(uel).get(0);
 		} else return null;
+	}
+
+	@Transactional
+	@Override
+	public void removeActiveStudy(Long removeActiveStudy, User user) {
+		Map<Long,Long> activeStudies = user.getActiveStudies();
+		activeStudies.remove(removeActiveStudy);
+		user.setActiveStudies(activeStudies);
+		User verifyUser = this.getUserByName(user.getUsername());
+		copyAllProperties(verifyUser, user);
+		userDao.updateUser(new UserEntity(verifyUser));
 	}
 }

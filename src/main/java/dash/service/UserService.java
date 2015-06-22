@@ -83,4 +83,6 @@ public interface UserService {
 	public int getNumberOfUsers();
 
 	public User getUserByName(String username);
+
+	public void removeActiveStudy(Long removeActiveStudy, User user);
 }

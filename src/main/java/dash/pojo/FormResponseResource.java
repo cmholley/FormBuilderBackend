@@ -2,7 +2,6 @@ package dash.pojo;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Arrays;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
@@ -25,16 +24,18 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import dash.errorhandling.AppException;
 import dash.filters.AppConstants;
 import dash.service.FormResponseService;
 import dash.service.FormService;
+import dash.service.UserService;
 
 /**
  *
@@ -54,7 +55,8 @@ public class FormResponseResource {
 	@Autowired
 	private FormService formService;
 	
-	
+	@Autowired	
+	private UserService userService;
 
 	// ************************************* CREATE
 	// ************************************
@@ -198,7 +200,8 @@ public class FormResponseResource {
 	@Path("{id}")
 	@Consumes({ MediaType.APPLICATION_JSON })
 	@Produces({ MediaType.TEXT_HTML })
-	public Response putFormResponseById(@PathParam("id") Long id,
+	public Response putFormResponseById(@PathParam("id") Long id, 
+			@QueryParam("removeActiveStudy") @DefaultValue("0") Long removeActiveStudy, 
 			FormResponse formResponse) throws AppException {
 
 		FormResponse formResponseById = formResponseService
@@ -210,6 +213,11 @@ public class FormResponseResource {
 			Form form = formService.getFormById(formResponse.getForm_id());
 			Long createFormResponseId = formResponseService
 					.createFormResponse(formResponse, form);
+			if(removeActiveStudy > 0) {
+				User user = userService.getUserByName(((UserDetails)SecurityContextHolder
+						.getContext().getAuthentication().getPrincipal()).getUsername());
+				userService.removeActiveStudy(removeActiveStudy, user);
+			}
 			return Response
 					.status(Response.Status.CREATED)
 					// 201
@@ -219,6 +227,11 @@ public class FormResponseResource {
 		} else {
 			// resource is existent and a full update should occur
 			formResponseService.updateFullyFormResponse(formResponse);
+			if(removeActiveStudy > 0) {
+				User user = userService.getUserByName(((UserDetails)SecurityContextHolder
+						.getContext().getAuthentication().getPrincipal()).getUsername());
+				userService.removeActiveStudy(removeActiveStudy, user);
+			}
 			return Response
 					.status(Response.Status.OK)
 					// 200
