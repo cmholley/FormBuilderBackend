@@ -333,13 +333,33 @@ public class StudyServiceDbAccessImpl extends ApplicationObjectSupport
 		SimpleMailMessage msg = new SimpleMailMessage(this.templateMessage);
 		msg.setFrom("NOREPLY@Housuggest.org");
 		msg.setTo(email);
-		msg.setSubject("Scheduling Test");
-		msg.setText("Form Id: " + formId + "StudyId: " + studyId); 
+		msg.setSubject("You have a survey to complete");
+		msg.setText("You have a survey to complete. Please go to **** or your"
+				+ " EMA App, the survey will be active"); 
 		try {
 			this.mailSender.send(msg);
 		} catch (MailException ex) {
 			System.err.println(ex.getMessage()); 
 		}
 		
+	}
+
+	/*
+	phonenumber@txt.att.net
+	 * */
+	
+	@Override
+	public void sendTextNotification(String cellPhone, long formId, long studyId) {
+		SimpleMailMessage msg = new SimpleMailMessage(this.templateMessage);
+		msg.setFrom("NOREPLY@Housuggest.org");
+		msg.setTo(cellPhone + "@txt.att.net");
+		msg.setSubject("Scheduling Test");
+		msg.setText("You have a survey to complete. Please go to **** or your"
+				+ " EMA App, the survey will be active"); 
+		try {
+			this.mailSender.send(msg);
+		} catch (MailException ex) {
+			System.err.println(ex.getMessage()); 
+		}
 	}
 }

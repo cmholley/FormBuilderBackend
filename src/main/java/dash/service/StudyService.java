@@ -123,6 +123,8 @@ public interface StudyService {
 
 	public void sendStudyNotificationEmail(String email, long formId,
 			long studyId);
+
+	public void sendTextNotification(String cellPhone, long formId, long studyId);
 	
 	
 	

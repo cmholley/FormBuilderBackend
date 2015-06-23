@@ -3,23 +3,18 @@ package dash.scheduling;
 import java.util.Map;
 import java.util.Set;
 
-import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
-import org.quartz.SchedulerContext;
-import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
-import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.quartz.QuartzJobBean;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import dash.dao.UserDao;
-import dash.dao.UserDaoJPA2Impl;
 import dash.dao.UserEntity;
+import dash.errorhandling.AppException;
+import dash.pojo.Study;
 import dash.service.StudyService;
-import dash.service.StudyServiceDbAccessImpl;
 
 public class StudyJob extends QuartzJobBean{
 	private Set<String> participants;
@@ -38,6 +33,14 @@ public class StudyJob extends QuartzJobBean{
 		
 		SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
 		UserEntity user;
+		Study study = null;
+		try {
+			study = studyService.getStudyById(studyId);
+		} catch (AppException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		participants = study.getParticipants();
 		for(String participant : participants){
 			user = userDao.getUserByName(participant) ;
 			Map<Long, Long> activeStudies = user.getActiveStudies();
@@ -45,7 +48,18 @@ public class StudyJob extends QuartzJobBean{
 			user.setActiveStudies(activeStudies);
 			userDao.updateUser(user);
 			//TODO: User preferences
-			sendNotificationEmail(participant);
+			switch(user.getNotificationPreference()){
+			case EMAIL:
+				sendNotificationEmail(user.getUsername());
+				break;
+			case TEXT:
+				sendTextNotification(user.getCellPhone());
+				break;
+			case BOTH:
+				sendTextNotification(user.getCellPhone());
+				sendNotificationEmail(user.getUsername());
+				break;
+			}
 		}
 
 	}
@@ -58,7 +72,11 @@ public class StudyJob extends QuartzJobBean{
 	private void sendNotificationEmail(String email){
 		studyService.sendStudyNotificationEmail(email, formId, studyId);
 	}
-
+	
+	private void sendTextNotification(String cellPhone){
+		studyService.sendTextNotification(cellPhone, formId, studyId);
+	}
+	//TODO: Use SMS API rather than email
 	public void setParticipants(Set<String> participants) {
 		this.participants = participants;
 	}

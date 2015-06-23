@@ -38,7 +38,7 @@ public interface UserService {
 	 * @return list with users corresponding to search criteria
 	 * @throws AppException
 	 */
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasRole('ROLE_USER')")
 	public List<User> getUsers(String orderByInsertionDate,
 			Integer numberDaysToLookBack) throws AppException;
 

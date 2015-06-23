@@ -27,6 +27,12 @@ import dash.helpers.DateISO8601Adapter;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class User implements Serializable {
 
+	public static enum NOTIFICATION_PREFERENCE {
+		EMAIL,
+		TEXT,
+		BOTH
+	};
+	
 	private static final long serialVersionUID = -8039686696076337053L;
 
 	/** id of the user */
@@ -71,6 +77,9 @@ public class User implements Serializable {
 
 	@XmlElement(name = "activeStudies")
 	private Map<Long, Long> activeStudies = new HashMap<Long, Long>();
+	
+	@XmlElement (name = "notificationPreference")
+	private NOTIFICATION_PREFERENCE notificationPreference;
 	
 	/** insertion date in the database */
 	@XmlElement(name = "insertionDate")
@@ -210,6 +219,15 @@ public class User implements Serializable {
 
 	public void setActiveStudies(Map<Long, Long> activeStudies) {
 		this.activeStudies = activeStudies;
+	}
+
+	public NOTIFICATION_PREFERENCE getNotificationPreference() {
+		return notificationPreference;
+	}
+
+	public void setNotificationPreference(
+			NOTIFICATION_PREFERENCE notificationPreference) {
+		this.notificationPreference = notificationPreference;
 	}
 
 

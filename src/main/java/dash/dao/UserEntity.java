@@ -10,16 +10,20 @@ import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.MapKeyColumn;
 import javax.persistence.Table;
+import javax.xml.bind.annotation.XmlElement;
 
 import org.apache.commons.beanutils.BeanUtils;
 
 import dash.pojo.User;
+import dash.pojo.User.NOTIFICATION_PREFERENCE;
 
 /**
  * User entity
@@ -73,10 +77,12 @@ public class UserEntity implements Serializable {
 
 	@ElementCollection (fetch= FetchType.EAGER)
 	@CollectionTable(name = "active_studies", joinColumns = {@JoinColumn(name="user_id")})
-//	@MapKeyColumn(name="study_id")
 	@Column(name = "value")
 	private Map<Long, Long> activeStudies = new HashMap<Long, Long>();
 	
+	@Enumerated(EnumType.STRING)
+	@Column (name = "notification_preference")
+	private NOTIFICATION_PREFERENCE notificationPreference;
 	
 	/** insertion date in the database */
 	@Column(name = "insertion_date")
@@ -207,6 +213,15 @@ public class UserEntity implements Serializable {
 
 	public void setActiveStudies(Map<Long, Long> activeStudies) {
 		this.activeStudies = activeStudies;
+	}
+
+	public NOTIFICATION_PREFERENCE getNotificationPreference() {
+		return notificationPreference;
+	}
+
+	public void setNotificationPreference(
+			NOTIFICATION_PREFERENCE notificationPreference) {
+		this.notificationPreference = notificationPreference;
 	}
 
 }
