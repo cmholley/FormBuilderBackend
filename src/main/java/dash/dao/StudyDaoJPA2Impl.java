@@ -129,4 +129,10 @@ public class StudyDaoJPA2Impl implements StudyDao {
 		List<StudyEntity> studies = query.getResultList();
 		return studies;
 	}
+
+	@Override
+	public void insertExpirationTime(Long id, Date expirationDate) {
+		// TODO Auto-generated method stub
+		
+	}
 }

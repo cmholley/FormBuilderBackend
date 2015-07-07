@@ -12,6 +12,8 @@ import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import javax.ws.rs.core.Response;
@@ -361,5 +363,13 @@ public class StudyServiceDbAccessImpl extends ApplicationObjectSupport
 		} catch (MailException ex) {
 			System.err.println(ex.getMessage()); 
 		}
+	}
+
+	@Override
+	public void insertExpirationTime(Long id, Integer expirationTime) {
+		Calendar cal = Calendar.getInstance();
+		cal.add(Calendar.HOUR, expirationTime);
+		Date expirationDate = cal.getTime();
+		studyDao.insertExpirationTime(id, expirationDate);
 	}
 }

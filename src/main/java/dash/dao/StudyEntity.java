@@ -55,6 +55,9 @@ public class StudyEntity implements Serializable {
 	@Column(name = "end_Date")
 	private Date endDate;
 	
+	@Column(name = "expiration_time")
+	private Integer expirationTime;
+	
 	@Column(name = "sunday")
 	private boolean sunday;
 	
@@ -244,6 +247,14 @@ public class StudyEntity implements Serializable {
 
 	public void setStudyName(String studyName) {
 		this.studyName = studyName;
+	}
+
+	public Integer getExpirationTime() {
+		return expirationTime;
+	}
+
+	public void setExpirationTime(Integer expirationTime) {
+		this.expirationTime = expirationTime;
 	}
 	
 }

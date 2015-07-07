@@ -20,6 +20,23 @@ public class QuartzInitServletContextListener implements ServletContextListener{
 	
 	@Override
 	public void contextInitialized(ServletContextEvent sce) {
+		scheduleDailyInitJob();
+		
+	}
+
+	@Override
+	public void contextDestroyed(ServletContextEvent sce) {		
+	
+	}
+	
+	private void scheduleTimeoutJob(){
+		Timer timeoutTimer = new Timer(true);//The timer thread needs to be a daemon
+		Calendar cal = Calendar.getInstance();
+		cal.add(Calendar.MINUTE, cal.get(Calendar.MINUTE) % 5);
+		timeoutTimer.scheduleAtFixedRate()
+	}
+	
+	private void scheduleDailyInitJob(){
 		Timer dailyTimer = new Timer(true);//The timer thread needs to be a daemon
 		Scheduler scheduler = null;
 		try {
@@ -38,12 +55,7 @@ public class QuartzInitServletContextListener implements ServletContextListener{
 		//cal.add(Calendar.SECOND, 15);
 		Date midnightDate = cal.getTime();
 		dailyTimer.scheduleAtFixedRate(new DailyInitJob(sce, scheduler), midnightDate, 
-				TimeUnit.MILLISECONDS.convert(1, TimeUnit.DAYS)); //Executes daily
+				TimeUnit.MILLISECONDS.convert(1, TimeUnit.DAYS)); //Executes daily	
 	}
-
-	@Override
-	public void contextDestroyed(ServletContextEvent sce) {
-		
-		
-	}
+	
 }

@@ -64,6 +64,9 @@ public class Study implements IAclObject {
 	@XmlElement(name = "studyName")
 	private String studyName;
 	
+	@XmlElement (name = "expirationTime")
+	private Integer expirationTime;
+	
 	@XmlElement(name = "participants")
 	private Set<String> participants;
 	
@@ -330,6 +333,14 @@ public class Study implements IAclObject {
 
 	public void setStudyName(String studyName) {
 		this.studyName = studyName;
+	}
+
+	public Integer getExpirationTime() {
+		return expirationTime;
+	}
+
+	public void setExpirationTime(Integer expirationTime) {
+		this.expirationTime = expirationTime;
 	}
 }
  

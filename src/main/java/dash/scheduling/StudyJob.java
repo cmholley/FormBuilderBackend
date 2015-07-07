@@ -40,6 +40,7 @@ public class StudyJob extends QuartzJobBean{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		studyService.insertExpirationTime(study.getId(), study.getExpirationTime());
 		participants = study.getParticipants();
 		for(String participant : participants){
 			user = userDao.getUserByName(participant) ;
