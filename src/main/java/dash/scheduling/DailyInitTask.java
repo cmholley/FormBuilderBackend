@@ -31,13 +31,13 @@ import dash.pojo.Study;
 //It will retrieve all of the studies with a start date
 //Of the current day and then initialize the job for them based of off the survey.
 
-public class DailyInitJob extends TimerTask{
+public class DailyInitTask extends TimerTask{
 	
 	private ServletContextEvent servletContextEvent;
 	
 	private Scheduler scheduler;
 
-	public DailyInitJob(ServletContextEvent servletContextEvent, Scheduler scheduler){
+	public DailyInitTask(ServletContextEvent servletContextEvent, Scheduler scheduler){
 		this.servletContextEvent = servletContextEvent;
 		this.scheduler = scheduler;
 	}
