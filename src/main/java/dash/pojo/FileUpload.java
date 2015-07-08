@@ -1,6 +1,5 @@
 package dash.pojo;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -13,15 +12,6 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-
-import org.apache.commons.beanutils.BeanUtils;
-
-
-
-
-
-
-
 
 import dash.helpers.DateISO8601Adapter;
 import dash.security.IAclObject;

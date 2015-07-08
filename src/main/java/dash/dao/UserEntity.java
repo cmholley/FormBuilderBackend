@@ -16,9 +16,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.MapKeyColumn;
 import javax.persistence.Table;
-import javax.xml.bind.annotation.XmlElement;
 
 import org.apache.commons.beanutils.BeanUtils;
 
@@ -82,7 +80,7 @@ public class UserEntity implements Serializable {
 	
 	@Enumerated(EnumType.STRING)
 	@Column (name = "notification_preference")
-	private NOTIFICATION_PREFERENCE notificationPreference;
+	private NOTIFICATION_PREFERENCE notificationPreference = NOTIFICATION_PREFERENCE.EMAIL;
 	
 	/** insertion date in the database */
 	@Column(name = "insertion_date")

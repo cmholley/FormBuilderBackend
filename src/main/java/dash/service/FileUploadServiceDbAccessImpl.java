@@ -11,7 +11,6 @@ import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.ws.rs.core.Response;
@@ -72,9 +71,9 @@ public class FileUploadServiceDbAccessImpl extends ApplicationObjectSupport
 	//Not functional for this resource
 	public void createFileUploads(List<FileUpload> fileUploads)
 			throws AppException {
-		for (FileUpload fileUpload : fileUploads) {
-			//createFileUpload(fileUpload);
-		}
+		/*for (FileUpload fileUpload : fileUploads) {
+			createFileUpload(fileUpload);
+		}*/
 	}
 
 	// ******************** Read related methods implementation

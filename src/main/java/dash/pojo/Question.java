@@ -1,38 +1,17 @@
 package dash.pojo;
 
 import java.io.Serializable;
-import java.lang.reflect.InvocationTargetException;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
 
 import javax.persistence.Column;
-import javax.persistence.ElementCollection;
 import javax.persistence.Embeddable;
 import javax.persistence.GeneratedValue;
-import javax.persistence.PrePersist;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-
-import org.apache.commons.beanutils.BeanUtils;
-
-
-
-
-
-
-
-
 
 import dash.filters.AppConstants;
 import dash.filters.AppConstants.InputValidation;
-import dash.filters.AppConstants.QuestionType;
-import dash.helpers.DateISO8601Adapter;
-import dash.security.IAclObject;
 
 /**
  * An embeddable object resource  for json/xml representation

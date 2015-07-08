@@ -20,25 +20,20 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.beanutils.BeanUtilsBean;
-import org.hibernate.annotations.Index;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.ApplicationObjectSupport;
 import org.springframework.mail.MailException;
-import org.springframework.mail.MailSender;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
-
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeMessage;
-
-import org.springframework.core.io.FileSystemResource;
 import org.springframework.mail.MailParseException;
+import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import dash.dao.FormResponseDao;
 import dash.dao.FormResponseEntity;

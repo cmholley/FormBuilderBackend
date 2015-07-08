@@ -10,7 +10,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import dash.errorhandling.AppException;
 import dash.pojo.Form;
 import dash.pojo.FormResponse;
-import dash.pojo.SampleObject;
 
 /**
  * Example service interface for a basic object.

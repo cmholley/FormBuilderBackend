@@ -1,24 +1,14 @@
 package dash.pojo;
 
 import java.io.Serializable;
-import java.lang.reflect.InvocationTargetException;
-import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-
-import org.apache.commons.beanutils.BeanUtils;
-
-import dash.dao.SampleObjectEntity;
-import dash.helpers.DateISO8601Adapter;
-import dash.security.IAclObject;
 
 /**
  * object resource placeholder for json/xml representation

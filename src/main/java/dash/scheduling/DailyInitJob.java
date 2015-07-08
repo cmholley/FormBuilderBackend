@@ -14,21 +14,17 @@ import javax.servlet.ServletContextEvent;
 import org.quartz.CronScheduleBuilder;
 import org.quartz.CronTrigger;
 import org.quartz.JobBuilder;
-import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.Trigger;
 import org.quartz.TriggerBuilder;
-import org.quartz.impl.StdSchedulerFactory;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.context.ApplicationContext;
-import org.springframework.stereotype.Component;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import dash.dao.StudyDao;
 import dash.dao.StudyEntity;
-import dash.dao.UserDao;
 import dash.pojo.Study;
 
 //This TimerTask is designed to run every day at midnight. 

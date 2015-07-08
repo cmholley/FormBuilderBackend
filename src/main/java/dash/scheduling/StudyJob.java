@@ -66,9 +66,8 @@ public class StudyJob extends QuartzJobBean{
 	}
 	
 
-	private void sendPushNotification(String username){
-		
-	}
+	/*private void sendPushNotification(String username){
+	}*/
 	
 	private void sendNotificationEmail(String email){
 		studyService.sendStudyNotificationEmail(email, formId, studyId);

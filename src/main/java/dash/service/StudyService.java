@@ -5,7 +5,6 @@ import java.io.InputStream;
 import java.util.List;
 
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.access.prepost.PreFilter;
 
 import dash.errorhandling.AppException;
 import dash.pojo.Form;
@@ -127,6 +126,8 @@ public interface StudyService {
 	public void sendTextNotification(String cellPhone, long formId, long studyId);
 
 	public void insertExpirationTime(Long id, Integer integer);
+
+	public void expireStudies();
 	
 	
 	

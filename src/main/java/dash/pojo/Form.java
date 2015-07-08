@@ -14,7 +14,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.apache.commons.beanutils.BeanUtils;
-import org.springframework.security.core.context.SecurityContextHolder;
 
 import dash.dao.FormEntity;
 import dash.helpers.DateISO8601Adapter;

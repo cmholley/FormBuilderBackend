@@ -79,7 +79,7 @@ public class User implements Serializable {
 	private Map<Long, Long> activeStudies = new HashMap<Long, Long>();
 	
 	@XmlElement (name = "notificationPreference")
-	private NOTIFICATION_PREFERENCE notificationPreference;
+	private NOTIFICATION_PREFERENCE notificationPreference = NOTIFICATION_PREFERENCE.EMAIL;
 	
 	/** insertion date in the database */
 	@XmlElement(name = "insertionDate")

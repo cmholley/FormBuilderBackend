@@ -4,9 +4,10 @@ import java.lang.reflect.InvocationTargetException;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.HashMap;
+import java.util.Map.Entry;
 
 import javax.ws.rs.core.Response;
 
@@ -120,7 +121,7 @@ public class FormServiceDbAccessImpl extends ApplicationObjectSupport implements
 			formIds.put(formId, permissionsTemp);
 		}
 		LinkedHashMap<Form, List<Integer>> forms = new LinkedHashMap<Form, List<Integer>>();
-		for (HashMap.Entry<Long, List<Integer>> entry : formIds.entrySet()) {
+		for (Entry<Long, List<Integer>> entry : formIds.entrySet()) {
 			Form form = new Form(formDao.getFormById(entry.getKey()));
 			forms.put(form, entry.getValue());
 		}

@@ -3,7 +3,6 @@ package dash.dao;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Date;
-import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CollectionTable;
@@ -15,11 +14,9 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.Table;
-import javax.xml.bind.annotation.XmlElement;
 
 import org.apache.commons.beanutils.BeanUtils;
 
-import dash.pojo.Form;
 import dash.pojo.Study;
 import dash.pojo.Study.TIMERANGE;
 
@@ -27,7 +24,7 @@ import dash.pojo.Study.TIMERANGE;
 @Table(name = "studies")
 public class StudyEntity implements Serializable {
 	
-	private static final Long serialVersionUID = -2453192655669468348L;
+	private static final long serialVersionUID = -2453192655669468348L;
 
 	@Id
 	@GeneratedValue
@@ -255,6 +252,13 @@ public class StudyEntity implements Serializable {
 
 	public void setExpirationTime(Integer expirationTime) {
 		this.expirationTime = expirationTime;
+	}
+
+	/**
+	 * @return the serialversionuid
+	 */
+	public static long getSerialversionuid() {
+		return serialVersionUID;
 	}
 	
 }

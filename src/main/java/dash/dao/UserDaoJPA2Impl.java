@@ -123,7 +123,6 @@ UserDao {
 		user.setInsertionDate(new Date());
 		entityManager.persist(user);
 		entityManager.flush();// force insert to receive the id of the user
-
 		// Give admin over new user to the new user
 
 		return user.getId();

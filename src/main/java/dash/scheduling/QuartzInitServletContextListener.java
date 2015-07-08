@@ -13,31 +13,33 @@ import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.impl.StdSchedulerFactory;
 
-
 @WebListener
-public class QuartzInitServletContextListener implements ServletContextListener{
+public class QuartzInitServletContextListener implements ServletContextListener {
 
-	
 	@Override
 	public void contextInitialized(ServletContextEvent sce) {
-		scheduleDailyInitJob();
-		
+		scheduleDailyInitJob(sce);
+		scheduleTimeoutJob(sce);
 	}
 
 	@Override
-	public void contextDestroyed(ServletContextEvent sce) {		
-	
+	public void contextDestroyed(ServletContextEvent sce) {
+
 	}
-	
-	private void scheduleTimeoutJob(){
-		Timer timeoutTimer = new Timer(true);//The timer thread needs to be a daemon
+
+	private void scheduleTimeoutJob(ServletContextEvent sce) {
+		Timer timeoutTimer = new Timer(true);// The timer thread needs to be a
+											 // daemon
 		Calendar cal = Calendar.getInstance();
 		cal.add(Calendar.MINUTE, cal.get(Calendar.MINUTE) % 5);
-		timeoutTimer.scheduleAtFixedRate()
+		Date start = cal.getTime();
+		timeoutTimer.scheduleAtFixedRate(new TimeoutTask(sce), start,
+				TimeUnit.MILLISECONDS.convert(5, TimeUnit.MINUTES));
 	}
-	
-	private void scheduleDailyInitJob(){
-		Timer dailyTimer = new Timer(true);//The timer thread needs to be a daemon
+
+	private void scheduleDailyInitJob(ServletContextEvent sce) {
+		Timer dailyTimer = new Timer(true);// The timer thread needs to be a
+											// daemon
 		Scheduler scheduler = null;
 		try {
 			scheduler = new StdSchedulerFactory().getScheduler();
@@ -48,14 +50,16 @@ public class QuartzInitServletContextListener implements ServletContextListener{
 		}
 		Calendar cal = Calendar.getInstance();
 		cal.add(Calendar.DATE, 1);
-		cal.set(Calendar.HOUR_OF_DAY,0);
-		cal.set(Calendar.MINUTE,5);//Scheduling at 12:05am removes midnight ambiguity
-		cal.set(Calendar.SECOND,0);
-		cal.set(Calendar.MILLISECOND,0);
-		//cal.add(Calendar.SECOND, 15);
+		cal.set(Calendar.HOUR_OF_DAY, 0);
+		cal.set(Calendar.MINUTE, 5);// Scheduling at 12:05am removes midnight
+									// ambiguity
+		cal.set(Calendar.SECOND, 0);
+		cal.set(Calendar.MILLISECOND, 0);
+		// cal.add(Calendar.SECOND, 15);
 		Date midnightDate = cal.getTime();
-		dailyTimer.scheduleAtFixedRate(new DailyInitJob(sce, scheduler), midnightDate, 
-				TimeUnit.MILLISECONDS.convert(1, TimeUnit.DAYS)); //Executes daily	
+		dailyTimer.scheduleAtFixedRate(new DailyInitJob(sce, scheduler),
+				midnightDate, TimeUnit.MILLISECONDS.convert(1, TimeUnit.DAYS)); // Executes
+																				// daily
 	}
-	
+
 }

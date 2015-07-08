@@ -34,6 +34,7 @@ import dash.filters.AppConstants;
 import dash.helpers.NullAwareBeanUtilsBean;
 import dash.pojo.Form;
 import dash.pojo.Study;
+import dash.pojo.User;
 import dash.security.CustomPermission;
 import dash.security.GenericAclController;
 
@@ -52,6 +53,9 @@ public class StudyServiceDbAccessImpl extends ApplicationObjectSupport
 	@Autowired
 	StudyDao studyDao;
 
+	@Autowired
+	UserService userService;
+	
 	@Autowired
 	private GenericAclController<Study> aclController;
 	
@@ -371,5 +375,33 @@ public class StudyServiceDbAccessImpl extends ApplicationObjectSupport
 		cal.add(Calendar.HOUR, expirationTime);
 		Date expirationDate = cal.getTime();
 		studyDao.insertExpirationTime(id, expirationDate);
+	}
+
+	@Override
+	public void expireStudies(){
+		List<Long> expiredStudies = studyDao.getExpiredStudies();
+		for(Long study : expiredStudies){
+			try {
+				expireStudy(study);
+			} catch (AppException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			studyDao.removeExpiredStudy(study);
+		}
+	}
+	
+	private void expireStudy(Long study) throws AppException{
+		List<Long> userIds = studyDao.getUsersForActiveStudy(study);
+		List<User> users = new ArrayList<User>();
+		User userTemp;
+		for(Long userId : userIds){
+			userTemp = userService.getUserById(userId);
+			userTemp.getActiveStudies().remove(study);
+			users.add(userTemp);
+		}
+		for(User user : users){
+			userService.updatePartiallyUser(user);
+		}
 	}
 }

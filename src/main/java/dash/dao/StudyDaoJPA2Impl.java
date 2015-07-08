@@ -1,5 +1,6 @@
 package dash.dao;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -10,6 +11,12 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 
+import org.hibernate.SQLQuery;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.cfg.Configuration;
+import org.hibernate.service.ServiceRegistry;
+import org.hibernate.service.ServiceRegistryBuilder;
 import org.springframework.stereotype.Component;
 
 import dash.pojo.Study;
@@ -132,7 +139,62 @@ public class StudyDaoJPA2Impl implements StudyDao {
 
 	@Override
 	public void insertExpirationTime(Long id, Date expirationDate) {
-		// TODO Auto-generated method stub
-		
+		Configuration configuration = new Configuration().configure();
+		ServiceRegistry serviceRegistry = new ServiceRegistryBuilder()
+				.applySettings(configuration.getProperties())
+				.buildServiceRegistry();
+		SessionFactory sessionFactory = configuration
+				.buildSessionFactory(serviceRegistry);
+		Session session = sessionFactory.openSession();
+		String queryString = "INSERT INTO expirtation_times (study_id, expiration_time) "
+				+ "VALUES (:id, :expirationDate)";
+		SQLQuery query = session.createSQLQuery(queryString);
+		query.setLong("id", id);
+		query.setDate("expiratoinDate", expirationDate);
 	}
+
+	@Override
+	public List<Long> getExpiredStudies() {
+		Configuration configuration = new Configuration().configure();
+		ServiceRegistry serviceRegistry = new ServiceRegistryBuilder()
+				.applySettings(configuration.getProperties())
+				.buildServiceRegistry();
+		SessionFactory sessionFactory = configuration
+				.buildSessionFactory(serviceRegistry);
+		Session session = sessionFactory.openSession();
+		String queryString = "SELECT study_id FROM expiration_times WHERE expiration_time < NOW()";
+		SQLQuery query = session.createSQLQuery(queryString);
+		List<Long> studyIds = new ArrayList<Long>();
+		for(Object object : query.list()){
+			studyIds.add((Long)object);
+		}
+		return studyIds;
+	}
+
+	@Override
+	public List<Long> getUsersForActiveStudy(Long studyId) {
+		Configuration configuration = new Configuration().configure();
+		ServiceRegistry serviceRegistry = new ServiceRegistryBuilder()
+				.applySettings(configuration.getProperties())
+				.buildServiceRegistry();
+		SessionFactory sessionFactory = configuration
+				.buildSessionFactory(serviceRegistry);
+		Session session = sessionFactory.openSession();
+		String queryString = "SELECT user_id FROM active_studies WHERE activeStudies KEY = :studyId";
+		SQLQuery query = session.createSQLQuery(queryString);
+		List<Long> userIds = new ArrayList<Long>();
+		for(Object object : query.list()){
+			userIds.add((Long)object);
+		}
+		return userIds;
+	}
+
+	@Override
+	public void removeExpiredStudy(Long study) {
+		Query query = entityManager.createNativeQuery("DELETE FROM expiration_times WHERE study_id = :studyId");
+		query.setParameter("studyId", study);
+		query.executeUpdate();
+	}
+	
+	
 }

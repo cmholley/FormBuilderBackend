@@ -3,8 +3,6 @@ package dash.dao;
 import java.util.Date;
 import java.util.List;
 
-
-
 import dash.pojo.Study;
 
 
@@ -40,5 +38,11 @@ public interface StudyDao {
 	public List<StudyEntity> getTodaysStudies();
 
 	public void insertExpirationTime(Long id, Date expirationDate);
+
+	public List<Long> getExpiredStudies();
+
+	public List<Long> getUsersForActiveStudy(Long study);
+
+	public void removeExpiredStudy(Long study);
 
 }

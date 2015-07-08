@@ -16,8 +16,6 @@ import dash.pojo.FormResponseResource;
 import dash.pojo.SampleObjectResource;
 import dash.pojo.StudyResource;
 import dash.pojo.UsersResource;
-import dash.scheduling.DailyInitJob;
-import dash.scheduling.QuartzInitServletContextListener;
 
 /**
  * Registers the components to be used by the JAX-RS application

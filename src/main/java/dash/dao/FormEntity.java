@@ -17,13 +17,10 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.Table;
-import javax.xml.bind.annotation.XmlElement;
 
 import org.apache.commons.beanutils.BeanUtils;
-import org.springframework.security.core.context.SecurityContextHolder;
 
 import dash.pojo.Form;
-import dash.pojo.User;
 import dash.pojo.Form.THEME;
 import dash.pojo.Question;
 
