@@ -16,6 +16,8 @@ import org.quartz.impl.StdSchedulerFactory;
 @WebListener
 public class QuartzInitServletContextListener implements ServletContextListener {
 
+	private Scheduler scheduler = null;
+	
 	@Override
 	public void contextInitialized(ServletContextEvent sce) {
 		scheduleDailyInitJob(sce);
@@ -24,7 +26,18 @@ public class QuartzInitServletContextListener implements ServletContextListener 
 
 	@Override
 	public void contextDestroyed(ServletContextEvent sce) {
-
+		try {
+			scheduler.shutdown();
+		} catch (SchedulerException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}		
 	}
 
 	private void scheduleTimeoutJob(ServletContextEvent sce) {
@@ -40,7 +53,6 @@ public class QuartzInitServletContextListener implements ServletContextListener 
 	private void scheduleDailyInitJob(ServletContextEvent sce) {
 		Timer dailyTimer = new Timer(true);// The timer thread needs to be a
 											// daemon
-		Scheduler scheduler = null;
 		try {
 			scheduler = new StdSchedulerFactory().getScheduler();
 			scheduler.start();
