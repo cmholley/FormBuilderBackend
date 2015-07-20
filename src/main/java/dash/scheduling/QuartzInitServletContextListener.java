@@ -65,10 +65,13 @@ public class QuartzInitServletContextListener implements ServletContextListener 
 		dailyTimer = new Timer();// The timer thread needs to be a
 											// daemon
 		try {
-			scheduler = new StdSchedulerFactory().getScheduler();
+			scheduler = (new StdSchedulerFactory()).getScheduler();
+			System.out.println("About to start");
 			scheduler.start();
+			System.out.println("Started");
 		} catch (SchedulerException e) {
 			// TODO Auto-generated catch block
+			System.out.println("Exception Caught");
 			e.printStackTrace();
 		}
 		Calendar cal = Calendar.getInstance();
@@ -78,7 +81,7 @@ public class QuartzInitServletContextListener implements ServletContextListener 
 									// ambiguity
 		cal.set(Calendar.SECOND, 0);
 		cal.set(Calendar.MILLISECOND, 0);*/
-		cal.add(Calendar.SECOND, 60);
+		cal.add(Calendar.MINUTE, 5);
 		Date midnightDate = cal.getTime();
 		System.out.println("Scheduling DailyTask");
 		dailyTimer.scheduleAtFixedRate(new DailyInitTask(sce, scheduler),

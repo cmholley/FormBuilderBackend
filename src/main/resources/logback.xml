@@ -41,7 +41,7 @@
 		<appender-ref ref="FILE" />
 	</logger>
 	<logger name = "org.quartz">
-		<level value="INFO" />
+		<level value="DEBUG" />
 		<appender-ref ref="FILE" />
 	</logger>
 	<root>
