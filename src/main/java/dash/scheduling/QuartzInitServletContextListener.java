@@ -16,7 +16,12 @@ import org.quartz.impl.StdSchedulerFactory;
 @WebListener
 public class QuartzInitServletContextListener implements ServletContextListener {
 
-	private Scheduler scheduler = null;
+	private static Scheduler scheduler = null;
+	
+	private Timer dailyTimer;
+	
+	private Timer timeoutTimer;
+	
 	
 	@Override
 	public void contextInitialized(ServletContextEvent sce) {
@@ -32,6 +37,12 @@ public class QuartzInitServletContextListener implements ServletContextListener 
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		dailyTimer.cancel();
+		dailyTimer.purge();
+		timeoutTimer.cancel();
+		timeoutTimer.purge();
+		//Sleep the thread in order to allow the scheduler and timers
+		//to finish. Prevents errors and memory leaks
 		try {
 			Thread.sleep(1000);
 		} catch (InterruptedException e) {
@@ -41,7 +52,7 @@ public class QuartzInitServletContextListener implements ServletContextListener 
 	}
 
 	private void scheduleTimeoutJob(ServletContextEvent sce) {
-		Timer timeoutTimer = new Timer(true);// The timer thread needs to be a
+		timeoutTimer = new Timer();// The timer thread needs to be a
 											 // daemon
 		Calendar cal = Calendar.getInstance();
 		cal.add(Calendar.MINUTE, cal.get(Calendar.MINUTE) % 5);
@@ -51,7 +62,7 @@ public class QuartzInitServletContextListener implements ServletContextListener 
 	}
 
 	private void scheduleDailyInitJob(ServletContextEvent sce) {
-		Timer dailyTimer = new Timer(true);// The timer thread needs to be a
+		dailyTimer = new Timer();// The timer thread needs to be a
 											// daemon
 		try {
 			scheduler = new StdSchedulerFactory().getScheduler();
@@ -61,14 +72,15 @@ public class QuartzInitServletContextListener implements ServletContextListener 
 			e.printStackTrace();
 		}
 		Calendar cal = Calendar.getInstance();
-		cal.add(Calendar.DATE, 1);
+		/*cal.add(Calendar.DATE, 1);
 		cal.set(Calendar.HOUR_OF_DAY, 0);
 		cal.set(Calendar.MINUTE, 5);// Scheduling at 12:05am removes midnight
 									// ambiguity
 		cal.set(Calendar.SECOND, 0);
-		cal.set(Calendar.MILLISECOND, 0);
-		// cal.add(Calendar.SECOND, 15);
+		cal.set(Calendar.MILLISECOND, 0);*/
+		cal.add(Calendar.SECOND, 60);
 		Date midnightDate = cal.getTime();
+		System.out.println("Scheduling DailyTask");
 		dailyTimer.scheduleAtFixedRate(new DailyInitTask(sce, scheduler),
 				midnightDate, TimeUnit.MILLISECONDS.convert(1, TimeUnit.DAYS)); // Executes
 																				// daily
