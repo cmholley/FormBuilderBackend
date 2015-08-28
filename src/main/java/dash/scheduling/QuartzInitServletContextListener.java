@@ -51,8 +51,7 @@ public class QuartzInitServletContextListener implements ServletContextListener 
 	}
 
 	private void scheduleTimeoutJob(ServletContextEvent sce) {
-		timeoutTimer = new Timer();// The timer thread needs to be a
-									// daemon
+		timeoutTimer = new Timer();
 		Calendar cal = Calendar.getInstance();
 		cal.add(Calendar.MINUTE, cal.get(Calendar.MINUTE) % 5);
 		Date start = cal.getTime();
@@ -61,8 +60,7 @@ public class QuartzInitServletContextListener implements ServletContextListener 
 	}
 
 	private void scheduleDailyInitJob(ServletContextEvent sce) {
-		dailyTimer = new Timer();// The timer thread needs to be a
-									// daemon
+		dailyTimer = new Timer();
 		try {
 			scheduler = (new StdSchedulerFactory()).getScheduler();
 			scheduler.start();
@@ -77,7 +75,7 @@ public class QuartzInitServletContextListener implements ServletContextListener 
 									// ambiguity
 		cal.set(Calendar.SECOND, 0);
 		cal.set(Calendar.MILLISECOND, 0);
-		//cal.add(Calendar.MINUTE, 5); // Can be used for development to schedule
+		//cal.add(Calendar.SECOND, 20); // Can be used for development to schedule
 										// immediately rather then at 12:05
 		Date midnightDate = cal.getTime();
 		dailyTimer.scheduleAtFixedRate(new DailyInitTask(sce, scheduler),

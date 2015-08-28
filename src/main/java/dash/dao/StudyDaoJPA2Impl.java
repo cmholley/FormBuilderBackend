@@ -150,7 +150,7 @@ public class StudyDaoJPA2Impl implements StudyDao {
 				+ "VALUES (:id, :expirationDate)";
 		SQLQuery query = session.createSQLQuery(queryString);
 		query.setLong("id", id);
-		query.setDate("expiratoinDate", expirationDate);
+		query.setDate("expirationDate", expirationDate);
 	}
 
 	@Override

@@ -380,4 +380,22 @@ public class UserServiceDbAccessImpl extends ApplicationObjectSupport implements
 		copyAllProperties(verifyUser, user);
 		userDao.updateUser(new UserEntity(verifyUser));
 	}
+
+	@Transactional
+	@Override
+	public void updateUserJob(User user) throws AppException {
+		User verifyUserExistenceById = verifyUserExistenceById(user.getId());
+		if (verifyUserExistenceById == null) {
+			throw new AppException(
+					Response.Status.NOT_FOUND.getStatusCode(),
+					404,
+					"The resource you are trying to update does not exist in the database",
+					"Please verify existence of data in the database for the id - "
+							+ user.getId(), AppConstants.DASH_POST_URL);
+		}
+
+		copyAllProperties(verifyUserExistenceById, user);
+		userDao.updateUser(new UserEntity(verifyUserExistenceById));
+		
+	}
 }

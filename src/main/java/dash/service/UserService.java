@@ -85,4 +85,9 @@ public interface UserService {
 	public User getUserByName(String username);
 
 	public void removeActiveStudy(Long removeActiveStudy, User user);
+	
+	//This method is insecure and should not be used outside of the StudyJob class
+	//It's purpose is to allow the study job to make calls to the service layer
+	//Without worrying about the permissions filtering
+	public void updateUserJob(User use) throws AppException;
 }

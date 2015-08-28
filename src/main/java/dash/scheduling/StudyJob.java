@@ -7,14 +7,13 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.quartz.QuartzJobBean;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
-import dash.dao.UserDao;
-import dash.dao.UserEntity;
 import dash.errorhandling.AppException;
 import dash.pojo.Study;
+import dash.pojo.User;
 import dash.service.StudyService;
+import dash.service.UserService;
 
 public class StudyJob extends QuartzJobBean{
 	private Set<String> participants;
@@ -22,17 +21,16 @@ public class StudyJob extends QuartzJobBean{
 	private long studyId;
 	
 	@Autowired
-	private UserDao userDao;
+	private UserService userService;
 	
 	@Autowired
-	StudyService studyService;
+	private StudyService studyService;
 	
-	@Transactional
 	public void executeInternal(JobExecutionContext arg0)
 			throws JobExecutionException {
 		
 		SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
-		UserEntity user;
+		User user;
 		Study study = null;
 		try {
 			study = studyService.getStudyById(studyId);
@@ -45,22 +43,27 @@ public class StudyJob extends QuartzJobBean{
 		}
 		participants = study.getParticipants();
 		for(String participant : participants){
-			user = userDao.getUserByName(participant) ;
+			user = userService.getUserByName(participant) ;
 			Map<Long, Long> activeStudies = user.getActiveStudies();
 			activeStudies.put(studyId, formId);
 			user.setActiveStudies(activeStudies);
-			userDao.updateUser(user);
+			try {
+				userService.updateUserJob(user);
+			} catch (AppException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			//TODO: User preferences
 			switch(user.getNotificationPreference()){
 			case EMAIL:
-				sendNotificationEmail(user.getUsername());
+				//sendNotificationEmail(user.getUsername());
 				break;
 			case TEXT:
 				sendTextNotification(user.getCellPhone());
 				break;
 			case BOTH:
 				sendTextNotification(user.getCellPhone());
-				sendNotificationEmail(user.getUsername());
+				//sendNotificationEmail(user.getUsername());
 				break;
 			}
 		}

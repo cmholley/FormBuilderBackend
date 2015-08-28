@@ -91,7 +91,7 @@ public interface FormResponseService {
 
 
 	@PreAuthorize("hasPermission(#formResponse, 'delete') or hasPermission(#form, "
-			+ "'DELETE_RESPONSES	') or hasRole('ROLE_ADMIN')")
+			+ "'DELETE_RESPONSES') or hasRole('ROLE_ADMIN')")
 	public void deleteFormResponse(FormResponse formResponse, Form form);
 	/** removes all formResponses
 	 * DO NOT USE, IMPROPERLY UPDATES ACL_OBJECT table

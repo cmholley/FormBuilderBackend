@@ -350,23 +350,46 @@ public class StudyServiceDbAccessImpl extends ApplicationObjectSupport
 		
 	}
 
-	/*
-	phonenumber@txt.att.net
-	 * */
 	
 	@Override
 	public void sendTextNotification(String cellPhone, long formId, long studyId) {
 		SimpleMailMessage msg = new SimpleMailMessage(this.templateMessage);
 		msg.setFrom("NOREPLY@Housuggest.org");
-		msg.setTo(cellPhone + "@txt.att.net");
+		setTextAddresses(cellPhone, msg);
 		msg.setSubject("Scheduling Test");
-		msg.setText("You have a survey to complete. Please go to **** or your"
-				+ " EMA App, the survey will be active"); 
+		msg.setText("You have a survey to complete. Please go to www.housuggest.org/FormViewer or your"
+				+ " EMA App to fill out the survey."); 
 		try {
 			this.mailSender.send(msg);
 		} catch (MailException ex) {
 			System.err.println(ex.getMessage()); 
 		}
+	}
+	
+	/**
+	 * 
+	 * @param cellPhone
+	 * @param msg
+	 * This private function sets the to field of the message to the various 
+	 * emails for sms through email for different carriers. Since each phone number
+	 * is unique regardless of carrier, only one should go through using the proper carrier
+	 * 
+	 */
+	private void setTextAddresses(String cellPhone, SimpleMailMessage msg){
+		List<String> addresses = new ArrayList<String>();
+		addresses.add(cellPhone + "@email.uscc.net");//US Cellular
+		addresses.add(cellPhone + "@tms.suncom.com");//SunCom
+		addresses.add(cellPhone + "@ptel.net");//Powertel
+		addresses.add(cellPhone + "@txt.att.net");//AT&T
+		addresses.add(cellPhone + "@message.alltel.com");//Alltel
+		addresses.add(cellPhone + "@MyMetroPcs.com");//Metro PCS
+		addresses.add(cellPhone + "@tmomail.net");//T-Mobile
+		addresses.add(cellPhone + "@vmobl.com");//Virgin Mobile
+		addresses.add(cellPhone + "@cingularme.com");//Cingular
+		addresses.add(cellPhone + "@messaging.sprintpcs.com");//Sprint
+		addresses.add(cellPhone + "@vtext.com");//Verizon
+		addresses.add(cellPhone + "@messaging.nextel.com");//Nextel
+		msg.setTo(addresses.toArray(new String[0]));
 	}
 
 	@Override
