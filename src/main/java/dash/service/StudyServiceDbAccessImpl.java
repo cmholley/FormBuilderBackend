@@ -340,7 +340,7 @@ public class StudyServiceDbAccessImpl extends ApplicationObjectSupport
 		msg.setFrom("NOREPLY@Housuggest.org");
 		msg.setTo(email);
 		msg.setSubject("You have a survey to complete");
-		msg.setText("You have a survey to complete. Please go to **** or your"
+		msg.setText("You have a survey to complete. Please go to www.housuggest.org/FormViewer or your"
 				+ " EMA App, the survey will be active"); 
 		try {
 			this.mailSender.send(msg);
