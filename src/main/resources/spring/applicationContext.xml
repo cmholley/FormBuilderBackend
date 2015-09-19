@@ -33,6 +33,11 @@
 				<property name="databasePlatform" value="org.hibernate.dialect.MySQLDialect" />
 			</bean>
 		</property>
+		<property name="jpaProperties">
+			<props>
+				<prop key="hibernate.hbm2ddl.auto">update</prop>
+			</props>
+		</property>
 	</bean>
 
 
@@ -41,13 +46,11 @@
 		<property name="host" value="localhost" />
 		<property name="port" value="25" />
 		<property name="protocol" value="smtp" />
-
 		<property name="javaMailProperties">
 			<props>
 				<prop key="mail.smtps.auth">false</prop>
 				<prop key="mail.smtp.ssl.enable">false</prop>
 				<prop key="mail.transport.protocol">smtp</prop>
-
 			</props>
 		</property>
 	</bean>
@@ -73,5 +76,4 @@
 		<property name="jndiName" value="java:comp/env/jdbc/dashDB" />
 		<property name="resourceRef" value="true" />
 	</bean>
-
 </beans>

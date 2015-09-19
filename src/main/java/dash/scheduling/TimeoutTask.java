@@ -20,13 +20,16 @@ public class TimeoutTask extends TimerTask {
 
 	@Override
 	public void run() {
+		//Gets the current spring context to retrieve the StudyService bean
 		ApplicationContext springContext = WebApplicationContextUtils
 				.getRequiredWebApplicationContext(servletContextEvent
 						.getServletContext());
+		//Retrieves the study service bean
 		AutowireCapableBeanFactory factory = springContext
 				.getAutowireCapableBeanFactory();
 		StudyService studyService = (StudyService) factory
 				.getBean(StudyService.class);
+		
 		studyService.expireStudies();
 	}
 

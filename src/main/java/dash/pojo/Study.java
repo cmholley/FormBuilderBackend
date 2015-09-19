@@ -63,6 +63,7 @@ public class Study implements IAclObject {
 	@XmlElement(name = "studyName")
 	private String studyName;
 	
+	//The number of hours after the study is made active before it expires
 	@XmlElement (name = "expirationTime")
 	private Integer expirationTime;
 	

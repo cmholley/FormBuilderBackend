@@ -217,7 +217,7 @@ public class StudyResource {
 	public Response deleteStudy(@PathParam("id") Long id)
 			throws AppException {
 		Study study = studyService.verifyStudyExistenceById(id);
-		Form form = formService.getFormById(id);
+		Form form = formService.getFormById(study.getFormId());
 		studyService.deleteStudy(study, form);
 		return Response.status(Response.Status.NO_CONTENT)// 204
 				.entity("Study successfully removed from database").build();
