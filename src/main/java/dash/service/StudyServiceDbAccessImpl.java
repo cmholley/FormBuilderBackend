@@ -427,4 +427,5 @@ public class StudyServiceDbAccessImpl extends ApplicationObjectSupport
 			userService.updatePartiallyUser(user);
 		}
 	}
+	
 }
