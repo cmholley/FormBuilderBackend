@@ -160,7 +160,9 @@ public class FormResponseResource {
 			@QueryParam("numberOfFormResponses")@DefaultValue("25") int numberOfFormResponses,
 			@QueryParam("page") @DefaultValue("1") int page) throws IOException,
 			AppException {
-		List<FormResponse> formResponsesByFormId= formResponseService.getFormResponsesByFormId(id, numberOfFormResponses, page, formService.getFormById(id));
+		List<FormResponse> formResponsesByFormId= formResponseService.
+				getFormResponsesByFormId(id, numberOfFormResponses, page, 
+						formService.getFormById(id));
 		return formResponsesByFormId;
 	}
 	
