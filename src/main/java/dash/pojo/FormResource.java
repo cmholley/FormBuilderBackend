@@ -82,6 +82,8 @@ public class FormResource {
 				.entity("A new form has been created at index")
 				.header("Location", String.valueOf(createFormId))
 				.header("ObjectId", String.valueOf(createFormId))
+				.header("Access-Control-Allow-Headers", "Cache-Control, Pragma, Origin, Authorization, "
+						+ "Content-Type, X-Requested-With, X-XSRF-TOKEN, ObjectId, Location")
 				.build();
 	}
 
