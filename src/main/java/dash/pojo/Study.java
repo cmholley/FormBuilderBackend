@@ -4,6 +4,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
@@ -23,34 +24,6 @@ import dash.security.IAclObject;
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Study implements IAclObject {
-	public static enum TIMERANGE{
-				MORNING, AFTERNOON, EVENING, NIGHT;
-				
-				public static String getRandomTimeString(TIMERANGE range){
-					String timeString = "";
-					Random rn = new Random();
-					int second = 0;
-					int minute = rn.nextInt(60);
-					int hour = 0;
-					
-					switch(range){
-					case MORNING://6-11
-						hour = (rn.nextInt(6)  + 6);
-						break;
-					case AFTERNOON://12-16
-						hour = (rn.nextInt(5) + 12);
-						break;
-					case EVENING://17-20
-						hour = (rn.nextInt(4) + 17);
-						break;
-					case NIGHT://20-23
-						hour = (rn.nextInt(4) + 20);
-						break;				
-					}
-					timeString += (second + " " + minute + " " + hour + " ");					
-					return timeString;
-				}
-	};
 	
 	@XmlElement(name = "id")
 	private Long id;
@@ -72,10 +45,7 @@ public class Study implements IAclObject {
 	
 	@XmlElement(name = "fixedTimes")
 	@XmlJavaTypeAdapter(DateISO8601Adapter.class)
-	private Set<Date> fixedTimes;
-	
-	@XmlElement(name = "ranges")
-	private Set<TIMERANGE> ranges;
+	private Set<Date> fixedTimes = new HashSet<Date>();
 	
 	@XmlElement(name = "startDate")
 	@XmlJavaTypeAdapter(DateISO8601Adapter.class)
@@ -121,25 +91,6 @@ public class Study implements IAclObject {
 		}
 	}
 	
-	public Study(Set<String> participants, Set<Date> fixedTimes,
-			Set<TIMERANGE> ranges, Date startDate, Date endDate,
-			boolean sunday, boolean monday, boolean tuesday, boolean wednesday,
-			boolean thursday, boolean friday, boolean saturday, long formId) {
-		super();
-		this.participants = participants;
-		this.fixedTimes = fixedTimes;
-		this.ranges = ranges;
-		this.startDate = startDate;
-		this.endDate = endDate;
-		this.sunday = sunday;
-		this.monday = monday;
-		this.tuesday = tuesday;
-		this.wednesday = wednesday;
-		this.thursday = thursday;
-		this.friday = friday;
-		this.saturday = saturday;
-		this.formId = formId;
-	}
 	
 	public Study(){
 		
@@ -197,12 +148,6 @@ public class Study implements IAclObject {
 			cronString += dateString;
 			cronStrings.add(cronString);
 		}
-		for(TIMERANGE range : ranges){
-			cronString = "";
-			cronString += TIMERANGE.getRandomTimeString(range);
-			cronString += dateString;
-			cronStrings.add(cronString);
-		}
 		return cronStrings;
 	}
 	
@@ -220,14 +165,6 @@ public class Study implements IAclObject {
 
 	public void setFixedTimes(Set<Date> fixedTimes) {
 		this.fixedTimes = fixedTimes;
-	}
-
-	public Set<TIMERANGE> getRanges() {
-		return ranges;
-	}
-
-	public void setRanges(Set<TIMERANGE> ranges) {
-		this.ranges = ranges;
 	}
 
 	public Date getStartDate() {

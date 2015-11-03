@@ -86,7 +86,7 @@ public class StudyDaoJPA2Impl implements StudyDao {
 	@Override
 	public void updateStudy(StudyEntity study) {
 		// TODO think about partial update and full update
-		entityManager.persist(study);
+		entityManager.merge(study);
 	}
 
 	@Override

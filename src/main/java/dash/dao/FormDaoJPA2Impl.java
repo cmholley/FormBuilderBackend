@@ -11,14 +11,11 @@ import javax.persistence.TypedQuery;
 
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.cfg.Configuration;
-import org.hibernate.service.ServiceRegistry;
-import org.hibernate.service.ServiceRegistryBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import dash.pojo.Form;
 
@@ -113,15 +110,10 @@ public class FormDaoJPA2Impl implements FormDao {
 
 	@SuppressWarnings({ "unchecked" })
 	@Override
+	@Transactional//Must be transactional to unwrap the session for Native SQL
 	public List<Object[]> getMyForms(int numberOfForms, Long startIndex) {
 		try {
-			Configuration configuration = new Configuration().configure();
-			ServiceRegistry serviceRegistry = new ServiceRegistryBuilder()
-					.applySettings(configuration.getProperties())
-					.buildServiceRegistry();
-			SessionFactory sessionFactory = configuration
-					.buildSessionFactory(serviceRegistry);
-			Session session = sessionFactory.openSession();
+			Session session = entityManager.unwrap(Session.class);
 			String queryString = "SELECT acl_entry.mask, acl_object_identity.object_id_identity "
 					+ "FROM acl_entry JOIN acl_object_identity "
 					+ "ON acl_entry.acl_object_identity = acl_object_identity.id JOIN acl_sid "
@@ -142,15 +134,10 @@ public class FormDaoJPA2Impl implements FormDao {
 
 	@SuppressWarnings("unchecked")
 	@Override
+	@Transactional//Must be transactional to unwrap the session for Native SQL
 	public List<Object[]> getPermissionsForm(long id) {
 		try {
-			Configuration configuration = new Configuration().configure();
-			ServiceRegistry serviceRegistry = new ServiceRegistryBuilder()
-					.applySettings(configuration.getProperties())
-					.buildServiceRegistry();
-			SessionFactory sessionFactory = configuration
-					.buildSessionFactory(serviceRegistry);
-			Session session = sessionFactory.openSession();
+			Session session = entityManager.unwrap(Session.class);
 			String queryString = "SELECT acl_entry.mask, acl_sid.sid FROM acl_entry "
 					+ "JOIN acl_object_identity ON acl_entry.acl_object_identity = acl_object_identity.id "
 					+ "JOIN acl_sid ON acl_sid.id = acl_entry.sid "
