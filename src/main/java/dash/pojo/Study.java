@@ -6,7 +6,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Random;
 import java.util.Set;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -18,6 +17,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.apache.commons.beanutils.BeanUtils;
 
 import dash.dao.StudyEntity;
+import dash.helpers.CalendarISO8601Adapter;
 import dash.helpers.DateISO8601Adapter;
 import dash.security.IAclObject;
 
@@ -44,8 +44,8 @@ public class Study implements IAclObject {
 	private Set<String> participants;
 	
 	@XmlElement(name = "fixedTimes")
-	@XmlJavaTypeAdapter(DateISO8601Adapter.class)
-	private Set<Date> fixedTimes = new HashSet<Date>();
+	@XmlJavaTypeAdapter(CalendarISO8601Adapter.class)
+	private Set<Calendar> fixedTimes = new HashSet<Calendar>();
 	
 	@XmlElement(name = "startDate")
 	@XmlJavaTypeAdapter(DateISO8601Adapter.class)
@@ -136,8 +136,8 @@ public class Study implements IAclObject {
 			dateString += start.get(Calendar.YEAR);
 		else
 			dateString += (start.get(Calendar.YEAR) + "-" + end.get(Calendar.YEAR));
-		for(Date time : fixedTimes){
-			cal.setTime(time);
+		for(Calendar time : fixedTimes){
+			cal = time;
 			cronString = "";
 			cronString += cal.get(Calendar.SECOND);
 			cronString += " ";
@@ -159,11 +159,11 @@ public class Study implements IAclObject {
 		this.participants = participants;
 	}
 
-	public Set<Date> getFixedTimes() {
+	public Set<Calendar> getFixedTimes() {
 		return fixedTimes;
 	}
 
-	public void setFixedTimes(Set<Date> fixedTimes) {
+	public void setFixedTimes(Set<Calendar> fixedTimes) {
 		this.fixedTimes = fixedTimes;
 	}
 

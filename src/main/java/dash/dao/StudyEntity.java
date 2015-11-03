@@ -2,6 +2,7 @@ package dash.dao;
 
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -38,10 +39,9 @@ public class StudyEntity implements Serializable {
 	@CollectionTable(name = "participants", joinColumns = {@JoinColumn(name="study_id")})
 	private Set<String> Participants;
 	
-	@ElementCollection (fetch= FetchType.LAZY)
+	@ElementCollection (fetch= FetchType.EAGER)
 	@CollectionTable(name = "fixed_times", joinColumns = {@JoinColumn(name="study_id")})
-	private Set<Date> fixedTimes = new HashSet<Date>();;
-	
+	private Set<Calendar> fixedTimes = new HashSet<Calendar>();;
 	
 	@Column(name = "start_Date")
 	private Date startDate;
@@ -103,11 +103,11 @@ public class StudyEntity implements Serializable {
 		Participants = participants;
 	}
 
-	public Set<Date> getFixedTimes() {
+	public Set<Calendar> getFixedTimes() {
 		return fixedTimes;
 	}
 
-	public void setFixedTimes(Set<Date> fixedTimes) {
+	public void setFixedTimes(Set<Calendar> fixedTimes) {
 		this.fixedTimes = fixedTimes;
 	}
 
