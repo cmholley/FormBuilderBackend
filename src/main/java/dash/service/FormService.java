@@ -90,12 +90,14 @@ public interface FormService {
 	/*
 	 * ******************** Permission related methods **********************
 	 */
-
-	public void addPermission(User user, Form form, String perission);
+	@PreAuthorize("hasPermission(#form, 'DELETE') or hasRole('ROLE_ADMIN')")
+	public void updatePermission(User user, Form form, String permissionRole);
 	
-	public void deletePermission(User user, Form form, String perission);
+	@PreAuthorize("hasPermission(#form, 'DELETE') or hasRole('ROLE_ADMIN')")
+	public void deleteAllPermissions(User user, Form form);
 	
-	public HashMap<String, List<Integer>> getPermissionsForm(long id);
+	@PreAuthorize("hasPermission(#form, 'DELETE') or hasRole('ROLE_ADMIN')")
+	public HashMap<String, String> getPermissionsForm(Form form);
 	
 	/*
 	 * ******************** Delete related methods **********************
@@ -110,7 +112,7 @@ public interface FormService {
 	 * but they will take up space if this is commonly used */
 	@PreAuthorize("hasRole('ROLE_ROOT')")
 	public void deleteForms();
-	
+		
 	
 	/*
 	 * ******************** Helper methods **********************
@@ -122,5 +124,4 @@ public interface FormService {
 
 	public int getNumberOfForms();
 
-	public void updatePermission(User user, Form form, List<String> permissions);
 }

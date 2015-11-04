@@ -167,7 +167,7 @@ public class FormResource {
 		Form formById = formService
 				.getFormById(id);
 		if(permissions){
-			HashMap<String, List<Integer>> permissionsMap = formService.getPermissionsForm(id);
+			HashMap<String, String> permissionsMap = formService.getPermissionsForm(formById);
 			formById.setPermissions(permissionsMap);
 		}
 		return Response.status(200)
@@ -268,40 +268,19 @@ public class FormResource {
 	// Permissions**************************
 	
 	@POST
-	@Path("{id}/PERMISSION/{username}")
+	@Path("{formId}/PERMISSION")
 	@Produces({ MediaType.TEXT_HTML })
-	public Response updatePermission(@PathParam("username") String username,
-			@PathParam("id") Long id, @QueryParam("permissions") List<String> permissions) throws AppException {
+	public Response updatePermission(@QueryParam("username") String username,
+			@PathParam("formId") Long formId, @QueryParam("permissionRole") String permissionRole) throws AppException {
 		User user = userService.getUserByName(username);
 		if(user != null) {
-			Form form = formService.getFormById(id);
-			formService.updatePermission(user, form, permissions);
+			Form form = formService.getFormById(formId);
+			formService.updatePermission(user, form, permissionRole);
 			return Response
 				.status(Response.Status.OK)
 				.entity("PERMISSION UPDATED: User " + user.getUsername()
-						+ " given permission " + permissions + " for form "
+						+ " given permission role " + permissionRole + " for form "
 						+ form.getId()).build();
-		} else {
-			return Response.
-					status(Response.Status.NOT_FOUND)
-					.entity("USER NOT FOUND!").build();
-		}
-	}
-	
-	@POST
-	@Path("{id}/PERMISSIONADD/{user}/{permission}")
-	@Produces({ MediaType.TEXT_HTML })
-	public Response addPermission(@PathParam("user") Long userId,
-			@PathParam("id") Long id, @PathParam("permission") String permission) throws AppException {
-		User user = userService.getUserById(userId);
-		if(user != null) {
-			Form form = formService.getFormById(id);
-			formService.addPermission(user, form, permission);
-			return Response
-					.status(Response.Status.OK)
-					.entity("PERMISSION ADDED: User " + user.getUsername()
-							+ " given permission " + permission + " for form "
-							+ form.getId()).build();
 		} else {
 			return Response.
 					status(Response.Status.NOT_FOUND)
@@ -310,17 +289,18 @@ public class FormResource {
 	}
 	
 	@DELETE
-	@Path("{id}/PERMISSION/{user}/{permission}")
+	@Path("{id}/PERMISSION/")
 	@Produces({ MediaType.TEXT_HTML })
-	public Response deletePermission(@PathParam("user") Long userId,
-			@PathParam("id") Long id, @PathParam("permission") String permission) throws AppException {
-		User user = userService.getUserById(userId);
-		Form form = formService.getFormById(id);
-		formService.deletePermission(user, form, permission);
+	public Response deleteAllPermissions(@QueryParam("username") String username,
+			@PathParam("formId") Long formId) throws AppException {
+		User user = userService.getUserByName(username);
+		Form form = formService.getFormById(formId);
+		formService.deleteAllPermissions(user, form);
 		return Response
 				.status(Response.Status.OK)
-				.entity("PERMISSION ADDED: User " + user.getUsername()
-						+ " given permission " + permission + " for form "
+				.entity("PERMISSIONS DELETED: User " + user.getUsername()
+						+ "has had all permissions removed for form "
 						+ form.getId()).build();
 	}
+	
 }

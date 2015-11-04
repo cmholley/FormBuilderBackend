@@ -3,7 +3,6 @@ package dash.service;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigInteger;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -39,8 +38,7 @@ import dash.security.GenericAclController;
  *
  */
 @Component("formService")
-public class FormServiceDbAccessImpl extends ApplicationObjectSupport implements
-		FormService {
+public class FormServiceDbAccessImpl extends ApplicationObjectSupport implements FormService {
 
 	@Autowired
 	FormDao formDao;
@@ -48,7 +46,9 @@ public class FormServiceDbAccessImpl extends ApplicationObjectSupport implements
 	@Autowired
 	private GenericAclController<Form> aclController;
 
-	/********************* Create related methods implementation ***********************/
+	/*********************
+	 * Create related methods implementation
+	 ***********************/
 	@Override
 	@Transactional
 	public Long createForm(Form form) throws AppException {
@@ -75,16 +75,14 @@ public class FormServiceDbAccessImpl extends ApplicationObjectSupport implements
 	// ******************** Read related methods implementation
 	// **********************
 	@Override
-	public List<Form> getForms(int numberOfForms, Long startIndex)
-			throws AppException {
+	public List<Form> getForms(int numberOfForms, Long startIndex) throws AppException {
 
 		List<FormEntity> forms = formDao.getForms(numberOfForms, startIndex);
 		return getFormsFromEntities(forms);
 	}
 
 	@Override
-	public LinkedHashMap<Form, List<Integer>> getMyForms(int numberOfForms,
-			Long startIndex) throws AppException {
+	public LinkedHashMap<Form, List<Integer>> getMyForms(int numberOfForms, Long startIndex) throws AppException {
 
 		// A lookup in the ACL tables to compile a list of all objects where the
 		// user has
@@ -92,8 +90,7 @@ public class FormServiceDbAccessImpl extends ApplicationObjectSupport implements
 		// collection
 		// of only those objects.
 		// return getForms(numberOfForms, startIndex);
-		List<Object[]> resultList = formDao.getMyForms(numberOfForms,
-				startIndex);
+		List<Object[]> resultList = formDao.getMyForms(numberOfForms, startIndex);
 		LinkedHashMap<Long, List<Integer>> formIds = new LinkedHashMap<Long, List<Integer>>();
 		long formId = -1;
 		List<Integer> permissionsTemp = new ArrayList<Integer>();
@@ -132,11 +129,10 @@ public class FormServiceDbAccessImpl extends ApplicationObjectSupport implements
 	public Form getFormById(Long id) throws AppException {
 		FormEntity formById = formDao.getFormById(id);
 		if (formById == null) {
-			throw new AppException(Response.Status.NOT_FOUND.getStatusCode(),
-					404, "The form you requested with id " + id
-							+ " was not found in the database",
-					"Verify the existence of the form with the id " + id
-							+ " in the database", AppConstants.DASH_POST_URL);
+			throw new AppException(Response.Status.NOT_FOUND.getStatusCode(), 404,
+					"The form you requested with id " + id + " was not found in the database",
+					"Verify the existence of the form with the id " + id + " in the database",
+					AppConstants.DASH_POST_URL);
 		}
 
 		return new Form(formDao.getFormById(id));
@@ -166,7 +162,9 @@ public class FormServiceDbAccessImpl extends ApplicationObjectSupport implements
 
 	}
 
-	/********************* UPDATE-related methods implementation ***********************/
+	/*********************
+	 * UPDATE-related methods implementation
+	 ***********************/
 
 	@Override
 	@Transactional
@@ -174,12 +172,10 @@ public class FormServiceDbAccessImpl extends ApplicationObjectSupport implements
 
 		Form verifyFormExistenceById = verifyFormExistenceById(form.getId());
 		if (verifyFormExistenceById == null) {
-			throw new AppException(
-					Response.Status.NOT_FOUND.getStatusCode(),
-					404,
+			throw new AppException(Response.Status.NOT_FOUND.getStatusCode(), 404,
 					"The resource you are trying to update does not exist in the database",
-					"Please verify existence of data in the database for the id - "
-							+ form.getId(), AppConstants.DASH_POST_URL);
+					"Please verify existence of data in the database for the id - " + form.getId(),
+					AppConstants.DASH_POST_URL);
 		}
 		copyAllProperties(verifyFormExistenceById, form);
 
@@ -208,7 +204,9 @@ public class FormServiceDbAccessImpl extends ApplicationObjectSupport implements
 
 	}
 
-	/********************* DELETE-related methods implementation ***********************/
+	/*********************
+	 * DELETE-related methods implementation
+	 ***********************/
 
 	@Override
 	@Transactional
@@ -243,12 +241,10 @@ public class FormServiceDbAccessImpl extends ApplicationObjectSupport implements
 		// do a validation to verify existence of the resource
 		Form verifyFormExistenceById = verifyFormExistenceById(form.getId());
 		if (verifyFormExistenceById == null) {
-			throw new AppException(
-					Response.Status.NOT_FOUND.getStatusCode(),
-					404,
+			throw new AppException(Response.Status.NOT_FOUND.getStatusCode(), 404,
 					"The resource you are trying to update does not exist in the database",
-					"Please verify existence of data in the database for the id - "
-							+ form.getId(), AppConstants.DASH_POST_URL);
+					"Please verify existence of data in the database for the id - " + form.getId(),
+					AppConstants.DASH_POST_URL);
 		}
 		copyPartialProperties(verifyFormExistenceById, form);
 		formDao.updateForm(new FormEntity(verifyFormExistenceById));
@@ -270,52 +266,69 @@ public class FormServiceDbAccessImpl extends ApplicationObjectSupport implements
 
 	}
 
-	/********************* PERMISSION-related methods implementation ***********************/
+	/*********************
+	 * PERMISSION-related methods implementation
+	 ***********************/
 
-	public void addPermission(User user, Form form, String permission) {
-		CustomPermissionFactory factory = new CustomPermissionFactory();
-		Permission permissionObject = factory.buildFromName(permission);
-		aclController.createAce(form, permissionObject,
-				new PrincipalSid(user.getUsername()));
-	}
-
-	public void deletePermission(User user, Form form, String permission) {
-		CustomPermissionFactory factory = new CustomPermissionFactory();
-		Permission permissionObject = factory.buildFromName(permission);
-		aclController.deleteACE(form, permissionObject,
-				new PrincipalSid(user.getUsername()));
-	}
-
+	/**
+	 * Takes a role, and applies the associated permissions with that role
+	 * owner: READ, WRITE, CREATE, DELETE, DELETE_RESPONSES 
+	 * collaborator: READ, WRITE, CREATE 
+	 * response_viewer: READ 
+	 * responder: CREATE
+	 */
 	@Override
-	public void updatePermission(User user, Form form, List<String> permissions) {
-		String[] strArray = { "READ", "WRITE", "DELETE", "CREATE",
-				"DELETE_RESPONSES" };
-		List<String> masterPermissions = new ArrayList<String>(
-				Arrays.asList(strArray));
-		for (String permission : masterPermissions) {
-			if (permissions.contains(permission)) {
-				CustomPermissionFactory factory = new CustomPermissionFactory();
-				Permission permissionObject = factory.buildFromName(permission);
-				aclController.createAce(form, permissionObject,
-						new PrincipalSid(user.getUsername()));
-				System.out.println("Permission Granted: " + permission);
-			} else {
-				CustomPermissionFactory factory = new CustomPermissionFactory();
-				Permission permissionObject = factory.buildFromName(permission);
-				aclController.deleteACE(form, permissionObject,
-						new PrincipalSid(user.getUsername()));
-				System.out.println("Permission Deleted: " + permission);
-			}
+	public void updatePermission(User user, Form form, String permissionRole) {
+		//Create factory and PrincipalSid
+		CustomPermissionFactory factory = new CustomPermissionFactory();
+		PrincipalSid sid = new PrincipalSid(user.getUsername());
+		//Delete all existing permissions
+		aclController.deleteACE(form, factory.buildFromName("READ"), sid);
+		aclController.deleteACE(form, factory.buildFromName("WRITE"), sid);
+		aclController.deleteACE(form, factory.buildFromName("CREATE"), sid);
+		aclController.deleteACE(form, factory.buildFromName("DELETE"), sid);
+		aclController.deleteACE(form, factory.buildFromName("DELETE_RESPONSES"), sid);
+		// Switch applies the new one permissions
+		switch (permissionRole.toLowerCase()) {
+		case ("owner"):
+			aclController.createAce(form, factory.buildFromName("DELETE"), sid);
+			aclController.createAce(form, factory.buildFromName("DELETE_RESPONSES"), sid);
+			// No break because we want it to fall through t the collabrator
+			// case also
+		case ("collabrator"):
+			aclController.createAce(form, factory.buildFromName("READ"), sid);
+			aclController.createAce(form, factory.buildFromName("WRITE"), sid);
+			aclController.createAce(form, factory.buildFromName("CREATE"), sid);
+			break;
+		case ("response_viewer"):
+			aclController.createAce(form, factory.buildFromName("READ"), sid);
+			break;
+		case ("responder"):
+			aclController.createAce(form, factory.buildFromName("CREATE"), sid);
 		}
-
+	}
+	
+	@Override
+	public void deleteAllPermissions(User user, Form form){
+		//Create factory and PrincipalSid
+		CustomPermissionFactory factory = new CustomPermissionFactory();
+		PrincipalSid sid = new PrincipalSid(user.getUsername());
+		//Delete all existing permissions
+		aclController.deleteACE(form, factory.buildFromName("READ"), sid);
+		aclController.deleteACE(form, factory.buildFromName("WRITE"), sid);
+		aclController.deleteACE(form, factory.buildFromName("CREATE"), sid);
+		aclController.deleteACE(form, factory.buildFromName("DELETE"), sid);
+		aclController.deleteACE(form, factory.buildFromName("DELETE_RESPONSES"), sid);
 	}
 
 	@Override
-	public HashMap<String, List<Integer>> getPermissionsForm(long id) {
-		List<Object[]> resultList = formDao.getPermissionsForm(id);
+	public HashMap<String, String> getPermissionsForm(Form form) {
+		List<Object[]> resultList = formDao.getPermissionsForm(form.getId());
 		LinkedHashMap<String, List<Integer>> permissions = new LinkedHashMap<String, List<Integer>>();
 		String username = "";
 		List<Integer> permissionsTemp = new ArrayList<Integer>();
+		// Generates map with usernames as keys and lists of permissions as
+		// values
 		for (Object[] entry : resultList) {
 			if (username.equals("") || !username.equals((String) entry[1])) {
 				if (!username.equals("")) {
@@ -329,7 +342,31 @@ public class FormServiceDbAccessImpl extends ApplicationObjectSupport implements
 		if (!username.equals("")) {
 			permissions.put(username, permissionsTemp);
 		}
-		return permissions;
+		//Assigns a role for every list of masks
+		HashMap<String, String> permissionRoles = new LinkedHashMap<String, String>();
+		String role;
+		for(Entry<String, List<Integer>> entry : permissions.entrySet()){
+			role = "ERROR";
+			List<Integer> values = entry.getValue();
+			List<Integer> comparing = new ArrayList<Integer>();
+			comparing.add(4);//CREATE
+			if(values.containsAll(comparing))//List just holds 4
+				role = "Responder";
+			comparing.clear();
+			comparing.add(1);//READ
+			if(values.containsAll(comparing))
+				role = "Response_Viewer";
+			comparing.add(4);//Re-add CREATE
+			comparing.add(2);//WRITE
+			if(values.containsAll(comparing))
+				role = "Collaborator";
+			comparing.add(8);//DELETE
+			comparing.add(128);//DELETE_RESPONSES
+			if(values.containsAll(comparing))
+				role = "Owner";
+			permissionRoles.put(entry.getKey(), role);
+		}
+		
+		return permissionRoles;
 	}
-
 }

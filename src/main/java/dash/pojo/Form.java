@@ -86,7 +86,7 @@ public class Form implements IAclObject {
 	@XmlElement(name = "closed_message")
 	private String closed_message;
 
-	private HashMap<String, List<Integer>> permissions;
+	private HashMap<String, String> permissions;
 	
 	@XmlElement(name = "confirmation_recipient_email")
 	private String confirmation_recipient_email;
@@ -261,11 +261,11 @@ public class Form implements IAclObject {
 		this.subtitle = subtitle;
 	}
 
-	public HashMap<String, List<Integer>> getPermissions() {
+	public HashMap<String, String> getPermissions() {
 		return permissions;
 	}
 
-	public void setPermissions(HashMap<String, List<Integer>> permissions) {
+	public void setPermissions(HashMap<String, String> permissions) {
 		this.permissions = permissions;
 	}
 	public String getConfirmation_recipient_email() {
