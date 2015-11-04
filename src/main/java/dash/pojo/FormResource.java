@@ -157,15 +157,15 @@ public class FormResource {
 	}
 
 	@GET
-	@Path("{id}")
+	@Path("{formId}")
 	@Produces({ MediaType.APPLICATION_JSON })
-	public Response getFormById(@PathParam("id") Long id,
+	public Response getFormById(@PathParam("formId") Long formId,
 			@QueryParam("detailed") boolean detailed, @QueryParam("permissions") 
 			@DefaultValue("false") boolean permissions) throws IOException,
 			AppException {
 		try{
 		Form formById = formService
-				.getFormById(id);
+				.getFormById(formId);
 		if(permissions){
 			HashMap<String, String> permissionsMap = formService.getPermissionsForm(formById);
 			formById.setPermissions(permissionsMap);
@@ -175,7 +175,7 @@ public class FormResource {
 				}).header("Access-Control-Allow-Headers", "X-extra-header")
 				.allow("OPTIONS").build();
 		}catch(AccessDeniedException e){
-			Form formData = formService.verifyFormExistenceById(id);
+			Form formData = formService.verifyFormExistenceById(formId);
 			formData.setQuestions(null);			
 			return Response.status(Status.UNAUTHORIZED)
 					.entity(new GenericEntity<Form>(formData) {
@@ -204,14 +204,14 @@ public class FormResource {
 	 * @throws AppException
 	 */
 	@PUT
-	@Path("{id}")
+	@Path("{formId}")
 	@Consumes({ MediaType.APPLICATION_JSON })
 	@Produces({ MediaType.TEXT_HTML })
-	public Response putFormById(@PathParam("id") Long id,
+	public Response putFormById(@PathParam("formId") Long formId,
 			Form form) throws AppException {
 
 		Form formById = formService
-				.verifyFormExistenceById(id);
+				.verifyFormExistenceById(formId);
 
 		if (formById == null) {
 			// resource not existent yet, and should be created under the
@@ -231,18 +231,18 @@ public class FormResource {
 					.status(Response.Status.OK)
 					// 200
 					.entity("The form you specified has been fully updated created AT THE LOCATION you specified")
-					.header("Location", String.valueOf(id)).build();
+					.header("Location", String.valueOf(formId)).build();
 		}
 	}
 
 	// PARTIAL update
 	@POST
-	@Path("{id}")
+	@Path("{formId}")
 	@Consumes({ MediaType.APPLICATION_JSON })
 	@Produces({ MediaType.TEXT_HTML })
-	public Response partialUpdateForm(@PathParam("id") Long id,
+	public Response partialUpdateForm(@PathParam("formId") Long formId,
 			Form form) throws AppException {
-		form.setId(id);
+		form.setId(formId);
 		formService.updatePartiallyForm(form);
 		return Response
 				.status(Response.Status.OK)
@@ -252,13 +252,11 @@ public class FormResource {
 	}
 	
 	@DELETE
-	@Path("{id}")
+	@Path("{formId}")
 	@Produces({ MediaType.TEXT_HTML })
-	public Response deletePost(@PathParam("id") Long id)
+	public Response deletePost(@PathParam("formId") Long formId)
 			throws AppException {
-		Form form = formService.verifyFormExistenceById(id);
-		
-		
+		Form form = formService.verifyFormExistenceById(formId);
 		formService.deleteForm(form);
 		return Response.status(Response.Status.NO_CONTENT)// 204
 				.entity("Form successfully removed from database").build();
@@ -289,7 +287,7 @@ public class FormResource {
 	}
 	
 	@DELETE
-	@Path("{id}/PERMISSION/")
+	@Path("{formId}/PERMISSION")
 	@Produces({ MediaType.TEXT_HTML })
 	public Response deleteAllPermissions(@QueryParam("username") String username,
 			@PathParam("formId") Long formId) throws AppException {

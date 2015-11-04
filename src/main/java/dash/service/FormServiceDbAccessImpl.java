@@ -351,19 +351,19 @@ public class FormServiceDbAccessImpl extends ApplicationObjectSupport implements
 			List<Integer> comparing = new ArrayList<Integer>();
 			comparing.add(4);//CREATE
 			if(values.containsAll(comparing))//List just holds 4
-				role = "Responder";
+				role = "responder";
 			comparing.clear();
 			comparing.add(1);//READ
 			if(values.containsAll(comparing))
-				role = "Response_Viewer";
+				role = "response_viewer";
 			comparing.add(4);//Re-add CREATE
 			comparing.add(2);//WRITE
 			if(values.containsAll(comparing))
-				role = "Collaborator";
+				role = "collaborator";
 			comparing.add(8);//DELETE
 			comparing.add(128);//DELETE_RESPONSES
 			if(values.containsAll(comparing))
-				role = "Owner";
+				role = "owner";
 			permissionRoles.put(entry.getKey(), role);
 		}
 		
