@@ -91,7 +91,7 @@ public interface FormService {
 	 * ******************** Permission related methods **********************
 	 */
 	@PreAuthorize("hasPermission(#form, 'DELETE') or hasRole('ROLE_ADMIN')")
-	public void updatePermission(User user, Form form, String permissionRole);
+	public void updatePermission(User user, Form form, String permissionRole) throws AppException;
 	
 	@PreAuthorize("hasPermission(#form, 'DELETE') or hasRole('ROLE_ADMIN')")
 	public void deleteAllPermissions(User user, Form form);

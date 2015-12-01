@@ -170,11 +170,12 @@ public class FormResponseResource {
 	@GET
 	@Path("{id}")
 	@Produces({ MediaType.APPLICATION_JSON })
-	public Response getFormResponseById(@PathParam("id") Long id,
+	public Response getFormResponseById(@PathParam("id") Long id, @QueryParam("formId") Long formId,
 			@QueryParam("detailed") boolean detailed) throws IOException,
 			AppException {
+		Form form = formService.getFormById(formId);
 		FormResponse formResponseById = formResponseService
-				.getFormResponseById(id);
+				.getFormResponseById(id, form);
 		return Response.status(200)
 				.entity(new GenericEntity<FormResponse>(formResponseById) {
 				}).header("Access-Control-Allow-Headers", "X-extra-header")
@@ -279,11 +280,13 @@ public class FormResponseResource {
 	public Response uploadFile(
 			@QueryParam("responseId") Long id,
 			@QueryParam("entryId") Long entryId,
+			@QueryParam("formId") Long formId,
 		@FormDataParam("file") InputStream uploadedInputStream,
 		@FormDataParam("file") FormDataContentDisposition fileDetail,
 		@HeaderParam("Content-Length") final long fileSize) throws AppException {
 		
-		FormResponse formResponse= formResponseService.getFormResponseById(id);
+		Form form = formService.getFormById(formId);
+		FormResponse formResponse= formResponseService.getFormResponseById(id, form);
 			
 		String uploadedFileLocation = AppConstants.APPLICATION_UPLOAD_LOCATION_FOLDER+"/"
 				+ formResponse.getDocument_folder()+"/" + entryId +"/" + fileDetail.getFileName().replaceAll("%20", "_").toLowerCase();;
@@ -312,11 +315,13 @@ public class FormResponseResource {
 	//Gets a specific file and allows the user to download the pdf
 	@GET
 	@Path("/download")
-	public Response getFile(@QueryParam("responseId") Long id, 
+	public Response getFile(@QueryParam("responseId") Long id,
+			@QueryParam("formId") Long formId,
 			@QueryParam("entryId") Long entryId,
 			@QueryParam("fileName") String fileName) throws AppException {
 		
-		FormResponse formResponse= formResponseService.getFormResponseById(id);
+		Form form = formService.getFormById(formId);
+		FormResponse formResponse= formResponseService.getFormResponseById(id, form);
 		
 		if(formResponse == null){
 			return Response.status(Response.Status.BAD_REQUEST)
@@ -335,9 +340,11 @@ public class FormResponseResource {
 	public Response deleteUpload(
 			@QueryParam("responseId") Long id,
 			@QueryParam("entryId") Long entryId,
+			@QueryParam("formId") Long formId,
 			@QueryParam("fileName") String fileName) throws AppException{
 		
-		FormResponse formResponse= formResponseService.getFormResponseById(id);
+		Form form = formService.getFormById(formId);
+		FormResponse formResponse= formResponseService.getFormResponseById(id, form);
 		
 		String uploadedFileLocation = AppConstants.APPLICATION_UPLOAD_LOCATION_FOLDER + formResponse.getId()+"/" + fileName;
 		// save it

@@ -276,35 +276,42 @@ public class FormServiceDbAccessImpl extends ApplicationObjectSupport implements
 	 * collaborator: READ, WRITE, CREATE 
 	 * response_viewer: READ 
 	 * responder: CREATE
+	 * @throws AppException 
 	 */
 	@Override
-	public void updatePermission(User user, Form form, String permissionRole) {
+	public void updatePermission(User user, Form form, String permissionRole) throws AppException {
 		//Create factory and PrincipalSid
 		CustomPermissionFactory factory = new CustomPermissionFactory();
 		PrincipalSid sid = new PrincipalSid(user.getUsername());
-		//Delete all existing permissions
-		aclController.deleteACE(form, factory.buildFromName("READ"), sid);
-		aclController.deleteACE(form, factory.buildFromName("WRITE"), sid);
-		aclController.deleteACE(form, factory.buildFromName("CREATE"), sid);
-		aclController.deleteACE(form, factory.buildFromName("DELETE"), sid);
-		aclController.deleteACE(form, factory.buildFromName("DELETE_RESPONSES"), sid);
 		// Switch applies the new one permissions
 		switch (permissionRole.toLowerCase()) {
 		case ("owner"):
+			deleteAllPermissions(user, form);
 			aclController.createAce(form, factory.buildFromName("DELETE"), sid);
 			aclController.createAce(form, factory.buildFromName("DELETE_RESPONSES"), sid);
 			// No break because we want it to fall through t the collabrator
 			// case also
-		case ("collabrator"):
+		case ("collaborator"):
+			deleteAllPermissions(user, form);
 			aclController.createAce(form, factory.buildFromName("READ"), sid);
 			aclController.createAce(form, factory.buildFromName("WRITE"), sid);
 			aclController.createAce(form, factory.buildFromName("CREATE"), sid);
 			break;
 		case ("response_viewer"):
+			deleteAllPermissions(user, form);
 			aclController.createAce(form, factory.buildFromName("READ"), sid);
 			break;
 		case ("responder"):
+			deleteAllPermissions(user, form);
 			aclController.createAce(form, factory.buildFromName("CREATE"), sid);
+			break;
+		default:
+			throw new AppException(
+					Response.Status.FORBIDDEN.getStatusCode(),
+					403,
+					"The permission role you sent is not valid",
+					"Please verify the role", AppConstants.DASH_POST_URL);
+			
 		}
 	}
 	
