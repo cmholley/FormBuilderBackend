@@ -139,18 +139,11 @@ public class StudyDaoJPA2Impl implements StudyDao {
 
 	@Override
 	public void insertExpirationTime(Long id, Date expirationDate) {
-		Configuration configuration = new Configuration().configure();
-		ServiceRegistry serviceRegistry = new ServiceRegistryBuilder()
-				.applySettings(configuration.getProperties())
-				.buildServiceRegistry();
-		SessionFactory sessionFactory = configuration
-				.buildSessionFactory(serviceRegistry);
-		Session session = sessionFactory.openSession();
-		String queryString = "INSERT INTO expirtation_times (study_id, expiration_time) "
-				+ "VALUES (:id, :expirationDate)";
-		SQLQuery query = session.createSQLQuery(queryString);
-		query.setLong("id", id);
-		query.setDate("expirationDate", expirationDate);
+		Query query = entityManager.createNativeQuery("INSERT INTO expiration_times (study_id, expiration_time) "
+				+ "VALUES (?, ?)");
+		query.setParameter(1, id);
+		query.setParameter(2, expirationDate);
+		query.executeUpdate();
 	}
 
 	@Override
@@ -166,7 +159,7 @@ public class StudyDaoJPA2Impl implements StudyDao {
 		SQLQuery query = session.createSQLQuery(queryString);
 		List<Long> studyIds = new ArrayList<Long>();
 		for(Object object : query.list()){
-			studyIds.add((Long)object);
+			studyIds.add(new Long((int)(object)));
 		}
 		return studyIds;
 	}
@@ -180,11 +173,12 @@ public class StudyDaoJPA2Impl implements StudyDao {
 		SessionFactory sessionFactory = configuration
 				.buildSessionFactory(serviceRegistry);
 		Session session = sessionFactory.openSession();
-		String queryString = "SELECT user_id FROM active_studies WHERE activeStudies KEY = :studyId";
+		String queryString = "SELECT user_id FROM active_studies WHERE activeStudies_KEY = :studyId";
 		SQLQuery query = session.createSQLQuery(queryString);
+		query.setParameter("studyId", studyId);
 		List<Long> userIds = new ArrayList<Long>();
 		for(Object object : query.list()){
-			userIds.add((Long)object);
+			userIds.add(new Long((int)(object)));
 		}
 		return userIds;
 	}

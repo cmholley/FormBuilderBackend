@@ -393,14 +393,16 @@ public class StudyServiceDbAccessImpl extends ApplicationObjectSupport
 	}
 
 	@Override
-	public void insertExpirationTime(Long id, Integer expirationTime) {
+	@Transactional
+	public void insertExpirationTime(Long id, Long expirationTime) {
 		Calendar cal = Calendar.getInstance();
-		cal.add(Calendar.HOUR, expirationTime);
+		cal.add(Calendar.HOUR, expirationTime.intValue());
 		Date expirationDate = cal.getTime();
 		studyDao.insertExpirationTime(id, expirationDate);
 	}
 
 	@Override
+	@Transactional
 	public void expireStudies(){
 		List<Long> expiredStudies = studyDao.getExpiredStudies();
 		for(Long study : expiredStudies){
@@ -424,7 +426,7 @@ public class StudyServiceDbAccessImpl extends ApplicationObjectSupport
 			users.add(userTemp);
 		}
 		for(User user : users){
-			userService.updatePartiallyUser(user);
+			userService.updateUserJob(user);
 		}
 	}
 	

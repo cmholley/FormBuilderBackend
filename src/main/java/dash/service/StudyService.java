@@ -125,7 +125,7 @@ public interface StudyService {
 
 	public void sendTextNotification(String cellPhone, long formId, long studyId);
 
-	public void insertExpirationTime(Long id, Integer integer);
+	public void insertExpirationTime(Long id, Long expirationTime);
 
 	public void expireStudies();
 	

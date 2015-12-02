@@ -6,12 +6,11 @@ import javax.xml.bind.annotation.adapters.XmlAdapter;
 
 public class CalendarISO8601Adapter extends XmlAdapter<String, Calendar> {
 
-	private static final String FORMAT = "yyyy-MM-dd'T'HH:mm";
+	private static final String FORMAT = "yyyy-MM-dd'T'HH:mmZ";
 	private SimpleDateFormat dateFormat;
 
 	public CalendarISO8601Adapter() {
 		super();
-
 		dateFormat = new SimpleDateFormat(FORMAT);
 	}
 

@@ -37,8 +37,8 @@ public class Study implements IAclObject {
 	private String studyName;
 	
 	//The number of hours after the study is made active before it expires
-	@XmlElement (name = "expirationTime")
-	private Integer expirationTime;
+	@XmlElement (name = "duration")
+	private Long duration;
 	
 	@XmlElement(name = "participants")
 	private Set<String> participants;
@@ -272,12 +272,12 @@ public class Study implements IAclObject {
 		this.studyName = studyName;
 	}
 
-	public Integer getExpirationTime() {
-		return expirationTime;
+	public Long getDuration() {
+		return duration;
 	}
 
-	public void setExpirationTime(Integer expirationTime) {
-		this.expirationTime = expirationTime;
+	public void setDuration(Long duration) {
+		this.duration = duration;
 	}
 }
  
