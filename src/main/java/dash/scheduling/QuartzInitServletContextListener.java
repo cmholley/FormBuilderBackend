@@ -43,7 +43,7 @@ public class QuartzInitServletContextListener implements ServletContextListener 
 		// Sleep the thread in order to allow the scheduler and timers
 		// to finish. Prevents errors and memory leaks
 		try {
-			Thread.sleep(1000);
+			Thread.sleep(10000);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

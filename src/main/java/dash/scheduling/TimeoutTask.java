@@ -20,6 +20,12 @@ public class TimeoutTask extends TimerTask {
 
 	@Override
 	public void run() {
+		try {
+			Thread.sleep(10000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		//Gets the current spring context to retrieve the StudyService bean
 		ApplicationContext springContext = WebApplicationContextUtils
 				.getRequiredWebApplicationContext(servletContextEvent

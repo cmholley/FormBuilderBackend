@@ -96,7 +96,7 @@ public interface FormService {
 	@PreAuthorize("hasPermission(#form, 'DELETE') or hasRole('ROLE_ADMIN')")
 	public void deleteAllPermissions(User user, Form form);
 	
-	@PreAuthorize("hasPermission(#form, 'DELETE') or hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasPermission(#form, 'WRITE') or hasRole('ROLE_ADMIN')")
 	public HashMap<String, String> getPermissionsForm(Form form);
 	
 	/*

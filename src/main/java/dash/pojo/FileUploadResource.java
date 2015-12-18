@@ -94,7 +94,9 @@ public class FileUploadResource {
 				// 201
 				.entity("A new fileUpload has been created at index")
 				.header("Location", String.valueOf(createFileUploadId))
-				.header("ObjectId", String.valueOf(createFileUploadId)).build();
+				.header("ObjectId", String.valueOf(createFileUploadId))
+				.header("Access-Control-Expose-Headers", "ObjectId")
+				.build();
 	}
 
 	@DELETE

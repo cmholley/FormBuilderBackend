@@ -289,6 +289,10 @@ public class FormServiceDbAccessImpl extends ApplicationObjectSupport implements
 			deleteAllPermissions(user, form);
 			aclController.createAce(form, factory.buildFromName("DELETE"), sid);
 			aclController.createAce(form, factory.buildFromName("DELETE_RESPONSES"), sid);
+			aclController.createAce(form, factory.buildFromName("READ"), sid);
+			aclController.createAce(form, factory.buildFromName("WRITE"), sid);
+			aclController.createAce(form, factory.buildFromName("CREATE"), sid);
+			break;
 			// No break because we want it to fall through t the collabrator
 			// case also
 		case ("collaborator"):
