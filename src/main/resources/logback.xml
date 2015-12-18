@@ -16,7 +16,7 @@
 		<file>/var/log/tomcat/webapps/formbuilder-backend.log</file>
 		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
       		<!-- rollover daily -->
-			<fileNamePattern>/var/logs/tomcat/webapps/formbuilder-backend-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+			<fileNamePattern>/var/log/tomcat/webapps/formbuilder-backend-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
 			
 			<timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
                 <maxFileSize>5MB</maxFileSize>
