@@ -4,7 +4,9 @@ import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
@@ -17,6 +19,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.Table;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 import org.apache.commons.beanutils.BeanUtils;
 
@@ -43,7 +47,6 @@ public class UserEntity implements Serializable {
 	/** username of the user */
 	@Column(name = "username")
 	private String username;
-
 
 	/** firstname of the user */
 	@Column(name = "firstName")
@@ -86,6 +89,13 @@ public class UserEntity implements Serializable {
 	@Column(name = "insertion_date")
 	private Date insertionDate;
 
+	@Column(name = "is_email_verified")
+	private boolean is_email_verified;
+	
+	@ElementCollection (fetch= FetchType.EAGER)
+	@CollectionTable(name = "validation_tokens", joinColumns = {@JoinColumn(name="user_id")})
+	private Set<ValidationTokenEntity> validation_tokens = new HashSet<ValidationTokenEntity>();
+	
 	public UserEntity(){}
 
 	public UserEntity( String username, 
@@ -220,6 +230,22 @@ public class UserEntity implements Serializable {
 	public void setNotificationPreference(
 			NOTIFICATION_PREFERENCE notificationPreference) {
 		this.notificationPreference = notificationPreference;
+	}
+
+	public boolean isIs_email_verified() {
+		return is_email_verified;
+	}
+
+	public void setIs_email_verified(boolean is_email_verified) {
+		this.is_email_verified = is_email_verified;
+	}
+
+	public Set<ValidationTokenEntity> getValidation_tokens() {
+		return validation_tokens;
+	}
+
+	public void setValidation_tokens(Set<ValidationTokenEntity> validation_tokens) {
+		this.validation_tokens = validation_tokens;
 	}
 
 }

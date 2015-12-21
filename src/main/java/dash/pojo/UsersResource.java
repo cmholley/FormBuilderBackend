@@ -13,9 +13,11 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -310,5 +312,44 @@ public class UsersResource {
 		String username = ((UserDetails)auth.getPrincipal()).getUsername();		
 		User user = userService.getUserByName(username);
 		return user.getActiveStudies();
+	}
+	
+	@GET
+	@Path("{username}/forgotPassword")
+	public Response forgotPassword(@PathParam("username") String username,
+			@Context UriInfo uri) {
+
+		try {
+			User user = userService.getUserByName(username);
+			userService.requestPasswordReset(user, uri);
+		} catch (AppException e) {
+			System.out.print(e.getDeveloperMessage() + "\n" + e.getMessage()
+					+ "\n");
+			e.printStackTrace();
+		}
+
+		return Response
+				.status(Response.Status.OK)
+				.entity("An email has been sent to the address registered to this username.")
+				.build();
+	}
+
+	@GET
+	@Path("{id}/tokenValidation")
+	@Produces({ MediaType.TEXT_HTML })
+	public Response tokenValidation(@PathParam("id") Long id,
+			@QueryParam("token") String token) throws AppException {
+
+		return userService.validateToken(id, token);
+	}
+
+	@POST
+	@Path("{id}/tokenPasswordReset")
+	@Produces({ MediaType.TEXT_HTML })
+	public String tokenPasswordReset(@PathParam("id") Long id,
+			@FormParam("token") String token,
+			@FormParam("password") String password) throws AppException {
+		userService.tokenPasswordReset(id, token, password);
+		return "Your password has been successfully reset";
 	}
 }

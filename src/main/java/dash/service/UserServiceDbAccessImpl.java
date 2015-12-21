@@ -2,14 +2,19 @@ package dash.service;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 
 import org.apache.commons.beanutils.BeanUtilsBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.ApplicationObjectSupport;
+import org.springframework.mail.MailException;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.acls.domain.BasePermission;
 import org.springframework.security.acls.domain.ObjectIdentityImpl;
 import org.springframework.security.acls.domain.PrincipalSid;
@@ -26,6 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import dash.dao.UserDao;
 import dash.dao.UserEntity;
+import dash.dao.ValidationTokenEntity;
 import dash.errorhandling.AppException;
 import dash.filters.AppConstants;
 import dash.helpers.NullAwareBeanUtilsBean;
@@ -51,6 +57,12 @@ public class UserServiceDbAccessImpl extends ApplicationObjectSupport implements
 
 	@Autowired
 	private UserLoginController authoritiesController;
+	
+	@Autowired
+	private JavaMailSender mailSender;
+	
+	@Autowired
+	private SimpleMailMessage templateMessage;
 
 	public static final String userRole = "ROLE_USER";
 
@@ -397,5 +409,108 @@ public class UserServiceDbAccessImpl extends ApplicationObjectSupport implements
 		copyAllProperties(verifyUserExistenceById, user);
 		userDao.updateUser(new UserEntity(verifyUserExistenceById));
 		
+	}
+	
+	@Transactional
+	public void requestPasswordReset(User user, UriInfo uri)
+			throws AppException {
+		UserEntity userEntity = userDao.getUserById(user.getId());
+		if (userEntity.isIs_email_verified()) {
+			String ws = "local_test";
+			ValidationTokenEntity tokenEntity = new ValidationTokenEntity(
+					ValidationTokenEntity.TOKEN_TYPE.PASSWORD_RESET);
+			userEntity.getValidation_tokens().add(tokenEntity);
+			// Then email the token
+			SimpleMailMessage msg = new SimpleMailMessage(this.templateMessage);
+			msg.setSubject("Password Reset Request");
+			msg.setTo(userEntity.getEmail());
+			msg.setText("Hi, \n\nWe recieved a request to reset you password for "
+					+ AppConstants.APPLICATION_NAME
+					+ "."
+					+ "  To reset your password please click the following link.\n\n"
+					+ "http://localhost:8100/#/resetPassword/uid/"
+					+ userEntity.getId()
+					+ "/token/"
+					+ tokenEntity.getToken()
+					+ "/uin/"
+					+ userEntity.getUsername()
+					+ "/ws/"
+					+ ws
+					+ "\n\n\nIf you did not attempt to reset your password please contact us immediately.");
+			try {
+				this.mailSender.send(msg);
+			} catch (MailException ex) {
+				// simply log it and go on...
+				throw new AppException(
+						Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),
+						500,
+						"The mail server has expirienced a critical error, we were unable to email the user",
+						ex.getMessage(), AppConstants.DASH_POST_URL);
+			}
+		}
+
+	}
+
+	@Override
+	@Transactional
+	public Response validateToken(Long id, String token) throws AppException {
+		User user = this.getUserById(id);
+		String debugInfo = "token failed debug out:";
+		for (ValidationTokenEntity tokenEntity : user.getValidation_tokens()) {
+			debugInfo = "<br>tokenmatchcheck=";
+			if (tokenEntity.getToken().equals(token)) {
+				debugInfo += "true";
+			} else {
+				debugInfo += "false<br>" + tokenEntity.getToken() + "<br>"
+						+ token;
+			}
+			debugInfo += "  <br>expirationCheck=";
+			if (tokenEntity.getExpiration_date().after(new Date())) {
+				debugInfo += "true";
+			} else {
+				debugInfo += "false";
+			}
+
+			if (tokenEntity.getToken().equals(token)
+					&& tokenEntity.getExpiration_date().after(new Date())) {
+				switch (tokenEntity.getToken_type()) {
+				case PASSWORD_RESET: {
+					return Response
+							.status(200)
+							.entity("Token is valid! Proceed to password reset...")
+							.build();
+				}
+				case EMAIL_ACTIVATION: {
+					/* TODO: activate email */
+					return Response.status(200)
+							.entity("Thank you for activating your account!")
+							.build();
+				}
+
+				default:
+					return Response
+							.status(500)
+							.entity("Internal Server Error: Token Type Invalid")
+							.build();
+				}
+			}
+		}
+
+		return Response.status(500).entity(debugInfo).build();
+
+	}
+
+	public void tokenPasswordReset(Long id, String token, String password)
+			throws AppException {
+		User user = this.getUserById(id);
+		boolean tokenIsValid = false;
+		for (ValidationTokenEntity tokenEntity : user.getValidation_tokens()) {
+			if (tokenEntity.getToken().equals(token)
+					&& tokenEntity.getExpiration_date().after(new Date())
+					&& tokenEntity.getToken_type() == ValidationTokenEntity.TOKEN_TYPE.PASSWORD_RESET) {
+				user.setPassword(password);
+				this.resetPassword(user);
+			}
+		}
 	}
 }

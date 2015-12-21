@@ -4,17 +4,21 @@ import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.apache.commons.beanutils.BeanUtils;
 
 import dash.dao.UserEntity;
+import dash.dao.ValidationTokenEntity;
 import dash.helpers.DateISO8601Adapter;
 
 /**
@@ -85,6 +89,12 @@ public class User implements Serializable {
 	@XmlElement(name = "insertionDate")
 	@XmlJavaTypeAdapter(DateISO8601Adapter.class)
 	private Date insertionDate;
+	
+	@XmlElement(name = "is_email_verified")
+	private boolean is_email_verified;
+	
+	@XmlTransient
+	private Set<ValidationTokenEntity> validation_tokens = new HashSet<ValidationTokenEntity>();
 
 	public User(UserEntity userEntity) {
 		try {
@@ -228,6 +238,22 @@ public class User implements Serializable {
 	public void setNotificationPreference(
 			NOTIFICATION_PREFERENCE notificationPreference) {
 		this.notificationPreference = notificationPreference;
+	}
+
+	public boolean isIs_email_verified() {
+		return is_email_verified;
+	}
+
+	public void setIs_email_verified(boolean is_email_verified) {
+		this.is_email_verified = is_email_verified;
+	}
+
+	public Set<ValidationTokenEntity> getValidation_tokens() {
+		return validation_tokens;
+	}
+
+	public void setValidation_tokens(Set<ValidationTokenEntity> validation_tokens) {
+		this.validation_tokens = validation_tokens;
 	}
 
 

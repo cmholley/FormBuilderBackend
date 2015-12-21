@@ -2,6 +2,9 @@ package dash.service;
 
 import java.util.List;
 
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
+
 import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
 
@@ -76,7 +79,17 @@ public interface UserService {
 
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public void setRoleAdmin(User user);
+	
+	/*
+	 * ******************** Password Reset methods **********************
+	 */
 
+	public void requestPasswordReset(User user, UriInfo uri) throws AppException;
+	
+	public Response validateToken(Long id, String token) throws AppException;
+	
+	public void tokenPasswordReset(Long id, String token, String Password)throws AppException;
+	
 	/*
 	 * ******************** Helper methods **********************
 	 */
