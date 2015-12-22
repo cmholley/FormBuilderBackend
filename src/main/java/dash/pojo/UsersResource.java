@@ -61,6 +61,7 @@ public class UsersResource {
 	@Produces({ MediaType.TEXT_HTML })
 	public Response createUser(User user) throws AppException {
 		Long createUserId = userService.createUser(user);
+		userService.requestEmailActivation(user);//Request email for activation
 		return Response.status(Response.Status.CREATED)
 				// 201
 				.entity("A new user has been created with ")
@@ -339,7 +340,6 @@ public class UsersResource {
 	@Produces({ MediaType.TEXT_HTML })
 	public Response tokenValidation(@PathParam("id") Long id,
 			@QueryParam("token") String token) throws AppException {
-
 		return userService.validateToken(id, token);
 	}
 

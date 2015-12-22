@@ -103,4 +103,7 @@ public interface UserService {
 	//It's purpose is to allow the study job to make calls to the service layer
 	//Without worrying about the permissions filtering
 	public void updateUserJob(User use) throws AppException;
+	
+	//Generates a new token and sends an email to validate 
+	public void requestEmailActivation(User user) throws AppException;
 }

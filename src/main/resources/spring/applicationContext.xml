@@ -66,7 +66,7 @@
 		</props> </property> </bean> -->
 
 	<bean id="templateMessage" class="org.springframework.mail.SimpleMailMessage">
-		<property name="from" value="formbuildertest@gmail.com" />
+		<property name="from" value="NOREPLY@Housuggest.org" />
 		<property name="subject" value="Test" />
 	</bean>
 
