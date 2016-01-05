@@ -407,33 +407,34 @@ public class UserServiceDbAccessImpl extends ApplicationObjectSupport implements
 	}
 
 	@Override
+	@Transactional
 	public void requestEmailActivation(User user) throws AppException {
 		UserEntity userEntity = userDao.getUserById(user.getId());
-		if (userEntity.isIs_email_verified()) {
-			String ws = "FormBuilderBackend";
-			ValidationTokenEntity tokenEntity = new ValidationTokenEntity(
-					ValidationTokenEntity.TOKEN_TYPE.EMAIL_ACTIVATION);
-			userEntity.getValidation_tokens().add(tokenEntity);
-			// Then email the token
-			SimpleMailMessage msg = new SimpleMailMessage(this.templateMessage);
-			msg.setSubject("Password Reset Request");
-			msg.setTo(userEntity.getUsername());
-			msg.setText("Hi, \n\nWe recieved a request to reset you password for " + AppConstants.APPLICATION_NAME + "."
-					+ "  To reset your password please click the following link.\n\n"
-					+ "http://hnetdev.hnet.uh.edu/#/resetPassword/uid/" + userEntity.getId() + "/token/"
-					+ tokenEntity.getToken() + "/uin/" + userEntity.getUsername() + "/ws/" + ws
-					+ "\n\n\nIf you did not attempt to reset your password please contact us immediately.");
-			try {
-				this.mailSender.send(msg);
-			} catch (MailException ex) {
-				// simply log it and go on...
-				throw new AppException(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), 500,
-						"The mail server has expirienced a critical error, we were unable to email the user",
-						ex.getMessage(), AppConstants.DASH_POST_URL);
-			}
+		String ws = "FormBuilderBackend";
+		ValidationTokenEntity tokenEntity = new ValidationTokenEntity(
+				ValidationTokenEntity.TOKEN_TYPE.EMAIL_ACTIVATION);
+		userEntity.getValidation_tokens().add(tokenEntity);
+		userDao.updateUser(userEntity);
+		// Then email the token
+		SimpleMailMessage msg = new SimpleMailMessage(this.templateMessage);
+		msg.setSubject("Accout Activation");
+		msg.setTo(userEntity.getUsername());
+		msg.setText("Hi, \n\nWe recieved a request to create a new account with this email for " + AppConstants.APPLICATION_NAME + "."
+				+ " To activate your account please click the following link.\n\n"
+				+ "http://hnetdev.hnet.uh.edu/PasswordReset/#/emailValidate/uid/" + userEntity.getId() + "/token/"
+				+ tokenEntity.getToken() + "/uin/" + userEntity.getUsername() + "/ws/" + ws
+				+ "\n\n\nIf you did not attempt to create this account, please contact us immediately.");
+		try {
+			this.mailSender.send(msg);
+		} catch (MailException ex) {
+			// simply log it and go on...
+			throw new AppException(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), 500,
+					"The mail server has expirienced a critical error, we were unable to email the user",
+					ex.getMessage(), AppConstants.DASH_POST_URL);
 		}
-
 	}
+
+	
 
 	@Override
 	@Transactional
@@ -445,8 +446,7 @@ public class UserServiceDbAccessImpl extends ApplicationObjectSupport implements
 			if (tokenEntity.getToken().equals(token)) {
 				debugInfo += "true";
 			} else {
-				debugInfo += "false<br>" + tokenEntity.getToken() + "<br>"
-						+ token;
+				debugInfo += "false<br>" + tokenEntity.getToken() + "<br>" + token;
 			}
 			debugInfo += "  <br>expirationCheck=";
 			if (tokenEntity.getExpiration_date().after(new Date())) {
@@ -457,32 +457,21 @@ public class UserServiceDbAccessImpl extends ApplicationObjectSupport implements
 			if (tokenEntity.getToken().equals(token)) {
 				switch (tokenEntity.getToken_type()) {
 				case PASSWORD_RESET: {
-					if(tokenEntity.getExpiration_date().after(new Date())){
-						return Response.status(200)
-							.entity("Token is valid! Proceed to password reset...")
-							.build();
-					} else{
-						return Response
-								.status(500)
-								.entity("Internal Server Error: Token Type Invalid")
-								.build();
+					if (tokenEntity.getExpiration_date().after(new Date())) {
+						return Response.status(200).entity("Token is valid! Proceed to password reset...").build();
+					} else {
+						return Response.status(500).entity("Internal Server Error: Token Type Invalid").build();
 					}
 				}
 				case EMAIL_ACTIVATION: {
 					user.setIs_email_verified(true);
-					//Use the insecure user update because the user 
-					//is not currently authenticated
-					updateUserJob(user);
-					return Response.status(200)
-							.entity("Thank you for activating your account!")
-							.build();
+					userDao.updateUser(new UserEntity(user));
+
+					return Response.status(200).entity("Thank you for activating your account!").build();
 				}
 
 				default:
-					return Response
-							.status(500)
-							.entity("Internal Server Error: Token Type Invalid")
-							.build();
+					return Response.status(500).entity("Internal Server Error: Token Type Invalid").build();
 				}
 			}
 		}

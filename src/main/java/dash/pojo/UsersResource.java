@@ -151,12 +151,19 @@ public class UsersResource {
 	@GET
 	@Path("myUser")
 	@Produces({ MediaType.APPLICATION_JSON })
-	public User getMyUser(){
+	public Response getMyUser(){
 		Authentication auth = SecurityContextHolder.getContext()
 				.getAuthentication();
 		String username = ((UserDetails)auth.getPrincipal()).getUsername();		
 		User user = userService.getUserByName(username);
-		return user;
+		if(user.isIs_email_verified())
+			return Response.status(200)
+					.entity(new GenericEntity<User>(user) {})
+					.build();
+		else
+			return Response.status(501)
+					.entity("Unable to login. Please verify email.")
+					.build();
 	}
 
 	@GET
@@ -166,9 +173,11 @@ public class UsersResource {
 			@QueryParam("detailed") boolean detailed) throws IOException,
 			AppException {
 		User userById = userService.getUserById(id);
-		return Response.status(200).entity(new GenericEntity<User>(userById) {
-		}).header("Access-Control-Allow-Headers", "X-extra-header")
-				.allow("OPTIONS").build();
+		return Response.status(200)
+				.entity(new GenericEntity<User>(userById) {})
+				.header("Access-Control-Allow-Headers", "X-extra-header")
+				.allow("OPTIONS")
+				.build();
 	}
 
 	@GET

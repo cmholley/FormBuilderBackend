@@ -53,9 +53,8 @@ public class QuartzInitServletContextListener implements ServletContextListener 
 	private void scheduleTimeoutJob(ServletContextEvent sce) {
 		timeoutTimer = new Timer();
 		Calendar cal = Calendar.getInstance();
-		cal.add(Calendar.MINUTE, cal.get(Calendar.MINUTE) % 5);
-		Date start = cal.getTime();
-		timeoutTimer.scheduleAtFixedRate(new TimeoutTask(sce), start,
+		cal.add(Calendar.MINUTE, 5);
+		timeoutTimer.scheduleAtFixedRate(new TimeoutTask(sce), cal.getTime(),
 				TimeUnit.MILLISECONDS.convert(5, TimeUnit.MINUTES));
 	}
 
