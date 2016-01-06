@@ -381,7 +381,7 @@ public class UserServiceDbAccessImpl extends ApplicationObjectSupport implements
 	public void requestPasswordReset(User user, UriInfo uri) throws AppException {
 		UserEntity userEntity = userDao.getUserById(user.getId());
 		if (userEntity.isIs_email_verified()) {
-			String ws = "FormBuilderBackend";
+			String ws = "FormBuilder";
 			ValidationTokenEntity tokenEntity = new ValidationTokenEntity(
 					ValidationTokenEntity.TOKEN_TYPE.PASSWORD_RESET);
 			userEntity.getValidation_tokens().add(tokenEntity);
@@ -411,7 +411,7 @@ public class UserServiceDbAccessImpl extends ApplicationObjectSupport implements
 	@Transactional
 	public void requestEmailActivation(User user) throws AppException {
 		UserEntity userEntity = userDao.getUserById(user.getId());
-		String ws = "FormBuilderBackend";
+		String ws = "FormBuilder";
 		ValidationTokenEntity tokenEntity = new ValidationTokenEntity(
 				ValidationTokenEntity.TOKEN_TYPE.EMAIL_ACTIVATION);
 		userEntity.getValidation_tokens().add(tokenEntity);
