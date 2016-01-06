@@ -162,7 +162,7 @@ public class UsersResource {
 					.build();
 		else
 			return Response.status(501)
-					.entity("Unable to login. Please verify email.")
+					.entity("{\"message\":\"Unable to login. Please verify email.\"}")
 					.build();
 	}
 

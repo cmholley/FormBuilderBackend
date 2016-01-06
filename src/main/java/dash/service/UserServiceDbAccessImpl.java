@@ -391,9 +391,10 @@ public class UserServiceDbAccessImpl extends ApplicationObjectSupport implements
 			msg.setTo(userEntity.getUsername());
 			msg.setText("Hi, \n\nWe recieved a request to reset you password for " + AppConstants.APPLICATION_NAME + "."
 					+ "  To reset your password please click the following link.\n\n"
-					+ "http://hnetdev.hnet.uh.edu/#/resetPassword/uid/" + userEntity.getId() + "/token/"
+					+ "http://hnetdev.hnet.uh.edu/PasswordReset/#/resetPassword/uid/" + userEntity.getId() + "/token/"
 					+ tokenEntity.getToken() + "/uin/" + userEntity.getUsername() + "/ws/" + ws
-					+ "\n\n\nIf you did not attempt to reset your password please contact us immediately.");
+					+ "\n\n\nThis link is only valid for 2 hours. After that point, please request another password reset. "
+					+ "If you did not attempt to reset your password please contact us immediately.");
 			try {
 				this.mailSender.send(msg);
 			} catch (MailException ex) {

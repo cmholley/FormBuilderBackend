@@ -255,7 +255,7 @@ public class FormResource {
 	@DELETE
 	@Path("{formId}")
 	@Produces({ MediaType.TEXT_HTML })
-	public Response deletePost(@PathParam("formId") Long formId)
+	public Response deleteForm(@PathParam("formId") Long formId)
 			throws AppException {
 		Form form = formService.verifyFormExistenceById(formId);
 		formService.deleteForm(form);
