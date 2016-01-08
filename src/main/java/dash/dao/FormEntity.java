@@ -140,8 +140,8 @@ public class FormEntity implements Serializable {
 			BeanUtils.copyProperties(this, form);
 		} catch (IllegalAccessException e) {
 			// TODO Auto-generated catch block
-			Logger logger = LoggerFactory.getLogger(FormEntity.class);
-			logger.error("Exception thrown in FormEntity constructor", e);
+			Logger logger = LoggerFactory.getLogger(this.getClass());
+			logger.error("Exception thrown in " + this.getClass().getName(), e);
 		} catch (InvocationTargetException e) {
 			// TODO Auto-generated catch block
 			Logger logger = LoggerFactory.getLogger(this.getClass());

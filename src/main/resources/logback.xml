@@ -2,7 +2,6 @@
 <!DOCTYPE project>
 <configuration>
 
-
 	<appender name="FILE"
 		class="ch.qos.logback.core.rolling.RollingFileAppender">
 		<file>/var/log/tomcat/webapps/formbuilder-backend.log</file>
