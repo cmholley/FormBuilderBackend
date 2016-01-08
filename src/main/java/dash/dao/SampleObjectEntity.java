@@ -11,6 +11,8 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 import org.apache.commons.beanutils.BeanUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import dash.pojo.SampleObject;
 
@@ -21,18 +23,19 @@ import dash.pojo.SampleObject;
  *
  */
 @Entity
-@Table(name="sample_object")
+@Table(name = "sample_object")
 public class SampleObjectEntity implements Serializable {
 
 	private static final long serialVersionUID = -8039686696076337053L;
 
-	/** id of the user
-	 * Be aware that every object/entity MUST have an id */
+	/**
+	 * id of the user Be aware that every object/entity MUST have an id
+	 */
 	@Id
 	@GeneratedValue
-	@Column(name="id")
+	@Column(name = "id")
 	private Long id;
-	
+
 	/** path to stored documents for this object */
 	@Column(name = "document_folder")
 	private String document_folder;
@@ -45,25 +48,25 @@ public class SampleObjectEntity implements Serializable {
 	@Column(name = "time_stamp_sample")
 	private Date time_stamp_sample;
 
-	public SampleObjectEntity(){}
+	public SampleObjectEntity() {
+	}
 
-
-	public SampleObjectEntity( String basic_field_sample) {
+	public SampleObjectEntity(String basic_field_sample) {
 		super();
 		this.basic_field_sample = basic_field_sample;
 	}
 
-
-
 	public SampleObjectEntity(SampleObject sampleObject) {
 		try {
 			BeanUtils.copyProperties(this, sampleObject);
-		} catch ( IllegalAccessException e) {
+		} catch (IllegalAccessException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch ( InvocationTargetException e) {
+			Logger logger = LoggerFactory.getLogger(this.getClass());
+			logger.error("Exception thrown in " + this.getClass().getName(), e);
+		} catch (InvocationTargetException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Logger logger = LoggerFactory.getLogger(this.getClass());
+			logger.error("Exception thrown in " + this.getClass().getName(), e);
 		}
 	}
 
@@ -75,12 +78,11 @@ public class SampleObjectEntity implements Serializable {
 		this.basic_field_sample = basic_field_sample;
 	}
 
-
 	public Long getId() {
 		return id;
 	}
 
-	public void setId( Long id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 
@@ -88,11 +90,9 @@ public class SampleObjectEntity implements Serializable {
 		return document_folder;
 	}
 
-
 	public void setDocument_folder(String document_folder) {
 		this.document_folder = document_folder;
 	}
-
 
 	public Date getTime_stamp_sample() {
 		return time_stamp_sample;

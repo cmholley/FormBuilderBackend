@@ -15,6 +15,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.apache.commons.beanutils.BeanUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import dash.dao.StudyEntity;
 import dash.helpers.CalendarISO8601Adapter;
@@ -24,58 +26,58 @@ import dash.security.IAclObject;
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Study implements IAclObject {
-	
+
 	@XmlElement(name = "id")
 	private Long id;
-	
+
 	/** insertion date in the database */
 	@XmlElement(name = "insertion_date")
 	@XmlJavaTypeAdapter(DateISO8601Adapter.class)
 	private Date insertionDate;
-	
+
 	@XmlElement(name = "studyName")
 	private String studyName;
-	
-	//The number of hours after the study is made active before it expires
-	@XmlElement (name = "duration")
+
+	// The number of hours after the study is made active before it expires
+	@XmlElement(name = "duration")
 	private Long duration;
-	
+
 	@XmlElement(name = "participants")
 	private Set<String> participants;
-	
+
 	@XmlElement(name = "fixedTimes")
 	@XmlJavaTypeAdapter(CalendarISO8601Adapter.class)
 	private Set<Calendar> fixedTimes = new HashSet<Calendar>();
-	
+
 	@XmlElement(name = "startDate")
 	@XmlJavaTypeAdapter(DateISO8601Adapter.class)
 	private Date startDate;
-	
+
 	@XmlElement(name = "endDate")
 	@XmlJavaTypeAdapter(DateISO8601Adapter.class)
 	private Date endDate;
-	
+
 	@XmlElement(name = "sunday")
 	private boolean sunday;
-	
+
 	@XmlElement(name = "monday")
 	private boolean monday;
-	
+
 	@XmlElement(name = "tuesday")
-	private boolean tuesday; 
-	
+	private boolean tuesday;
+
 	@XmlElement(name = "wednesday")
 	private boolean wednesday;
-	
+
 	@XmlElement(name = "thursday")
-	private boolean thursday; 
-	
+	private boolean thursday;
+
 	@XmlElement(name = "friday")
-	private boolean friday; 
-	
+	private boolean friday;
+
 	@XmlElement(name = "saturday")
 	private boolean saturday;
-	
+
 	@XmlElement(name = "formId")
 	private long formId;
 
@@ -84,22 +86,24 @@ public class Study implements IAclObject {
 			BeanUtils.copyProperties(this, studyEntity);
 		} catch (IllegalAccessException e) {
 
-			e.printStackTrace();
+			Logger logger = LoggerFactory.getLogger(this.getClass());
+			logger.error("Exception thrown in " + this.getClass().getName(), e);
 		} catch (InvocationTargetException e) {
 
-			e.printStackTrace();
+			Logger logger = LoggerFactory.getLogger(this.getClass());
+			logger.error("Exception thrown in " + this.getClass().getName(), e);
 		}
 	}
-	
-	
-	public Study(){
-		
+
+	public Study() {
+
 	}
-	//Generates a string that can be used as a Cron Expression for scheduling a
-	//job using a Quartz Cron trigger
-	public List<String> generateCronStrings(){
-		//CronString Format
-		//SECONDS MINUTES HOURS DAYOFMONTH MONTH DAYOFWEEK {YEAR}
+
+	// Generates a string that can be used as a Cron Expression for scheduling a
+	// job using a Quartz Cron trigger
+	public List<String> generateCronStrings() {
+		// CronString Format
+		// SECONDS MINUTES HOURS DAYOFMONTH MONTH DAYOFWEEK {YEAR}
 		List<String> cronStrings = new ArrayList<String>();
 		String cronString;
 		Calendar cal = Calendar.getInstance();
@@ -108,35 +112,35 @@ public class Study implements IAclObject {
 		start.setTime(startDate);
 		end.setTime(endDate);
 		String dateString = "? ";
-		if(start.get(Calendar.MONTH) == end.get(Calendar.MONTH)){
+		if (start.get(Calendar.MONTH) == end.get(Calendar.MONTH)) {
 			dateString += (start.get(Calendar.MONTH) + 1);
-		}else{
-			dateString += ((start.get(Calendar.MONTH) + 1) + "-"
-					+ (end.get(Calendar.MONTH) + 1));
+		} else {
+			dateString += ((start.get(Calendar.MONTH) + 1) + "-" + (end.get(Calendar.MONTH) + 1));
 		}
 		dateString += " ";
-		if(sunday)
+		if (sunday)
 			dateString += "1,";
-		if(monday)
+		if (monday)
 			dateString += "2,";
-		if(tuesday)
+		if (tuesday)
 			dateString += "3,";
-		if(wednesday)
+		if (wednesday)
 			dateString += "4,";
-		if(thursday)
+		if (thursday)
 			dateString += "5,";
-		if(friday)
+		if (friday)
 			dateString += "6,";
-		if(saturday)
+		if (saturday)
 			dateString += "7,";
-		//Removes the comma at the end of the string left from the last day of week added
-		dateString = dateString.substring(0, dateString.length()-1);
+		// Removes the comma at the end of the string left from the last day of
+		// week added
+		dateString = dateString.substring(0, dateString.length() - 1);
 		dateString += " ";
-		if(start.get(Calendar.YEAR) == end.get(Calendar.YEAR))
+		if (start.get(Calendar.YEAR) == end.get(Calendar.YEAR))
 			dateString += start.get(Calendar.YEAR);
 		else
 			dateString += (start.get(Calendar.YEAR) + "-" + end.get(Calendar.YEAR));
-		for(Calendar time : fixedTimes){
+		for (Calendar time : fixedTimes) {
 			cal = time;
 			cronString = "";
 			cronString += cal.get(Calendar.SECOND);
@@ -150,7 +154,7 @@ public class Study implements IAclObject {
 		}
 		return cronStrings;
 	}
-	
+
 	public Set<String> getParticipants() {
 		return participants;
 	}
@@ -180,7 +184,7 @@ public class Study implements IAclObject {
 	}
 
 	public void setEndDate(Date endDate) {
-		this.endDate= endDate;
+		this.endDate = endDate;
 	}
 
 	public boolean isSunday() {
@@ -251,7 +255,6 @@ public class Study implements IAclObject {
 		this.id = id;
 	}
 
-	
 	public Long getId() {
 		return id;
 	}
@@ -280,4 +283,3 @@ public class Study implements IAclObject {
 		this.duration = duration;
 	}
 }
- 

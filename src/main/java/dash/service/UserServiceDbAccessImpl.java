@@ -10,6 +10,8 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 import org.apache.commons.beanutils.BeanUtilsBean;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.ApplicationObjectSupport;
 import org.springframework.mail.MailException;
@@ -235,10 +237,12 @@ public class UserServiceDbAccessImpl extends ApplicationObjectSupport implements
 			withNull.copyProperty(verifyUserExistenceById, "activeStudies", user.getActiveStudies());
 		} catch (IllegalAccessException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Logger logger = LoggerFactory.getLogger(this.getClass());
+			logger.error("Exception thrown in " + this.getClass().getName(), e);
 		} catch (InvocationTargetException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Logger logger = LoggerFactory.getLogger(this.getClass());
+			logger.error("Exception thrown in " + this.getClass().getName(), e);
 		}
 
 	}
@@ -275,10 +279,12 @@ public class UserServiceDbAccessImpl extends ApplicationObjectSupport implements
 			notNull.copyProperties(verifyUserExistenceById, user);
 		} catch (IllegalAccessException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Logger logger = LoggerFactory.getLogger(this.getClass());
+			logger.error("Exception thrown in " + this.getClass().getName(), e);
 		} catch (InvocationTargetException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Logger logger = LoggerFactory.getLogger(this.getClass());
+			logger.error("Exception thrown in " + this.getClass().getName(), e);
 		}
 
 	}
@@ -391,7 +397,7 @@ public class UserServiceDbAccessImpl extends ApplicationObjectSupport implements
 			msg.setTo(userEntity.getUsername());
 			msg.setText("Hi, \n\nWe recieved a request to reset you password for " + AppConstants.APPLICATION_NAME + "."
 					+ "  To reset your password please click the following link.\n\n"
-					+ "http://hnetdev.hnet.uh.edu/PasswordReset/#/resetPassword/uid/" + userEntity.getId() + "/token/"
+					+ "http://www.housuggest.org/PasswordReset/#/resetPassword/uid/" + userEntity.getId() + "/token/"
 					+ tokenEntity.getToken() + "/uin/" + userEntity.getUsername() + "/ws/" + ws
 					+ "\n\n\nThis link is only valid for 2 hours. After that point, please request another password reset. "
 					+ "If you did not attempt to reset your password please contact us immediately.");
@@ -420,9 +426,9 @@ public class UserServiceDbAccessImpl extends ApplicationObjectSupport implements
 		SimpleMailMessage msg = new SimpleMailMessage(this.templateMessage);
 		msg.setSubject("Accout Activation");
 		msg.setTo(userEntity.getUsername());
-		msg.setText("Hi, \n\nWe recieved a request to create a new account with this email for " + AppConstants.APPLICATION_NAME + "."
-				+ " To activate your account please click the following link.\n\n"
-				+ "http://hnetdev.hnet.uh.edu/PasswordReset/#/emailValidate/uid/" + userEntity.getId() + "/token/"
+		msg.setText("Hi, \n\nWe recieved a request to create a new account with this email for "
+				+ AppConstants.APPLICATION_NAME + "." + " To activate your account please click the following link.\n\n"
+				+ "http://www.housuggest.org/PasswordReset/#/emailValidate/uid/" + userEntity.getId() + "/token/"
 				+ tokenEntity.getToken() + "/uin/" + userEntity.getUsername() + "/ws/" + ws
 				+ "\n\n\nIf you did not attempt to create this account, please contact us immediately.");
 		try {
@@ -434,8 +440,6 @@ public class UserServiceDbAccessImpl extends ApplicationObjectSupport implements
 					ex.getMessage(), AppConstants.DASH_POST_URL);
 		}
 	}
-
-	
 
 	@Override
 	@Transactional

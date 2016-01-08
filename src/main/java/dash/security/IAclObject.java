@@ -1,7 +1,8 @@
 package dash.security;
 
 /**
- * All objects which will be handed to GenericAclController must impl this interface.
+ * All objects which will be handed to GenericAclController must impl this
+ * interface.
  * 
  * @author Tyler.swensen@gmail.com
  *

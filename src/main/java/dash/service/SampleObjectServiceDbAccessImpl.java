@@ -17,6 +17,8 @@ import java.util.List;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.beanutils.BeanUtilsBean;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.ApplicationObjectSupport;
 import org.springframework.stereotype.Component;
@@ -40,8 +42,7 @@ import dash.security.GenericAclController;
  *
  */
 @Component("sampleObjectService")
-public class SampleObjectServiceDbAccessImpl extends ApplicationObjectSupport
-		implements SampleObjectService {
+public class SampleObjectServiceDbAccessImpl extends ApplicationObjectSupport implements SampleObjectService {
 
 	@Autowired
 	SampleObjectDao sampleObjectDao;
@@ -49,14 +50,14 @@ public class SampleObjectServiceDbAccessImpl extends ApplicationObjectSupport
 	@Autowired
 	private GenericAclController<SampleObject> aclController;
 
-	/********************* Create related methods implementation ***********************/
+	/*********************
+	 * Create related methods implementation
+	 ***********************/
 	@Override
 	@Transactional
-	public Long createSampleObject(SampleObject sampleObject)
-			throws AppException {
+	public Long createSampleObject(SampleObject sampleObject) throws AppException {
 
-		long sampleObjectId = sampleObjectDao
-				.createSampleObject(new SampleObjectEntity(sampleObject));
+		long sampleObjectId = sampleObjectDao.createSampleObject(new SampleObjectEntity(sampleObject));
 		sampleObject.setId(sampleObjectId);
 		aclController.createACL(sampleObject);
 		aclController.createAce(sampleObject, CustomPermission.READ);
@@ -67,8 +68,7 @@ public class SampleObjectServiceDbAccessImpl extends ApplicationObjectSupport
 
 	@Override
 	@Transactional
-	public void createSampleObjects(List<SampleObject> sampleObjects)
-			throws AppException {
+	public void createSampleObjects(List<SampleObject> sampleObjects) throws AppException {
 		for (SampleObject sampleObject : sampleObjects) {
 			createSampleObject(sampleObject);
 		}
@@ -77,32 +77,26 @@ public class SampleObjectServiceDbAccessImpl extends ApplicationObjectSupport
 	// ******************** Read related methods implementation
 	// **********************
 	@Override
-	public List<SampleObject> getSampleObjects(int numberOfSampleObjects,
-			Long startIndex) throws AppException {
+	public List<SampleObject> getSampleObjects(int numberOfSampleObjects, Long startIndex) throws AppException {
 
-		List<SampleObjectEntity> sampleObjects = sampleObjectDao
-				.getSampleObjects(numberOfSampleObjects, startIndex);
+		List<SampleObjectEntity> sampleObjects = sampleObjectDao.getSampleObjects(numberOfSampleObjects, startIndex);
 		return getSampleObjectsFromEntities(sampleObjects);
 	}
 
 	@Override
 	public SampleObject getSampleObjectById(Long id) throws AppException {
-		SampleObjectEntity sampleObjectById = sampleObjectDao
-				.getSampleObjectById(id);
+		SampleObjectEntity sampleObjectById = sampleObjectDao.getSampleObjectById(id);
 		if (sampleObjectById == null) {
-			throw new AppException(Response.Status.NOT_FOUND.getStatusCode(),
-					404, "The sampleObject you requested with id " + id
-							+ " was not found in the database",
-					"Verify the existence of the sampleObject with the id "
-							+ id + " in the database",
+			throw new AppException(Response.Status.NOT_FOUND.getStatusCode(), 404,
+					"The sampleObject you requested with id " + id + " was not found in the database",
+					"Verify the existence of the sampleObject with the id " + id + " in the database",
 					AppConstants.DASH_POST_URL);
 		}
 
 		return new SampleObject(sampleObjectDao.getSampleObjectById(id));
 	}
 
-	private List<SampleObject> getSampleObjectsFromEntities(
-			List<SampleObjectEntity> sampleObjectEntities) {
+	private List<SampleObject> getSampleObjectsFromEntities(List<SampleObjectEntity> sampleObjectEntities) {
 		List<SampleObject> response = new ArrayList<SampleObject>();
 		for (SampleObjectEntity sampleObjectEntity : sampleObjectEntities) {
 			response.add(new SampleObject(sampleObjectEntity));
@@ -112,11 +106,9 @@ public class SampleObjectServiceDbAccessImpl extends ApplicationObjectSupport
 	}
 
 	/**
-	 *  save uploaded file to new location
+	 * save uploaded file to new location
 	 */
-	public void uploadFile(InputStream uploadedInputStream,
-			String uploadedFileLocation)
-			throws AppException {
+	public void uploadFile(InputStream uploadedInputStream, String uploadedFileLocation) throws AppException {
 
 		try {
 			File file = new File(uploadedFileLocation);
@@ -133,10 +125,8 @@ public class SampleObjectServiceDbAccessImpl extends ApplicationObjectSupport
 			out.close();
 		} catch (IOException e) {
 
-			throw new AppException(
-					Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), 500,
-					"Could not upload file due to IOException", "\n\n"
-							+ e.getMessage(), AppConstants.DASH_POST_URL);
+			throw new AppException(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), 500,
+					"Could not upload file due to IOException", "\n\n" + e.getMessage(), AppConstants.DASH_POST_URL);
 		}
 
 	}
@@ -161,33 +151,28 @@ public class SampleObjectServiceDbAccessImpl extends ApplicationObjectSupport
 
 	}
 
-	/********************* UPDATE-related methods implementation ***********************/
+	/*********************
+	 * UPDATE-related methods implementation
+	 ***********************/
 
 	@Override
 	@Transactional
-	public void updateFullySampleObject(SampleObject sampleObject)
-			throws AppException {
+	public void updateFullySampleObject(SampleObject sampleObject) throws AppException {
 
-		SampleObject verifySampleObjectExistenceById = verifySampleObjectExistenceById(sampleObject
-				.getId());
+		SampleObject verifySampleObjectExistenceById = verifySampleObjectExistenceById(sampleObject.getId());
 		if (verifySampleObjectExistenceById == null) {
-			throw new AppException(
-					Response.Status.NOT_FOUND.getStatusCode(),
-					404,
+			throw new AppException(Response.Status.NOT_FOUND.getStatusCode(), 404,
 					"The resource you are trying to update does not exist in the database",
-					"Please verify existence of data in the database for the id - "
-							+ sampleObject.getId(), AppConstants.DASH_POST_URL);
+					"Please verify existence of data in the database for the id - " + sampleObject.getId(),
+					AppConstants.DASH_POST_URL);
 		}
 		copyAllProperties(verifySampleObjectExistenceById, sampleObject);
 
-		sampleObjectDao.updateSampleObject(new SampleObjectEntity(
-				verifySampleObjectExistenceById));
+		sampleObjectDao.updateSampleObject(new SampleObjectEntity(verifySampleObjectExistenceById));
 
 	}
 
-	private void copyAllProperties(
-			SampleObject verifySampleObjectExistenceById,
-			SampleObject sampleObject) {
+	private void copyAllProperties(SampleObject verifySampleObjectExistenceById, SampleObject sampleObject) {
 		// If you would like to allow null values use the following line.
 		// Reference PostServiceImpl in the VolunteerManagementApp for more
 		// details.
@@ -197,19 +182,22 @@ public class SampleObjectServiceDbAccessImpl extends ApplicationObjectSupport
 		// used.
 		BeanUtilsBean notNull = new NullAwareBeanUtilsBean();
 		try {
-			notNull.copyProperties(verifySampleObjectExistenceById,
-					sampleObject);
+			notNull.copyProperties(verifySampleObjectExistenceById, sampleObject);
 		} catch (IllegalAccessException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Logger logger = LoggerFactory.getLogger(this.getClass());
+			logger.error("Exception thrown in " + this.getClass().getName(), e);
 		} catch (InvocationTargetException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Logger logger = LoggerFactory.getLogger(this.getClass());
+			logger.error("Exception thrown in " + this.getClass().getName(), e);
 		}
 
 	}
 
-	/********************* DELETE-related methods implementation ***********************/
+	/*********************
+	 * DELETE-related methods implementation
+	 ***********************/
 
 	@Override
 	@Transactional
@@ -230,8 +218,7 @@ public class SampleObjectServiceDbAccessImpl extends ApplicationObjectSupport
 
 	@Override
 	public SampleObject verifySampleObjectExistenceById(Long id) {
-		SampleObjectEntity sampleObjectById = sampleObjectDao
-				.getSampleObjectById(id);
+		SampleObjectEntity sampleObjectById = sampleObjectDao.getSampleObjectById(id);
 		if (sampleObjectById == null) {
 			return null;
 		} else {
@@ -241,86 +228,79 @@ public class SampleObjectServiceDbAccessImpl extends ApplicationObjectSupport
 
 	@Override
 	@Transactional
-	public void updatePartiallySampleObject(SampleObject sampleObject)
-			throws AppException {
+	public void updatePartiallySampleObject(SampleObject sampleObject) throws AppException {
 		// do a validation to verify existence of the resource
-		SampleObject verifySampleObjectExistenceById = verifySampleObjectExistenceById(sampleObject
-				.getId());
+		SampleObject verifySampleObjectExistenceById = verifySampleObjectExistenceById(sampleObject.getId());
 		if (verifySampleObjectExistenceById == null) {
-			throw new AppException(
-					Response.Status.NOT_FOUND.getStatusCode(),
-					404,
+			throw new AppException(Response.Status.NOT_FOUND.getStatusCode(), 404,
 					"The resource you are trying to update does not exist in the database",
-					"Please verify existence of data in the database for the id - "
-							+ sampleObject.getId(), AppConstants.DASH_POST_URL);
+					"Please verify existence of data in the database for the id - " + sampleObject.getId(),
+					AppConstants.DASH_POST_URL);
 		}
 		copyPartialProperties(verifySampleObjectExistenceById, sampleObject);
-		sampleObjectDao.updateSampleObject(new SampleObjectEntity(
-				verifySampleObjectExistenceById));
+		sampleObjectDao.updateSampleObject(new SampleObjectEntity(verifySampleObjectExistenceById));
 
 	}
 
-	private void copyPartialProperties(
-			SampleObject verifySampleObjectExistenceById,
-			SampleObject sampleObject) {
+	private void copyPartialProperties(SampleObject verifySampleObjectExistenceById, SampleObject sampleObject) {
 
 		BeanUtilsBean notNull = new NullAwareBeanUtilsBean();
 		try {
-			notNull.copyProperties(verifySampleObjectExistenceById,
-					sampleObject);
+			notNull.copyProperties(verifySampleObjectExistenceById, sampleObject);
 		} catch (IllegalAccessException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Logger logger = LoggerFactory.getLogger(this.getClass());
+			logger.error("Exception thrown in " + this.getClass().getName(), e);
 		} catch (InvocationTargetException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Logger logger = LoggerFactory.getLogger(this.getClass());
+			logger.error("Exception thrown in " + this.getClass().getName(), e);
 		}
 
 	}
-	
+
 	@Override
 	public void deleteUploadFile(String uploadedFileLocation) throws AppException {
 		Path path = Paths.get(uploadedFileLocation);
 		try {
-		    Files.delete(path);
+			Files.delete(path);
 		} catch (NoSuchFileException x) {
 			x.printStackTrace();
-			throw new AppException(Response.Status.NOT_FOUND.getStatusCode(),
-					404,
-					"NoSuchFileException thrown, Operation unsuccesful.", "Please ensure the file you are attempting to"
-					+ " delete exists at "+path+".", AppConstants.DASH_POST_URL);
-			
-					
+			throw new AppException(Response.Status.NOT_FOUND.getStatusCode(), 404,
+					"NoSuchFileException thrown, Operation unsuccesful.",
+					"Please ensure the file you are attempting to" + " delete exists at " + path + ".",
+					AppConstants.DASH_POST_URL);
+
 		} catch (DirectoryNotEmptyException x) {
 			x.printStackTrace();
-			throw new AppException(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),
-					404,
-					"DirectoryNotEmptyException thrown, operation unsuccesful.", "This method should not attempt to delete,"
-							+ " This should be considered a very serious error. Occured at "+path+".",
+			throw new AppException(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), 404,
+					"DirectoryNotEmptyException thrown, operation unsuccesful.",
+					"This method should not attempt to delete,"
+							+ " This should be considered a very serious error. Occured at " + path + ".",
 					AppConstants.DASH_POST_URL);
 		} catch (IOException x) {
 			x.printStackTrace();
-			throw new AppException(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),
-					500,
-					"IOException thrown and the designated file was not deleted.", 
-					" Permission problems occured at "+path+".",
-					AppConstants.DASH_POST_URL);
+			throw new AppException(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), 500,
+					"IOException thrown and the designated file was not deleted.",
+					" Permission problems occured at " + path + ".", AppConstants.DASH_POST_URL);
 		}
-		
+
 	}
 
 	@Override
 	public List<String> getFileNames(SampleObject sampleObject) {
 		List<String> results = new ArrayList<String>();
-		
-		File[] files = new File(AppConstants.APPLICATION_UPLOAD_LOCATION_FOLDER+"/" + sampleObject.getDocument_folder()).listFiles();
-		//If this pathname does not denote a directory, then listFiles() returns null. 
 
-		if(files != null){
+		File[] files = new File(
+				AppConstants.APPLICATION_UPLOAD_LOCATION_FOLDER + "/" + sampleObject.getDocument_folder()).listFiles();
+		// If this pathname does not denote a directory, then listFiles()
+		// returns null.
+
+		if (files != null) {
 			for (File file : files) {
-			    if (file.isFile()) {
-			        results.add(file.getName());
-			    }
+				if (file.isFile()) {
+					results.add(file.getName());
+				}
 			}
 		}
 		return results;

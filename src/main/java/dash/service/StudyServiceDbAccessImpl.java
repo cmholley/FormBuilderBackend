@@ -19,6 +19,8 @@ import java.util.List;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.beanutils.BeanUtilsBean;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.ApplicationObjectSupport;
 import org.springframework.mail.MailException;
@@ -47,32 +49,31 @@ import dash.security.GenericAclController;
  *
  */
 @Component("studyService")
-public class StudyServiceDbAccessImpl extends ApplicationObjectSupport
-		implements StudyService {
+public class StudyServiceDbAccessImpl extends ApplicationObjectSupport implements StudyService {
 
 	@Autowired
 	StudyDao studyDao;
 
 	@Autowired
 	UserService userService;
-	
+
 	@Autowired
 	private GenericAclController<Study> aclController;
-	
+
 	@Autowired
 	private JavaMailSender mailSender;
-	
+
 	@Autowired
 	private SimpleMailMessage templateMessage;
 
-	/********************* Create related methods implementation ***********************/
+	/*********************
+	 * Create related methods implementation
+	 ***********************/
 	@Override
 	@Transactional
-	public Long createStudy(Study study, Form form)
-			throws AppException {
+	public Long createStudy(Study study, Form form) throws AppException {
 
-		long studyId = studyDao
-				.createStudy(new StudyEntity(study));
+		long studyId = studyDao.createStudy(new StudyEntity(study));
 		study.setId(studyId);
 		aclController.createACL(study);
 		aclController.createAce(study, CustomPermission.READ);
@@ -83,11 +84,9 @@ public class StudyServiceDbAccessImpl extends ApplicationObjectSupport
 
 	@Override
 	@Transactional
-	public void createStudies(List<Study> studies)
-			throws AppException {
+	public void createStudies(List<Study> studies) throws AppException {
 		for (Study study : studies) {
-			Form form = new FormServiceDbAccessImpl()
-				.getFormById(study.getFormId());
+			Form form = new FormServiceDbAccessImpl().getFormById(study.getFormId());
 			createStudy(study, form);
 		}
 	}
@@ -95,32 +94,26 @@ public class StudyServiceDbAccessImpl extends ApplicationObjectSupport
 	// ******************** Read related methods implementation
 	// **********************
 	@Override
-	public List<Study> getStudies(int numberOfStudies,
-			Long startIndex) throws AppException {
+	public List<Study> getStudies(int numberOfStudies, Long startIndex) throws AppException {
 
-		List<StudyEntity> studies = studyDao
-				.getStudies(numberOfStudies, startIndex);
+		List<StudyEntity> studies = studyDao.getStudies(numberOfStudies, startIndex);
 		return getStudiesFromEntities(studies);
 	}
 
 	@Override
 	public Study getStudyById(Long id) throws AppException {
-		StudyEntity studyById = studyDao
-				.getStudyById(id);
+		StudyEntity studyById = studyDao.getStudyById(id);
 		if (studyById == null) {
-			throw new AppException(Response.Status.NOT_FOUND.getStatusCode(),
-					404, "The study you requested with id " + id
-							+ " was not found in the database",
-					"Verify the existence of the study with the id "
-							+ id + " in the database",
+			throw new AppException(Response.Status.NOT_FOUND.getStatusCode(), 404,
+					"The study you requested with id " + id + " was not found in the database",
+					"Verify the existence of the study with the id " + id + " in the database",
 					AppConstants.DASH_POST_URL);
 		}
 
 		return new Study(studyDao.getStudyById(id));
 	}
 
-	private List<Study> getStudiesFromEntities(
-			List<StudyEntity> studyEntities) {
+	private List<Study> getStudiesFromEntities(List<StudyEntity> studyEntities) {
 		List<Study> response = new ArrayList<Study>();
 		for (StudyEntity studyEntity : studyEntities) {
 			response.add(new Study(studyEntity));
@@ -130,11 +123,9 @@ public class StudyServiceDbAccessImpl extends ApplicationObjectSupport
 	}
 
 	/**
-	 *  save uploaded file to new location
+	 * save uploaded file to new location
 	 */
-	public void uploadFile(InputStream uploadedInputStream,
-			String uploadedFileLocation)
-			throws AppException {
+	public void uploadFile(InputStream uploadedInputStream, String uploadedFileLocation) throws AppException {
 
 		try {
 			File file = new File(uploadedFileLocation);
@@ -151,10 +142,8 @@ public class StudyServiceDbAccessImpl extends ApplicationObjectSupport
 			out.close();
 		} catch (IOException e) {
 
-			throw new AppException(
-					Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), 500,
-					"Could not upload file due to IOException", "\n\n"
-							+ e.getMessage(), AppConstants.DASH_POST_URL);
+			throw new AppException(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), 500,
+					"Could not upload file due to IOException", "\n\n" + e.getMessage(), AppConstants.DASH_POST_URL);
 		}
 
 	}
@@ -179,33 +168,28 @@ public class StudyServiceDbAccessImpl extends ApplicationObjectSupport
 
 	}
 
-	/********************* UPDATE-related methods implementation ***********************/
+	/*********************
+	 * UPDATE-related methods implementation
+	 ***********************/
 
 	@Override
 	@Transactional
-	public void updateFullyStudy(Study study, Form form)
-			throws AppException {
+	public void updateFullyStudy(Study study, Form form) throws AppException {
 
-		Study verifyStudyExistenceById = verifyStudyExistenceById(study
-				.getId());
+		Study verifyStudyExistenceById = verifyStudyExistenceById(study.getId());
 		if (verifyStudyExistenceById == null) {
-			throw new AppException(
-					Response.Status.NOT_FOUND.getStatusCode(),
-					404,
+			throw new AppException(Response.Status.NOT_FOUND.getStatusCode(), 404,
 					"The resource you are trying to update does not exist in the database",
-					"Please verify existence of data in the database for the id - "
-							+ study.getId(), AppConstants.DASH_POST_URL);
+					"Please verify existence of data in the database for the id - " + study.getId(),
+					AppConstants.DASH_POST_URL);
 		}
 		copyAllProperties(verifyStudyExistenceById, study);
 
-		studyDao.updateStudy(new StudyEntity(
-				verifyStudyExistenceById));
+		studyDao.updateStudy(new StudyEntity(verifyStudyExistenceById));
 
 	}
 
-	private void copyAllProperties(
-			Study verifyStudyExistenceById,
-			Study study) {
+	private void copyAllProperties(Study verifyStudyExistenceById, Study study) {
 		// If you would like to allow null values use the following line.
 		// Reference PostServiceImpl in the VolunteerManagementApp for more
 		// details.
@@ -215,19 +199,22 @@ public class StudyServiceDbAccessImpl extends ApplicationObjectSupport
 		// used.
 		BeanUtilsBean notNull = new NullAwareBeanUtilsBean();
 		try {
-			notNull.copyProperties(verifyStudyExistenceById,
-					study);
+			notNull.copyProperties(verifyStudyExistenceById, study);
 		} catch (IllegalAccessException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Logger logger = LoggerFactory.getLogger(this.getClass());
+			logger.error("Exception thrown in " + this.getClass().getName(), e);
 		} catch (InvocationTargetException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Logger logger = LoggerFactory.getLogger(this.getClass());
+			logger.error("Exception thrown in " + this.getClass().getName(), e);
 		}
 
 	}
 
-	/********************* DELETE-related methods implementation ***********************/
+	/*********************
+	 * DELETE-related methods implementation
+	 ***********************/
 
 	@Override
 	@Transactional
@@ -247,8 +234,7 @@ public class StudyServiceDbAccessImpl extends ApplicationObjectSupport
 
 	@Override
 	public Study verifyStudyExistenceById(Long id) {
-		StudyEntity studyById = studyDao
-				.getStudyById(id);
+		StudyEntity studyById = studyDao.getStudyById(id);
 		if (studyById == null) {
 			return null;
 		} else {
@@ -258,99 +244,86 @@ public class StudyServiceDbAccessImpl extends ApplicationObjectSupport
 
 	@Override
 	@Transactional
-	public void updatePartiallyStudy(Study study, Form form)
-			throws AppException {
+	public void updatePartiallyStudy(Study study, Form form) throws AppException {
 		// do a validation to verify existence of the resource
-		Study verifyStudyExistenceById = verifyStudyExistenceById(study
-				.getId());
+		Study verifyStudyExistenceById = verifyStudyExistenceById(study.getId());
 		if (verifyStudyExistenceById == null) {
-			throw new AppException(
-					Response.Status.NOT_FOUND.getStatusCode(),
-					404,
+			throw new AppException(Response.Status.NOT_FOUND.getStatusCode(), 404,
 					"The resource you are trying to update does not exist in the database",
-					"Please verify existence of data in the database for the id - "
-							+ study.getId(), AppConstants.DASH_POST_URL);
+					"Please verify existence of data in the database for the id - " + study.getId(),
+					AppConstants.DASH_POST_URL);
 		}
 		copyPartialProperties(verifyStudyExistenceById, study);
-		studyDao.updateStudy(new StudyEntity(
-				verifyStudyExistenceById));
+		studyDao.updateStudy(new StudyEntity(verifyStudyExistenceById));
 
 	}
 
-	private void copyPartialProperties(
-			Study verifyStudyExistenceById,
-			Study study) {
+	private void copyPartialProperties(Study verifyStudyExistenceById, Study study) {
 
 		BeanUtilsBean notNull = new NullAwareBeanUtilsBean();
 		try {
-			notNull.copyProperties(verifyStudyExistenceById,
-					study);
+			notNull.copyProperties(verifyStudyExistenceById, study);
 		} catch (IllegalAccessException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Logger logger = LoggerFactory.getLogger(this.getClass());
+			logger.error("Exception thrown in " + this.getClass().getName(), e);
 		} catch (InvocationTargetException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Logger logger = LoggerFactory.getLogger(this.getClass());
+			logger.error("Exception thrown in " + this.getClass().getName(), e);
 		}
 
 	}
-	
+
 	@Override
 	public void deleteUploadFile(String uploadedFileLocation) throws AppException {
 		Path path = Paths.get(uploadedFileLocation);
 		try {
-		    Files.delete(path);
+			Files.delete(path);
 		} catch (NoSuchFileException x) {
 			x.printStackTrace();
-			throw new AppException(Response.Status.NOT_FOUND.getStatusCode(),
-					404,
-					"NoSuchFileException thrown, Operation unsuccesful.", "Please ensure the file you are attempting to"
-					+ " delete exists at "+path+".", AppConstants.DASH_POST_URL);
-			
-					
+			throw new AppException(Response.Status.NOT_FOUND.getStatusCode(), 404,
+					"NoSuchFileException thrown, Operation unsuccesful.",
+					"Please ensure the file you are attempting to" + " delete exists at " + path + ".",
+					AppConstants.DASH_POST_URL);
+
 		} catch (DirectoryNotEmptyException x) {
 			x.printStackTrace();
-			throw new AppException(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),
-					404,
-					"DirectoryNotEmptyException thrown, operation unsuccesful.", "This method should not attempt to delete,"
-							+ " This should be considered a very serious error. Occured at "+path+".",
+			throw new AppException(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), 404,
+					"DirectoryNotEmptyException thrown, operation unsuccesful.",
+					"This method should not attempt to delete,"
+							+ " This should be considered a very serious error. Occured at " + path + ".",
 					AppConstants.DASH_POST_URL);
 		} catch (IOException x) {
 			x.printStackTrace();
-			throw new AppException(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),
-					500,
-					"IOException thrown and the designated file was not deleted.", 
-					" Permission problems occured at "+path+".",
-					AppConstants.DASH_POST_URL);
+			throw new AppException(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), 500,
+					"IOException thrown and the designated file was not deleted.",
+					" Permission problems occured at " + path + ".", AppConstants.DASH_POST_URL);
 		}
-		
-	}
 
+	}
 
 	@Override
 	public List<Study> getStudiesForForm(long formId, Form form) {
-		List<StudyEntity> studies = studyDao
-				.getStudiesForForm(formId);
+		List<StudyEntity> studies = studyDao.getStudiesForForm(formId);
 		return getStudiesFromEntities(studies);
 	}
 
-	public void sendStudyNotificationEmail(String email, long formId,
-			long studyId) {
+	public void sendStudyNotificationEmail(String email, long formId, long studyId) {
 		SimpleMailMessage msg = new SimpleMailMessage(this.templateMessage);
 		msg.setFrom("NOREPLY@Housuggest.org");
 		msg.setTo(email);
 		msg.setSubject("You have a survey to complete");
 		msg.setText("You have a survey to complete. Please go to www.housuggest.org/FormViewer or your"
-				+ " EMA App, the survey will be active"); 
+				+ " EMA App, the survey will be active");
 		try {
 			this.mailSender.send(msg);
 		} catch (MailException ex) {
-			System.err.println(ex.getMessage()); 
+			System.err.println(ex.getMessage());
 		}
-		
+
 	}
 
-	
 	@Override
 	public void sendTextNotification(String cellPhone, long formId, long studyId) {
 		SimpleMailMessage msg = new SimpleMailMessage(this.templateMessage);
@@ -358,37 +331,38 @@ public class StudyServiceDbAccessImpl extends ApplicationObjectSupport
 		setTextAddresses(cellPhone, msg);
 		msg.setSubject("Scheduling Test");
 		msg.setText("You have a survey to complete. Please go to www.housuggest.org/FormViewer or your"
-				+ " EMA App to fill out the survey."); 
+				+ " EMA App to fill out the survey.");
 		try {
 			this.mailSender.send(msg);
 		} catch (MailException ex) {
-			System.err.println(ex.getMessage()); 
+			System.err.println(ex.getMessage());
 		}
 	}
-	
+
 	/**
 	 * 
 	 * @param cellPhone
 	 * @param msg
-	 * This private function sets the to field of the message to the various 
-	 * emails for sms through email for different carriers. Since each phone number
-	 * is unique regardless of carrier, only one should go through using the proper carrier
+	 *            This private function sets the to field of the message to the
+	 *            various emails for sms through email for different carriers.
+	 *            Since each phone number is unique regardless of carrier, only
+	 *            one should go through using the proper carrier
 	 * 
 	 */
-	private void setTextAddresses(String cellPhone, SimpleMailMessage msg){
+	private void setTextAddresses(String cellPhone, SimpleMailMessage msg) {
 		List<String> addresses = new ArrayList<String>();
-		addresses.add(cellPhone + "@email.uscc.net");//US Cellular
-		addresses.add(cellPhone + "@tms.suncom.com");//SunCom
-		addresses.add(cellPhone + "@ptel.net");//Powertel
-		addresses.add(cellPhone + "@txt.att.net");//AT&T
-		addresses.add(cellPhone + "@message.alltel.com");//Alltel
-		addresses.add(cellPhone + "@MyMetroPcs.com");//Metro PCS
-		addresses.add(cellPhone + "@tmomail.net");//T-Mobile
-		addresses.add(cellPhone + "@vmobl.com");//Virgin Mobile
-		addresses.add(cellPhone + "@cingularme.com");//Cingular
-		addresses.add(cellPhone + "@messaging.sprintpcs.com");//Sprint
-		addresses.add(cellPhone + "@vtext.com");//Verizon
-		addresses.add(cellPhone + "@messaging.nextel.com");//Nextel
+		addresses.add(cellPhone + "@email.uscc.net");// US Cellular
+		addresses.add(cellPhone + "@tms.suncom.com");// SunCom
+		addresses.add(cellPhone + "@ptel.net");// Powertel
+		addresses.add(cellPhone + "@txt.att.net");// AT&T
+		addresses.add(cellPhone + "@message.alltel.com");// Alltel
+		addresses.add(cellPhone + "@MyMetroPcs.com");// Metro PCS
+		addresses.add(cellPhone + "@tmomail.net");// T-Mobile
+		addresses.add(cellPhone + "@vmobl.com");// Virgin Mobile
+		addresses.add(cellPhone + "@cingularme.com");// Cingular
+		addresses.add(cellPhone + "@messaging.sprintpcs.com");// Sprint
+		addresses.add(cellPhone + "@vtext.com");// Verizon
+		addresses.add(cellPhone + "@messaging.nextel.com");// Nextel
 		msg.setTo(addresses.toArray(new String[0]));
 	}
 
@@ -403,31 +377,32 @@ public class StudyServiceDbAccessImpl extends ApplicationObjectSupport
 
 	@Override
 	@Transactional
-	public void expireStudies(){
+	public void expireStudies() {
 		List<Long> expiredStudies = studyDao.getExpiredStudies();
-		for(Long study : expiredStudies){
+		for (Long study : expiredStudies) {
 			try {
 				expireStudy(study);
 			} catch (AppException e) {
 				// TODO Auto-generated catch block
-				e.printStackTrace();
+				Logger logger = LoggerFactory.getLogger(this.getClass());
+				logger.error("Exception thrown in " + this.getClass().getName(), e);
 			}
 			studyDao.removeExpiredStudy(study);
 		}
 	}
-	
-	private void expireStudy(Long study) throws AppException{
+
+	private void expireStudy(Long study) throws AppException {
 		List<Long> userIds = studyDao.getUsersForActiveStudy(study);
 		List<User> users = new ArrayList<User>();
 		User userTemp;
-		for(Long userId : userIds){
+		for (Long userId : userIds) {
 			userTemp = userService.getUserById(userId);
 			userTemp.getActiveStudies().remove(study);
 			users.add(userTemp);
 		}
-		for(User user : users){
+		for (User user : users) {
 			userService.updateUserJob(user);
 		}
 	}
-	
+
 }

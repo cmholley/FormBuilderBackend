@@ -13,15 +13,14 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.stereotype.Component;
 
 /**
- * This class handles all requests that do fail authentication.
- * Also is responsible for handling preflight requests which do not authenticate.
+ * This class handles all requests that do fail authentication. Also is
+ * responsible for handling preflight requests which do not authenticate.
  * 
  * @author Tyler.swensen@gmail.com
  *
  */
 @Component
-public final class RestAuthenticationEntryPoint extends
-BasicAuthenticationEntryPoint {
+public final class RestAuthenticationEntryPoint extends BasicAuthenticationEntryPoint {
 
 	private static final RequestMatcher requestMatcher = new ELRequestMatcher(
 			"hasHeader('X-Requested-With','XMLHttpRequest')");
@@ -35,16 +34,13 @@ BasicAuthenticationEntryPoint {
 	}
 
 	@Override
-	public void commence(final HttpServletRequest request,
-			final HttpServletResponse response,
-			final AuthenticationException authException) throws IOException,
-			ServletException {
+	public void commence(final HttpServletRequest request, final HttpServletResponse response,
+			final AuthenticationException authException) throws IOException, ServletException {
 
 		if (isPreflight(request)) {
 			response.setStatus(HttpServletResponse.SC_OK);
 		} else if (isRestRequest(request)) {
-			response.sendError(418,
-					"Unauthorized");
+			response.sendError(418, "Unauthorized");
 		} else {
 			super.commence(request, response, authException);
 		}

@@ -18,81 +18,85 @@ import javax.persistence.JoinColumn;
 import javax.persistence.Table;
 
 import org.apache.commons.beanutils.BeanUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import dash.pojo.Study;
 
 @Entity
 @Table(name = "studies")
 public class StudyEntity implements Serializable {
-	
+
 	private static final long serialVersionUID = -2453192655669468348L;
 
 	@Id
 	@GeneratedValue
-	@Column(name="id")
+	@Column(name = "id")
 	private Long id;
-	
+
 	@Column(name = "study_name")
 	private String studyName;
-	
-	@ElementCollection (fetch= FetchType.EAGER)
-	@CollectionTable(name = "participants", joinColumns = {@JoinColumn(name="study_id")})
+
+	@ElementCollection(fetch = FetchType.EAGER)
+	@CollectionTable(name = "participants", joinColumns = { @JoinColumn(name = "study_id") })
 	private Set<String> Participants;
-	
-	@ElementCollection (fetch= FetchType.EAGER)
-	@CollectionTable(name = "fixed_times", joinColumns = {@JoinColumn(name="study_id")})
+
+	@ElementCollection(fetch = FetchType.EAGER)
+	@CollectionTable(name = "fixed_times", joinColumns = { @JoinColumn(name = "study_id") })
 	private Set<Calendar> fixedTimes = new HashSet<Calendar>();;
-	
+
 	@Column(name = "start_Date")
 	private Date startDate;
-	
+
 	@Column(name = "end_Date")
 	private Date endDate;
-	
+
 	@Column(name = "duration")
 	private Integer duration;
-	
+
 	@Column(name = "sunday")
 	private boolean sunday;
-	
+
 	@Column(name = "monday")
 	private boolean monday;
-	
+
 	@Column(name = "tuesday")
-	private boolean tuesday; 
-	
+	private boolean tuesday;
+
 	@Column(name = "wednesday")
 	private boolean wednesday;
-	
+
 	@Column(name = "thursday")
-	private boolean thursday; 
-	
+	private boolean thursday;
+
 	@Column(name = "friday")
-	private boolean friday; 
-	
+	private boolean friday;
+
 	@Column(name = "saturday")
 	private boolean saturday;
-	
+
 	@Column(name = "form_id")
 	private Long formId;
-	
+
 	@Column(name = "insertion_Date")
 	private Date insertionDate;
-	
+
 	public StudyEntity(Study form) {
 		try {
 			BeanUtils.copyProperties(this, form);
-		} catch ( IllegalAccessException e) {
+		} catch (IllegalAccessException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch ( InvocationTargetException e) {
+			Logger logger = LoggerFactory.getLogger(this.getClass());
+			logger.error("Exception thrown in " + this.getClass().getName(), e);
+		} catch (InvocationTargetException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Logger logger = LoggerFactory.getLogger(this.getClass());
+			logger.error("Exception thrown in " + this.getClass().getName(), e);
 		}
 	}
-	
-	public StudyEntity(){
-		
+
+	public StudyEntity() {
+
 	}
 
 	public Set<String> getParticipants() {
@@ -229,5 +233,5 @@ public class StudyEntity implements Serializable {
 	public static long getSerialversionuid() {
 		return serialVersionUID;
 	}
-	
+
 }

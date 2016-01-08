@@ -4,15 +4,15 @@ import java.util.List;
 
 import dash.pojo.FormResponse;
 
-
 /**
  * An Example DAO interface for a simple object.
+ * 
  * @Author tyler.swensen@gmail.com
  */
 public interface FormResponseDao {
-	
+
 	public List<FormResponseEntity> getFormResponses(int numberOfFormResponses, Long startIndex);
-	
+
 	public int getNumberOfFormResponses();
 
 	/**
@@ -22,9 +22,9 @@ public interface FormResponseDao {
 	 * @return
 	 */
 	public FormResponseEntity getFormResponseById(Long id);
-	
+
 	public List<FormResponseEntity> getFormResponsesByFormId(Long id, int numberOfFormResponses, int page);
-	
+
 	public void deleteFormResponseById(FormResponse formResponse);
 
 	public Long createFormResponse(FormResponseEntity formResponse);

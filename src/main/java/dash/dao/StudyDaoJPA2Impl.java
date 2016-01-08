@@ -22,7 +22,8 @@ import org.springframework.stereotype.Component;
 import dash.pojo.Study;
 
 /**
- * This is an example of a JPA implementation of the DAO layer for a simple object
+ * This is an example of a JPA implementation of the DAO layer for a simple
+ * object
  * 
  * @author Tyler.swensen@gmail.com
  *
@@ -38,8 +39,7 @@ public class StudyDaoJPA2Impl implements StudyDao {
 
 		sqlString = "SELECT u FROM StudyEntity u WHERE u.id < ?1 ORDER BY u.time_stamp_sample DESC";
 
-		TypedQuery<StudyEntity> query = entityManager.createQuery(sqlString,
-				StudyEntity.class);
+		TypedQuery<StudyEntity> query = entityManager.createQuery(sqlString, StudyEntity.class);
 		if (startIndex == 0)
 			startIndex = Long.MAX_VALUE;
 		query.setParameter(1, startIndex);
@@ -53,8 +53,7 @@ public class StudyDaoJPA2Impl implements StudyDao {
 
 		try {
 			String qlString = "SELECT u FROM StudyEntity u WHERE u.id = ?1";
-			TypedQuery<StudyEntity> query = entityManager.createQuery(qlString,
-					StudyEntity.class);
+			TypedQuery<StudyEntity> query = entityManager.createQuery(qlString, StudyEntity.class);
 			query.setParameter(1, id);
 
 			return query.getSingleResult();
@@ -66,8 +65,7 @@ public class StudyDaoJPA2Impl implements StudyDao {
 	@Override
 	public void deleteStudyById(Study studyPojo) {
 
-		StudyEntity study = entityManager
-				.find(StudyEntity.class, studyPojo.getId());
+		StudyEntity study = entityManager.find(StudyEntity.class, studyPojo.getId());
 		entityManager.remove(study);
 
 	}
@@ -99,8 +97,7 @@ public class StudyDaoJPA2Impl implements StudyDao {
 	public int getNumberOfStudies() {
 		try {
 			String qlString = "SELECT COUNT(*) FROM study";
-			TypedQuery<StudyEntity> query = entityManager.createQuery(qlString,
-					StudyEntity.class);
+			TypedQuery<StudyEntity> query = entityManager.createQuery(qlString, StudyEntity.class);
 
 			return query.getFirstResult();
 		} catch (NoResultException e) {
@@ -111,8 +108,7 @@ public class StudyDaoJPA2Impl implements StudyDao {
 	@Override
 	public List<StudyEntity> getStudiesForForm(long formId) {
 		String sqlString = "SELECT u FROM StudyEntity u WHERE u.formId = :formId ORDER BY u.insertionDate DESC";
-		TypedQuery<StudyEntity> query = entityManager.createQuery(sqlString,
-				StudyEntity.class);
+		TypedQuery<StudyEntity> query = entityManager.createQuery(sqlString, StudyEntity.class);
 		query.setParameter("formId", formId);
 		List<StudyEntity> studies = query.getResultList();
 		return studies;
@@ -121,8 +117,7 @@ public class StudyDaoJPA2Impl implements StudyDao {
 	@Override
 	public List<StudyEntity> getTodaysStudies() {
 		String sqlString = "SELECT u FROM StudyEntity u WHERE u.startDate BETWEEN :startDate AND :endDate";
-		TypedQuery<StudyEntity> query = entityManager.createQuery(sqlString,
-				StudyEntity.class);
+		TypedQuery<StudyEntity> query = entityManager.createQuery(sqlString, StudyEntity.class);
 		Calendar cal = Calendar.getInstance();
 		cal.set(Calendar.MILLISECOND, 0);
 		cal.set(Calendar.SECOND, 0);
@@ -139,8 +134,8 @@ public class StudyDaoJPA2Impl implements StudyDao {
 
 	@Override
 	public void insertExpirationTime(Long id, Date expirationDate) {
-		Query query = entityManager.createNativeQuery("INSERT INTO expiration_times (study_id, expiration_time) "
-				+ "VALUES (?, ?)");
+		Query query = entityManager
+				.createNativeQuery("INSERT INTO expiration_times (study_id, expiration_time) " + "VALUES (?, ?)");
 		query.setParameter(1, id);
 		query.setParameter(2, expirationDate);
 		query.executeUpdate();
@@ -149,17 +144,15 @@ public class StudyDaoJPA2Impl implements StudyDao {
 	@Override
 	public List<Long> getExpiredStudies() {
 		Configuration configuration = new Configuration().configure();
-		ServiceRegistry serviceRegistry = new ServiceRegistryBuilder()
-				.applySettings(configuration.getProperties())
+		ServiceRegistry serviceRegistry = new ServiceRegistryBuilder().applySettings(configuration.getProperties())
 				.buildServiceRegistry();
-		SessionFactory sessionFactory = configuration
-				.buildSessionFactory(serviceRegistry);
+		SessionFactory sessionFactory = configuration.buildSessionFactory(serviceRegistry);
 		Session session = sessionFactory.openSession();
 		String queryString = "SELECT study_id FROM expiration_times WHERE expiration_time < NOW()";
 		SQLQuery query = session.createSQLQuery(queryString);
 		List<Long> studyIds = new ArrayList<Long>();
-		for(Object object : query.list()){
-			studyIds.add(new Long((int)(object)));
+		for (Object object : query.list()) {
+			studyIds.add(new Long((int) (object)));
 		}
 		return studyIds;
 	}
@@ -167,18 +160,16 @@ public class StudyDaoJPA2Impl implements StudyDao {
 	@Override
 	public List<Long> getUsersForActiveStudy(Long studyId) {
 		Configuration configuration = new Configuration().configure();
-		ServiceRegistry serviceRegistry = new ServiceRegistryBuilder()
-				.applySettings(configuration.getProperties())
+		ServiceRegistry serviceRegistry = new ServiceRegistryBuilder().applySettings(configuration.getProperties())
 				.buildServiceRegistry();
-		SessionFactory sessionFactory = configuration
-				.buildSessionFactory(serviceRegistry);
+		SessionFactory sessionFactory = configuration.buildSessionFactory(serviceRegistry);
 		Session session = sessionFactory.openSession();
 		String queryString = "SELECT user_id FROM active_studies WHERE activeStudies_KEY = :studyId";
 		SQLQuery query = session.createSQLQuery(queryString);
 		query.setParameter("studyId", studyId);
 		List<Long> userIds = new ArrayList<Long>();
-		for(Object object : query.list()){
-			userIds.add(new Long((int)(object)));
+		for (Object object : query.list()) {
+			userIds.add(new Long((int) (object)));
 		}
 		return userIds;
 	}
@@ -189,6 +180,5 @@ public class StudyDaoJPA2Impl implements StudyDao {
 		query.setParameter("studyId", study);
 		query.executeUpdate();
 	}
-	
-	
+
 }

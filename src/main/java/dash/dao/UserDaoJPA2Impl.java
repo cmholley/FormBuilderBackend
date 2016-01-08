@@ -13,6 +13,8 @@ import javax.persistence.Query;
 import javax.persistence.TemporalType;
 import javax.persistence.TypedQuery;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import dash.pojo.User;
@@ -24,8 +26,7 @@ import dash.pojo.User;
  *
  */
 @Component("userDao")
-public class UserDaoJPA2Impl implements
-UserDao {
+public class UserDaoJPA2Impl implements UserDao {
 
 	@PersistenceContext(unitName = "dashPersistence")
 	private EntityManager entityManager;
@@ -33,14 +34,12 @@ UserDao {
 	@Override
 	public List<UserEntity> getUsers(String orderByInsertionDate) {
 		String sqlString = null;
-		if(orderByInsertionDate != null){
-			sqlString = "SELECT u FROM UserEntity u"
-					+ " ORDER BY u.insertionDate " + orderByInsertionDate;
+		if (orderByInsertionDate != null) {
+			sqlString = "SELECT u FROM UserEntity u" + " ORDER BY u.insertionDate " + orderByInsertionDate;
 		} else {
 			sqlString = "SELECT u FROM UserEntity u";
 		}
-		TypedQuery<UserEntity> query = entityManager.createQuery(sqlString,
-				UserEntity.class);
+		TypedQuery<UserEntity> query = entityManager.createQuery(sqlString, UserEntity.class);
 
 		return query.getResultList();
 	}
@@ -51,12 +50,14 @@ UserDao {
 		Calendar calendar = new GregorianCalendar();
 		calendar.setTimeZone(TimeZone.getTimeZone("UTC+6"));
 		calendar.setTime(new Date());
-		calendar.add(Calendar.DATE, -numberOfDaysToLookBack);//substract the number of days to look back
+		calendar.add(Calendar.DATE, -numberOfDaysToLookBack);// substract the
+																// number of
+																// days to look
+																// back
 		Date dateToLookBackAfter = calendar.getTime();
 
 		String qlString = "SELECT u FROM UserEntity u where u.insertionDate > :dateToLookBackAfter ORDER BY u.insertionDate DESC";
-		TypedQuery<UserEntity> query = entityManager.createQuery(qlString,
-				UserEntity.class);
+		TypedQuery<UserEntity> query = entityManager.createQuery(qlString, UserEntity.class);
 		query.setParameter("dateToLookBackAfter", dateToLookBackAfter, TemporalType.DATE);
 
 		return query.getResultList();
@@ -67,8 +68,7 @@ UserDao {
 
 		try {
 			String qlString = "SELECT u FROM UserEntity u WHERE u.id = ?1";
-			TypedQuery<UserEntity> query = entityManager.createQuery(qlString,
-					UserEntity.class);
+			TypedQuery<UserEntity> query = entityManager.createQuery(qlString, UserEntity.class);
 			query.setParameter(1, id);
 
 			return query.getSingleResult();
@@ -82,8 +82,7 @@ UserDao {
 
 		try {
 			String qlString = "SELECT u FROM UserEntity u WHERE u.username = ?1";
-			TypedQuery<UserEntity> query = entityManager.createQuery(qlString,
-					UserEntity.class);
+			TypedQuery<UserEntity> query = entityManager.createQuery(qlString, UserEntity.class);
 			query.setParameter(1, name);
 
 			return query.getSingleResult();
@@ -93,26 +92,26 @@ UserDao {
 	}
 
 	@Override
-	public String getRoleByName(String username){
-		
-		try{
+	public String getRoleByName(String username) {
+
+		try {
 			String qlString = "SELECT u.authority FROM AuthorityEntity u  WHERE u.username= ?1";
 			TypedQuery<String> query = entityManager.createQuery(qlString, String.class);
 			query.setParameter(1, username);
-			
+
 			return query.getSingleResult();
-		}catch(NoResultException e){
-			e.printStackTrace();
+		} catch (NoResultException e) {
+			Logger logger = LoggerFactory.getLogger(this.getClass());
+			logger.error("Exception thrown in " + this.getClass().getName(), e);
 			return null;
 		}
-		
+
 	}
 
 	@Override
 	public void deleteUserById(User userPojo) {
 
-		UserEntity user = entityManager
-				.find(UserEntity.class, userPojo.getId());
+		UserEntity user = entityManager.find(UserEntity.class, userPojo.getId());
 		entityManager.remove(user);
 
 	}
@@ -130,21 +129,19 @@ UserDao {
 
 	@Override
 	public void updateUser(UserEntity user) {
-		//TODO think about partial update and full update
+		// TODO think about partial update and full update
 		entityManager.merge(user);
 	}
-	
-	public void updateUserRole(String role, String username){
+
+	public void updateUserRole(String role, String username) {
 		String qlString = "SELECT u FROM AuthorityEntity u WHERE u.username = ?1";
-		TypedQuery<AuthorityEntity> query = entityManager.createQuery(qlString,
-				AuthorityEntity.class);
+		TypedQuery<AuthorityEntity> query = entityManager.createQuery(qlString, AuthorityEntity.class);
 		query.setParameter(1, username);
 
-		AuthorityEntity authority= query.getSingleResult();
+		AuthorityEntity authority = query.getSingleResult();
 		authority.setAuthority(role);
 		entityManager.merge(authority);
 	}
-	
 
 	@Override
 	public void deleteUsers() {
@@ -156,8 +153,7 @@ UserDao {
 	public int getNumberOfUsers() {
 		try {
 			String qlString = "SELECT COUNT(*) FROM users";
-			TypedQuery<UserEntity> query = entityManager.createQuery(qlString,
-					UserEntity.class);
+			TypedQuery<UserEntity> query = entityManager.createQuery(qlString, UserEntity.class);
 
 			return query.getFirstResult();
 		} catch (NoResultException e) {

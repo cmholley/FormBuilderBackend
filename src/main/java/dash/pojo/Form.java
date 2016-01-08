@@ -4,7 +4,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -14,6 +13,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.apache.commons.beanutils.BeanUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import dash.dao.FormEntity;
 import dash.helpers.DateISO8601Adapter;
@@ -71,7 +72,7 @@ public class Form implements IAclObject {
 	@XmlElement(name = "send_receipt")
 	private boolean send_receipt;
 
-	@XmlElement(name = "email_message")//Message for receipt email
+	@XmlElement(name = "email_message") // Message for receipt email
 	private String email_message;
 
 	@XmlElement(name = "completed_message")
@@ -87,7 +88,7 @@ public class Form implements IAclObject {
 	private String closed_message;
 
 	private HashMap<String, String> permissions;
-	
+
 	@XmlElement(name = "confirmation_recipient_email")
 	private String confirmation_recipient_email;
 
@@ -96,18 +97,19 @@ public class Form implements IAclObject {
 			BeanUtils.copyProperties(this, formEntity);
 		} catch (IllegalAccessException e) {
 
-			e.printStackTrace();
+			Logger logger = LoggerFactory.getLogger(this.getClass());
+			logger.error("Exception thrown in " + this.getClass().getName(), e);
 		} catch (InvocationTargetException e) {
 
-			e.printStackTrace();
+			Logger logger = LoggerFactory.getLogger(this.getClass());
+			logger.error("Exception thrown in " + this.getClass().getName(), e);
 		}
 	}
 
-	public Form(String name, Set<Question> questions, boolean redirect_to_url,
-			boolean enabled, boolean publi, boolean send_notification, boolean send_receipt,
-			String email_message, String completed_message,
-			String redirect_url, Date expiration_date, String closed_message,
-			THEME theme, String receipt_message, String confirmation_recipient_email) {
+	public Form(String name, Set<Question> questions, boolean redirect_to_url, boolean enabled, boolean publi,
+			boolean send_notification, boolean send_receipt, String email_message, String completed_message,
+			String redirect_url, Date expiration_date, String closed_message, THEME theme, String receipt_message,
+			String confirmation_recipient_email) {
 		super();
 		this.name = name;
 		this.questions = questions;
@@ -122,15 +124,16 @@ public class Form implements IAclObject {
 		this.confirmation_recipient_email = confirmation_recipient_email;
 		this.closed_message = closed_message;
 		this.email_message = email_message;
-		this.completed_message = completed_message;	
+		this.completed_message = completed_message;
 	}
 
 	public Form() {
 		this.closed_message = "We're sorry, this form is closed";
 		this.completed_message = "Thank you for your submission, your response has been recorded";
-		this.email_message = "Thank you for completing this form. Your response has been recorded"; 
-		//User user = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		//this.confirmation_recipient_email = user.getUsername();
+		this.email_message = "Thank you for completing this form. Your response has been recorded";
+		// User user =
+		// (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		// this.confirmation_recipient_email = user.getUsername();
 	}
 
 	public Set<Question> getQuestions() {
@@ -268,6 +271,7 @@ public class Form implements IAclObject {
 	public void setPermissions(HashMap<String, String> permissions) {
 		this.permissions = permissions;
 	}
+
 	public String getConfirmation_recipient_email() {
 		return confirmation_recipient_email;
 	}

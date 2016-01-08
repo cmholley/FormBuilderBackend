@@ -14,7 +14,8 @@ import org.springframework.stereotype.Component;
 import dash.pojo.FormResponse;
 
 /**
- * This is an example of a JPA implementation of the DAO layer for a simple object
+ * This is an example of a JPA implementation of the DAO layer for a simple
+ * object
  * 
  * @author Tyler.swensen@gmail.com
  *
@@ -30,8 +31,7 @@ public class FormResponseDaoJPA2Impl implements FormResponseDao {
 
 		sqlString = "SELECT u FROM FormResponseEntity u WHERE u.id < ?1 ORDER BY u.insertion_date DESC";
 
-		TypedQuery<FormResponseEntity> query = entityManager.createQuery(sqlString,
-				FormResponseEntity.class);
+		TypedQuery<FormResponseEntity> query = entityManager.createQuery(sqlString, FormResponseEntity.class);
 		if (startIndex == 0)
 			startIndex = Long.MAX_VALUE;
 		query.setParameter(1, startIndex);
@@ -45,8 +45,7 @@ public class FormResponseDaoJPA2Impl implements FormResponseDao {
 
 		try {
 			String qlString = "SELECT u FROM FormResponseEntity u WHERE u.id = ?1";
-			TypedQuery<FormResponseEntity> query = entityManager.createQuery(qlString,
-					FormResponseEntity.class);
+			TypedQuery<FormResponseEntity> query = entityManager.createQuery(qlString, FormResponseEntity.class);
 			query.setParameter(1, id);
 
 			return query.getSingleResult();
@@ -54,22 +53,20 @@ public class FormResponseDaoJPA2Impl implements FormResponseDao {
 			return null;
 		}
 	}
-	
+
 	@Override
 	public List<FormResponseEntity> getFormResponsesByFormId(Long id, int numberOfFormResponses, int page) {
 
 		try {
 			String qlString = "SELECT u FROM FormResponseEntity u WHERE u.form_id = ?1 ORDER BY u.latest_update DESC";
-			TypedQuery<FormResponseEntity> query = entityManager.createQuery(qlString,
-					FormResponseEntity.class);
-			
-			
-			query.setFirstResult((page-1) * numberOfFormResponses); 
+			TypedQuery<FormResponseEntity> query = entityManager.createQuery(qlString, FormResponseEntity.class);
+
+			query.setFirstResult((page - 1) * numberOfFormResponses);
 			query.setParameter(1, id);
 			query.setMaxResults(numberOfFormResponses);
 
 			return query.getResultList();
-		
+
 		} catch (NoResultException e) {
 			return null;
 		}
@@ -78,8 +75,7 @@ public class FormResponseDaoJPA2Impl implements FormResponseDao {
 	@Override
 	public void deleteFormResponseById(FormResponse formResponsePojo) {
 
-		FormResponseEntity formResponse = entityManager
-				.find(FormResponseEntity.class, formResponsePojo.getId());
+		FormResponseEntity formResponse = entityManager.find(FormResponseEntity.class, formResponsePojo.getId());
 		entityManager.remove(formResponse);
 
 	}
@@ -112,8 +108,7 @@ public class FormResponseDaoJPA2Impl implements FormResponseDao {
 	public int getNumberOfFormResponses() {
 		try {
 			String qlString = "SELECT COUNT(*) FROM formResponse";
-			TypedQuery<FormResponseEntity> query = entityManager.createQuery(qlString,
-					FormResponseEntity.class);
+			TypedQuery<FormResponseEntity> query = entityManager.createQuery(qlString, FormResponseEntity.class);
 
 			return query.getFirstResult();
 		} catch (NoResultException e) {

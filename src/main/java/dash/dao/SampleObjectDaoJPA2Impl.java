@@ -14,7 +14,8 @@ import org.springframework.stereotype.Component;
 import dash.pojo.SampleObject;
 
 /**
- * This is an example of a JPA implementation of the DAO layer for a simple object
+ * This is an example of a JPA implementation of the DAO layer for a simple
+ * object
  * 
  * @author Tyler.swensen@gmail.com
  *
@@ -30,8 +31,7 @@ public class SampleObjectDaoJPA2Impl implements SampleObjectDao {
 
 		sqlString = "SELECT u FROM SampleObjectEntity u WHERE u.id < ?1 ORDER BY u.time_stamp_sample DESC";
 
-		TypedQuery<SampleObjectEntity> query = entityManager.createQuery(sqlString,
-				SampleObjectEntity.class);
+		TypedQuery<SampleObjectEntity> query = entityManager.createQuery(sqlString, SampleObjectEntity.class);
 		if (startIndex == 0)
 			startIndex = Long.MAX_VALUE;
 		query.setParameter(1, startIndex);
@@ -45,8 +45,7 @@ public class SampleObjectDaoJPA2Impl implements SampleObjectDao {
 
 		try {
 			String qlString = "SELECT u FROM SampleObjectEntity u WHERE u.id = ?1";
-			TypedQuery<SampleObjectEntity> query = entityManager.createQuery(qlString,
-					SampleObjectEntity.class);
+			TypedQuery<SampleObjectEntity> query = entityManager.createQuery(qlString, SampleObjectEntity.class);
 			query.setParameter(1, id);
 
 			return query.getSingleResult();
@@ -58,8 +57,7 @@ public class SampleObjectDaoJPA2Impl implements SampleObjectDao {
 	@Override
 	public void deleteSampleObjectById(SampleObject sampleObjectPojo) {
 
-		SampleObjectEntity sampleObject = entityManager
-				.find(SampleObjectEntity.class, sampleObjectPojo.getId());
+		SampleObjectEntity sampleObject = entityManager.find(SampleObjectEntity.class, sampleObjectPojo.getId());
 		entityManager.remove(sampleObject);
 
 	}
@@ -69,7 +67,8 @@ public class SampleObjectDaoJPA2Impl implements SampleObjectDao {
 
 		sampleObject.setTime_stamp_sample(new Date());
 		entityManager.persist(sampleObject);
-		entityManager.flush();// force insert to receive the id of the sampleObject
+		entityManager.flush();// force insert to receive the id of the
+								// sampleObject
 
 		// Give admin over new sampleObject to the new sampleObject
 
@@ -92,8 +91,7 @@ public class SampleObjectDaoJPA2Impl implements SampleObjectDao {
 	public int getNumberOfSampleObjects() {
 		try {
 			String qlString = "SELECT COUNT(*) FROM sampleObject";
-			TypedQuery<SampleObjectEntity> query = entityManager.createQuery(qlString,
-					SampleObjectEntity.class);
+			TypedQuery<SampleObjectEntity> query = entityManager.createQuery(qlString, SampleObjectEntity.class);
 
 			return query.getFirstResult();
 		} catch (NoResultException e) {

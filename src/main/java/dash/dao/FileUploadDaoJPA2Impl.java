@@ -14,7 +14,8 @@ import org.springframework.stereotype.Component;
 import dash.pojo.FileUpload;
 
 /**
- * This is an example of a JPA implementation of the DAO layer for a simple object
+ * This is an example of a JPA implementation of the DAO layer for a simple
+ * object
  * 
  * @author Tyler.swensen@gmail.com
  *
@@ -30,8 +31,7 @@ public class FileUploadDaoJPA2Impl implements FileUploadDao {
 
 		sqlString = "SELECT u FROM FileUpload u WHERE u.id < ?1 ORDER BY u.upload_timestamp DESC";
 
-		TypedQuery<FileUpload> query = entityManager.createQuery(sqlString,
-				FileUpload.class);
+		TypedQuery<FileUpload> query = entityManager.createQuery(sqlString, FileUpload.class);
 		if (startIndex == 0)
 			startIndex = Long.MAX_VALUE;
 		query.setParameter(1, startIndex);
@@ -45,8 +45,7 @@ public class FileUploadDaoJPA2Impl implements FileUploadDao {
 
 		try {
 			String qlString = "SELECT u FROM FileUpload u WHERE u.id = ?1";
-			TypedQuery<FileUpload> query = entityManager.createQuery(qlString,
-					FileUpload.class);
+			TypedQuery<FileUpload> query = entityManager.createQuery(qlString, FileUpload.class);
 			query.setParameter(1, id);
 
 			return query.getSingleResult();
@@ -58,8 +57,7 @@ public class FileUploadDaoJPA2Impl implements FileUploadDao {
 	@Override
 	public void deleteFileUploadById(FileUpload fileUploadPojo) {
 
-		FileUpload fileUpload = entityManager
-				.find(FileUpload.class, fileUploadPojo.getId());
+		FileUpload fileUpload = entityManager.find(FileUpload.class, fileUploadPojo.getId());
 		entityManager.remove(fileUpload);
 
 	}
@@ -69,7 +67,8 @@ public class FileUploadDaoJPA2Impl implements FileUploadDao {
 
 		fileUpload.setUpload_timestamp(new Date());
 		entityManager.persist(fileUpload);
-		entityManager.flush();// force insert to receive the id of the fileUpload
+		entityManager.flush();// force insert to receive the id of the
+								// fileUpload
 
 		// Give admin over new fileUpload to the new fileUpload
 
@@ -92,8 +91,7 @@ public class FileUploadDaoJPA2Impl implements FileUploadDao {
 	public int getNumberOfFileUploads() {
 		try {
 			String qlString = "SELECT COUNT(*) FROM fileUpload";
-			TypedQuery<FileUpload> query = entityManager.createQuery(qlString,
-					FileUpload.class);
+			TypedQuery<FileUpload> query = entityManager.createQuery(qlString, FileUpload.class);
 
 			return query.getFirstResult();
 		} catch (NoResultException e) {

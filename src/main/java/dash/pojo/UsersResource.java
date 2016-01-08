@@ -19,6 +19,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -61,11 +63,10 @@ public class UsersResource {
 	@Produces({ MediaType.TEXT_HTML })
 	public Response createUser(User user) throws AppException {
 		Long createUserId = userService.createUser(user);
-		userService.requestEmailActivation(user);//Request email for activation
+		userService.requestEmailActivation(user);// Request email for activation
 		return Response.status(Response.Status.CREATED)
 				// 201
-				.entity("A new user has been created with ")
-				.header("ObjectId", String.valueOf(createUserId)).build();
+				.entity("A new user has been created with ").header("ObjectId", String.valueOf(createUserId)).build();
 	}
 
 	/**
@@ -83,30 +84,20 @@ public class UsersResource {
 	@Consumes({ MediaType.APPLICATION_FORM_URLENCODED })
 	@Produces({ MediaType.TEXT_HTML })
 	@Transactional
-	public Response createUserFromApplicationFormURLencoded(
-			@FormParam("username") String username,
-			@FormParam("password") String password,
-			@FormParam("fistName") String firstName,
-			@FormParam("lastName") String lastName,
-			@FormParam("city") String city,
-			@FormParam("homePhone") String homePhone,
-			@FormParam("cellPhone") String cellPhone,
-			@FormParam("email") String email,
-			@FormParam("picturePath") String picturePath) throws AppException {
+	public Response createUserFromApplicationFormURLencoded(@FormParam("username") String username,
+			@FormParam("password") String password, @FormParam("fistName") String firstName,
+			@FormParam("lastName") String lastName, @FormParam("city") String city,
+			@FormParam("homePhone") String homePhone, @FormParam("cellPhone") String cellPhone,
+			@FormParam("email") String email, @FormParam("picturePath") String picturePath) throws AppException {
 
-		User user = new User(username, password, firstName, lastName, city,
-				homePhone, cellPhone, email, picturePath);
+		User user = new User(username, password, firstName, lastName, city, homePhone, cellPhone, email, picturePath);
 
 		Long createUserid = userService.createUser(user);
 
-		return Response
-				.status(Response.Status.CREATED)
+		return Response.status(Response.Status.CREATED)
 				// 201
-				.entity("A new user/resource has been created at /services/users/"
-						+ createUserid)
-				.header("Location",
-						"http://localhost:8888/services/users/"
-								+ String.valueOf(createUserid)).build();
+				.entity("A new user/resource has been created at /services/users/" + createUserid)
+				.header("Location", "http://localhost:8888/services/users/" + String.valueOf(createUserid)).build();
 	}
 
 	/**
@@ -139,45 +130,34 @@ public class UsersResource {
 	 */
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON })
-	public List<User> getUsers(
-			@QueryParam("orderByInsertionDate") String orderByInsertionDate,
-			@QueryParam("numberDaysToLookBack") Integer numberDaysToLookBack)
-			throws IOException, AppException {
-		List<User> users = userService.getUsers(orderByInsertionDate,
-				numberDaysToLookBack);
+	public List<User> getUsers(@QueryParam("orderByInsertionDate") String orderByInsertionDate,
+			@QueryParam("numberDaysToLookBack") Integer numberDaysToLookBack) throws IOException, AppException {
+		List<User> users = userService.getUsers(orderByInsertionDate, numberDaysToLookBack);
 		return users;
 	}
 
 	@GET
 	@Path("myUser")
 	@Produces({ MediaType.APPLICATION_JSON })
-	public Response getMyUser(){
-		Authentication auth = SecurityContextHolder.getContext()
-				.getAuthentication();
-		String username = ((UserDetails)auth.getPrincipal()).getUsername();		
+	public Response getMyUser() {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		String username = ((UserDetails) auth.getPrincipal()).getUsername();
 		User user = userService.getUserByName(username);
-		if(user.isIs_email_verified())
-			return Response.status(200)
-					.entity(new GenericEntity<User>(user) {})
-					.build();
+		if (user.isIs_email_verified())
+			return Response.status(200).entity(new GenericEntity<User>(user) {
+			}).build();
 		else
-			return Response.status(501)
-					.entity("{\"message\":\"Unable to login. Please verify email.\"}")
-					.build();
+			return Response.status(501).entity("{\"message\":\"Unable to login. Please verify email.\"}").build();
 	}
 
 	@GET
 	@Path("{id}")
 	@Produces({ MediaType.APPLICATION_JSON })
-	public Response getUserById(@PathParam("id") Long id,
-			@QueryParam("detailed") boolean detailed) throws IOException,
-			AppException {
+	public Response getUserById(@PathParam("id") Long id, @QueryParam("detailed") boolean detailed)
+			throws IOException, AppException {
 		User userById = userService.getUserById(id);
-		return Response.status(200)
-				.entity(new GenericEntity<User>(userById) {})
-				.header("Access-Control-Allow-Headers", "X-extra-header")
-				.allow("OPTIONS")
-				.build();
+		return Response.status(200).entity(new GenericEntity<User>(userById) {
+		}).header("Access-Control-Allow-Headers", "X-extra-header").allow("OPTIONS").build();
 	}
 
 	@GET
@@ -189,8 +169,7 @@ public class UsersResource {
 			List<String> role = userService.getRole(userService.getMyUser().get(0));
 			return Response.status(Response.Status.OK).entity(role).build();
 		} catch (Exception e) {
-			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-					.entity(e.getMessage()).build();
+			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
 		}
 	}
 
@@ -210,8 +189,7 @@ public class UsersResource {
 	@Path("{id}")
 	@Consumes({ MediaType.APPLICATION_JSON })
 	@Produces({ MediaType.TEXT_HTML })
-	public Response putUserById(@PathParam("id") Long id, User user)
-			throws AppException {
+	public Response putUserById(@PathParam("id") Long id, User user) throws AppException {
 
 		User userById = userService.getUserById(id);
 
@@ -221,15 +199,14 @@ public class UsersResource {
 			Long createUserId = userService.createUser(user);
 			return Response.status(Response.Status.CREATED)
 					// 201
-					.entity("A new user has been created with ")
-					.header("ObjectId", String.valueOf(createUserId)).build();
+					.entity("A new user has been created with ").header("ObjectId", String.valueOf(createUserId))
+					.build();
 		} else {
 			// resource is existent and a full update should occur
 			userService.updateFullyUser(user);
 			return Response.status(Response.Status.OK)
 					// 200
-					.entity("The user has been fully updated ")
-					.header("ObjectId ", String.valueOf(id)).build();
+					.entity("The user has been fully updated ").header("ObjectId ", String.valueOf(id)).build();
 		}
 	}
 
@@ -238,14 +215,12 @@ public class UsersResource {
 	@Path("{id}")
 	@Consumes({ MediaType.APPLICATION_JSON })
 	@Produces({ MediaType.TEXT_HTML })
-	public Response partialUpdateUser(@PathParam("id") Long id, User user)
-			throws AppException {
+	public Response partialUpdateUser(@PathParam("id") Long id, User user) throws AppException {
 		user.setId(id);
 		userService.updatePartiallyUser(user);
 		return Response.status(Response.Status.OK)
 				// 200
-				.entity("The user you specified has been successfully updated")
-				.build();
+				.entity("The user you specified has been successfully updated").build();
 	}
 
 	/**
@@ -254,30 +229,22 @@ public class UsersResource {
 	 */
 	@POST
 	@Path("{id}/role")
-	public Response updateUserRole(@PathParam("id") Long id,
-			@QueryParam("role") String role) throws AppException {
+	public Response updateUserRole(@PathParam("id") Long id, @QueryParam("role") String role) throws AppException {
 
 		User user = userService.getUserById(id);
 		switch (userService.getRole(user).get(0)) {
 		case "ROLE_ROOT":
-			return Response.status(Response.Status.BAD_REQUEST)
-					.entity("Cannot modify root user permissions").build();
+			return Response.status(Response.Status.BAD_REQUEST).entity("Cannot modify root user permissions").build();
 		case "ROLE_ADMIN":
-			if (userService.getRole(userService.getMyUser().get(0))
-					.contains("ROLE_ADMIN")
-					|| userService.getRole(
-							userService.getMyUser().get(0))
-							.contains("ROLE_ROOT")) {
+			if (userService.getRole(userService.getMyUser().get(0)).contains("ROLE_ADMIN")
+					|| userService.getRole(userService.getMyUser().get(0)).contains("ROLE_ROOT")) {
 				break;
 			} else
-				return Response
-						.status(401)
-						.entity("You do not have required permissions for this"
-								+ ".  You must have admin priviliges to modify another admin's role.")
-						.build();
+				return Response.status(401).entity("You do not have required permissions for this"
+						+ ".  You must have admin priviliges to modify another admin's role.").build();
 		case "ROLE_VISITOR":
-			return Response.status(Response.Status.BAD_REQUEST)
-					.entity("Cannot modify visitor user permissions").build();
+			return Response.status(Response.Status.BAD_REQUEST).entity("Cannot modify visitor user permissions")
+					.build();
 		}
 		switch (role) {
 		case "ROLE_USER":
@@ -290,12 +257,9 @@ public class UsersResource {
 			userService.setRoleAdmin(user);
 			break;
 		default:
-			return Response.status(Response.Status.BAD_REQUEST)
-					.entity("The role you specified does not exist").build();
+			return Response.status(Response.Status.BAD_REQUEST).entity("The role you specified does not exist").build();
 		}
-		return Response
-				.status(Response.Status.OK)
-				.entity("The users role you specified has been successfully updated")
+		return Response.status(Response.Status.OK).entity("The users role you specified has been successfully updated")
 				.build();
 	}
 
@@ -303,60 +267,52 @@ public class UsersResource {
 	@Path("{id}/password")
 	@Consumes({ MediaType.APPLICATION_JSON })
 	@Produces({ MediaType.TEXT_HTML })
-	public Response passwordReset(@PathParam("id") Long id, User user)
-			throws AppException {
+	public Response passwordReset(@PathParam("id") Long id, User user) throws AppException {
 		user.setId(id);
 		userService.resetPassword(user);
 		return Response.status(Response.Status.OK)
 				// 200
-				.entity("The user you specified has been successfully updated")
-				.build();
+				.entity("The user you specified has been successfully updated").build();
 	}
-	
+
 	@GET
 	@Path("/activestudies")
 	@Produces({ MediaType.APPLICATION_JSON })
-	public Map<Long, Long> getActiveStudes(){
-		Authentication auth = SecurityContextHolder.getContext()
-				.getAuthentication();
-		String username = ((UserDetails)auth.getPrincipal()).getUsername();		
+	public Map<Long, Long> getActiveStudes() {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		String username = ((UserDetails) auth.getPrincipal()).getUsername();
 		User user = userService.getUserByName(username);
 		return user.getActiveStudies();
 	}
-	
+
 	@GET
 	@Path("{username}/forgotPassword")
-	public Response forgotPassword(@PathParam("username") String username,
-			@Context UriInfo uri) {
+	public Response forgotPassword(@PathParam("username") String username, @Context UriInfo uri) {
 
 		try {
 			User user = userService.getUserByName(username);
 			userService.requestPasswordReset(user, uri);
 		} catch (AppException e) {
-			System.out.print(e.getDeveloperMessage() + "\n" + e.getMessage()
-					+ "\n");
-			e.printStackTrace();
+			System.out.print(e.getDeveloperMessage() + "\n" + e.getMessage() + "\n");
+			Logger logger = LoggerFactory.getLogger(this.getClass());
+			logger.error("Exception thrown in " + this.getClass().getName(), e);
 		}
 
-		return Response
-				.status(Response.Status.OK)
-				.entity("An email has been sent to the address registered to this username.")
-				.build();
+		return Response.status(Response.Status.OK)
+				.entity("An email has been sent to the address registered to this username.").build();
 	}
 
 	@GET
 	@Path("{id}/tokenValidation")
 	@Produces({ MediaType.TEXT_HTML })
-	public Response tokenValidation(@PathParam("id") Long id,
-			@QueryParam("token") String token) throws AppException {
+	public Response tokenValidation(@PathParam("id") Long id, @QueryParam("token") String token) throws AppException {
 		return userService.validateToken(id, token);
 	}
 
 	@POST
 	@Path("{id}/tokenPasswordReset")
 	@Produces({ MediaType.TEXT_HTML })
-	public String tokenPasswordReset(@PathParam("id") Long id,
-			@FormParam("token") String token,
+	public String tokenPasswordReset(@PathParam("id") Long id, @FormParam("token") String token,
 			@FormParam("password") String password) throws AppException {
 		userService.tokenPasswordReset(id, token, password);
 		return "Your password has been successfully reset";

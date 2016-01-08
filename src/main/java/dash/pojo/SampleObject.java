@@ -10,6 +10,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.apache.commons.beanutils.BeanUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import dash.dao.SampleObjectEntity;
 import dash.helpers.DateISO8601Adapter;
@@ -23,12 +25,12 @@ import dash.security.IAclObject;
  */
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
-public class SampleObject implements  IAclObject {
+public class SampleObject implements IAclObject {
 
 	/** id of the object */
 	@XmlElement(name = "id")
 	private Long id;
-	
+
 	@XmlElement(name = "document_folder")
 	private String document_folder;
 
@@ -44,19 +46,21 @@ public class SampleObject implements  IAclObject {
 	public SampleObject(SampleObjectEntity objectEntity) {
 		try {
 			BeanUtils.copyProperties(this, objectEntity);
-		} catch ( IllegalAccessException e) {
+		} catch (IllegalAccessException e) {
 
-			e.printStackTrace();
-		} catch ( InvocationTargetException e) {
+			Logger logger = LoggerFactory.getLogger(this.getClass());
+			logger.error("Exception thrown in " + this.getClass().getName(), e);
+		} catch (InvocationTargetException e) {
 
-			e.printStackTrace();
+			Logger logger = LoggerFactory.getLogger(this.getClass());
+			logger.error("Exception thrown in " + this.getClass().getName(), e);
 		}
 	}
 
-	public SampleObject( String basic_field_sample) {
+	public SampleObject(String basic_field_sample) {
 
 		this.basic_field_sample = basic_field_sample;
-		
+
 	}
 
 	public SampleObject() {
@@ -66,7 +70,7 @@ public class SampleObject implements  IAclObject {
 		return basic_field_sample;
 	}
 
-	public void setBasic_field_sample( String basic_field_sample) {
+	public void setBasic_field_sample(String basic_field_sample) {
 		this.basic_field_sample = basic_field_sample;
 	}
 
@@ -74,7 +78,7 @@ public class SampleObject implements  IAclObject {
 		return id;
 	}
 
-	public void setId( Long id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 
@@ -90,10 +94,8 @@ public class SampleObject implements  IAclObject {
 		return time_stamp_sample;
 	}
 
-	public void setTime_stamp_sample( Date time_stamp_sample) {
+	public void setTime_stamp_sample(Date time_stamp_sample) {
 		this.time_stamp_sample = time_stamp_sample;
 	}
-
-
 
 }

@@ -16,6 +16,8 @@ import java.util.List;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.beanutils.BeanUtilsBean;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.ApplicationObjectSupport;
 import org.springframework.stereotype.Component;
@@ -39,8 +41,7 @@ import dash.security.GenericAclController;
  *
  */
 @Component("fileUploadService")
-public class FileUploadServiceDbAccessImpl extends ApplicationObjectSupport
-		implements FileUploadService {
+public class FileUploadServiceDbAccessImpl extends ApplicationObjectSupport implements FileUploadService {
 
 	@Autowired
 	FileUploadDao fileUploadDao;
@@ -48,16 +49,16 @@ public class FileUploadServiceDbAccessImpl extends ApplicationObjectSupport
 	@Autowired
 	private GenericAclController<FileUpload> aclController;
 
-	/********************* Create related methods implementation ***********************/
+	/*********************
+	 * Create related methods implementation
+	 ***********************/
 	@Override
 	@Transactional
-	public Long createFileUpload(FileUpload fileUpload, InputStream fileInputStream)
-			throws AppException {
-		
+	public Long createFileUpload(FileUpload fileUpload, InputStream fileInputStream) throws AppException {
+
 		uploadFile(fileInputStream, fileUpload.getPath());
 
-		long fileUploadId = fileUploadDao
-				.createFileUpload(fileUpload);
+		long fileUploadId = fileUploadDao.createFileUpload(fileUpload);
 		fileUpload.setId(fileUploadId);
 		aclController.createACL(fileUpload);
 		aclController.createAce(fileUpload, CustomPermission.READ);
@@ -68,49 +69,40 @@ public class FileUploadServiceDbAccessImpl extends ApplicationObjectSupport
 
 	@Override
 	@Transactional
-	//Not functional for this resource
-	public void createFileUploads(List<FileUpload> fileUploads)
-			throws AppException {
-		/*for (FileUpload fileUpload : fileUploads) {
-			createFileUpload(fileUpload);
-		}*/
+	// Not functional for this resource
+	public void createFileUploads(List<FileUpload> fileUploads) throws AppException {
+		/*
+		 * for (FileUpload fileUpload : fileUploads) {
+		 * createFileUpload(fileUpload); }
+		 */
 	}
 
 	// ******************** Read related methods implementation
 	// **********************
 	@Override
-	public List<FileUpload> getFileUploads(int numberOfFileUploads,
-			Long startIndex) throws AppException {
+	public List<FileUpload> getFileUploads(int numberOfFileUploads, Long startIndex) throws AppException {
 
-		List<FileUpload> fileUploads = fileUploadDao
-				.getFileUploads(numberOfFileUploads, startIndex);
+		List<FileUpload> fileUploads = fileUploadDao.getFileUploads(numberOfFileUploads, startIndex);
 		return fileUploads;
 	}
 
 	@Override
 	public FileUpload getFileUploadById(Long id) throws AppException {
-		FileUpload fileUploadById = fileUploadDao
-				.getFileUploadById(id);
+		FileUpload fileUploadById = fileUploadDao.getFileUploadById(id);
 		if (fileUploadById == null) {
-			throw new AppException(Response.Status.NOT_FOUND.getStatusCode(),
-					404, "The fileUpload you requested with id " + id
-							+ " was not found in the database",
-					"Verify the existence of the fileUpload with the id "
-							+ id + " in the database",
+			throw new AppException(Response.Status.NOT_FOUND.getStatusCode(), 404,
+					"The fileUpload you requested with id " + id + " was not found in the database",
+					"Verify the existence of the fileUpload with the id " + id + " in the database",
 					AppConstants.DASH_POST_URL);
 		}
 
 		return fileUploadDao.getFileUploadById(id);
 	}
 
-	
-
 	/**
-	 *  save uploaded file to new location
+	 * save uploaded file to new location
 	 */
-	public void uploadFile(InputStream uploadedInputStream,
-			String uploadedFileLocation)
-			throws AppException {
+	public void uploadFile(InputStream uploadedInputStream, String uploadedFileLocation) throws AppException {
 
 		try {
 			File file = new File(uploadedFileLocation);
@@ -127,16 +119,14 @@ public class FileUploadServiceDbAccessImpl extends ApplicationObjectSupport
 			out.close();
 		} catch (IOException e) {
 
-			throw new AppException(
-					Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), 500,
-					"Could not upload file due to IOException", "\n\n"
-							+ e.getMessage(), AppConstants.DASH_POST_URL);
+			throw new AppException(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), 500,
+					"Could not upload file due to IOException", "\n\n" + e.getMessage(), AppConstants.DASH_POST_URL);
 		}
 
 	}
 
 	public File getUploadFile(FileUpload fileUpload, Form form) throws AppException {
-		
+
 		return new File(fileUpload.getPath());
 	}
 
@@ -156,22 +146,20 @@ public class FileUploadServiceDbAccessImpl extends ApplicationObjectSupport
 
 	}
 
-	/********************* UPDATE-related methods implementation ***********************/
+	/*********************
+	 * UPDATE-related methods implementation
+	 ***********************/
 
 	@Override
 	@Transactional
-	public void updateFullyFileUpload(FileUpload fileUpload)
-			throws AppException {
+	public void updateFullyFileUpload(FileUpload fileUpload) throws AppException {
 
-		FileUpload verifyFileUploadExistenceById = verifyFileUploadExistenceById(fileUpload
-				.getId());
+		FileUpload verifyFileUploadExistenceById = verifyFileUploadExistenceById(fileUpload.getId());
 		if (verifyFileUploadExistenceById == null) {
-			throw new AppException(
-					Response.Status.NOT_FOUND.getStatusCode(),
-					404,
+			throw new AppException(Response.Status.NOT_FOUND.getStatusCode(), 404,
 					"The resource you are trying to update does not exist in the database",
-					"Please verify existence of data in the database for the id - "
-							+ fileUpload.getId(), AppConstants.DASH_POST_URL);
+					"Please verify existence of data in the database for the id - " + fileUpload.getId(),
+					AppConstants.DASH_POST_URL);
 		}
 		copyAllProperties(verifyFileUploadExistenceById, fileUpload);
 
@@ -179,9 +167,7 @@ public class FileUploadServiceDbAccessImpl extends ApplicationObjectSupport
 
 	}
 
-	private void copyAllProperties(
-			FileUpload verifyFileUploadExistenceById,
-			FileUpload fileUpload) {
+	private void copyAllProperties(FileUpload verifyFileUploadExistenceById, FileUpload fileUpload) {
 		// If you would like to allow null values use the following line.
 		// Reference PostServiceImpl in the VolunteerManagementApp for more
 		// details.
@@ -191,53 +177,53 @@ public class FileUploadServiceDbAccessImpl extends ApplicationObjectSupport
 		// used.
 		BeanUtilsBean notNull = new NullAwareBeanUtilsBean();
 		try {
-			notNull.copyProperties(verifyFileUploadExistenceById,
-					fileUpload);
+			notNull.copyProperties(verifyFileUploadExistenceById, fileUpload);
 		} catch (IllegalAccessException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Logger logger = LoggerFactory.getLogger(this.getClass());
+			logger.error("Exception thrown in " + this.getClass().getName(), e);
 		} catch (InvocationTargetException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Logger logger = LoggerFactory.getLogger(this.getClass());
+			logger.error("Exception thrown in " + this.getClass().getName(), e);
 		}
 
 	}
 
-	/********************* DELETE-related methods implementation ***********************/
+	/*********************
+	 * DELETE-related methods implementation
+	 ***********************/
 
 	@Override
 	@Transactional
-	public void deleteFileUpload(FileUpload fileUpload, Form form) throws AppException{
-		
-		//first remove the actual file
+	public void deleteFileUpload(FileUpload fileUpload, Form form) throws AppException {
+
+		// first remove the actual file
 		Path path = Paths.get(fileUpload.getPath());
 		try {
-		    Files.delete(path);
+			Files.delete(path);
 		} catch (NoSuchFileException x) {
 			x.printStackTrace();
-			throw new AppException(Response.Status.NOT_FOUND.getStatusCode(),
-					404,
-					"NoSuchFileException thrown, Operation unsuccesful.", "Please ensure the file you are attempting to"
-					+ " delete exists at "+path+".", AppConstants.DASH_POST_URL);
-			
-					
+			throw new AppException(Response.Status.NOT_FOUND.getStatusCode(), 404,
+					"NoSuchFileException thrown, Operation unsuccesful.",
+					"Please ensure the file you are attempting to" + " delete exists at " + path + ".",
+					AppConstants.DASH_POST_URL);
+
 		} catch (DirectoryNotEmptyException x) {
 			x.printStackTrace();
-			throw new AppException(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),
-					404,
-					"DirectoryNotEmptyException thrown, operation unsuccesful.", "This method should not attempt to delete,"
-							+ " This should be considered a very serious error. Occured at "+path+".",
+			throw new AppException(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), 404,
+					"DirectoryNotEmptyException thrown, operation unsuccesful.",
+					"This method should not attempt to delete,"
+							+ " This should be considered a very serious error. Occured at " + path + ".",
 					AppConstants.DASH_POST_URL);
 		} catch (IOException x) {
 			x.printStackTrace();
-			throw new AppException(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),
-					500,
-					"IOException thrown and the designated file was not deleted.", 
-					" Permission problems occured at "+path+".",
-					AppConstants.DASH_POST_URL);
+			throw new AppException(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), 500,
+					"IOException thrown and the designated file was not deleted.",
+					" Permission problems occured at " + path + ".", AppConstants.DASH_POST_URL);
 		}
-		
-		//second delete the file_upload entry in the DB
+
+		// second delete the file_upload entry in the DB
 		fileUploadDao.deleteFileUploadById(fileUpload);
 		aclController.deleteACL(fileUpload);
 
@@ -253,8 +239,7 @@ public class FileUploadServiceDbAccessImpl extends ApplicationObjectSupport
 
 	@Override
 	public FileUpload verifyFileUploadExistenceById(Long id) {
-		FileUpload fileUploadById = fileUploadDao
-				.getFileUploadById(id);
+		FileUpload fileUploadById = fileUploadDao.getFileUploadById(id);
 		if (fileUploadById == null) {
 			return null;
 		} else {
@@ -264,24 +249,16 @@ public class FileUploadServiceDbAccessImpl extends ApplicationObjectSupport
 
 	@Override
 	@Transactional
-	public void updatePartiallyFileUpload(FileUpload fileUpload)
-			throws AppException {
+	public void updatePartiallyFileUpload(FileUpload fileUpload) throws AppException {
 		// do a validation to verify existence of the resource
-		FileUpload verifyFileUploadExistenceById = verifyFileUploadExistenceById(fileUpload
-				.getId());
+		FileUpload verifyFileUploadExistenceById = verifyFileUploadExistenceById(fileUpload.getId());
 		if (verifyFileUploadExistenceById == null) {
-			throw new AppException(
-					Response.Status.NOT_FOUND.getStatusCode(),
-					404,
+			throw new AppException(Response.Status.NOT_FOUND.getStatusCode(), 404,
 					"The resource you are trying to update does not exist in the database",
-					"Please verify existence of data in the database for the id - "
-							+ fileUpload.getId(), AppConstants.DASH_POST_URL);
+					"Please verify existence of data in the database for the id - " + fileUpload.getId(),
+					AppConstants.DASH_POST_URL);
 		}
-		
 
 	}
-
-	
-
 
 }

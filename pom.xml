@@ -137,7 +137,7 @@
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
 			<version>${mysql-connector-java.version}</version>
-			<!--<scope>provided</scope>-->
+			<!--<scope>provided</scope> -->
 		</dependency>
 
 		<!-- tomcat jdbc -->
@@ -245,7 +245,7 @@
 			<version>2.3</version>
 		</dependency>
 
-	<!-- Quartz Scheduler Library -->
+		<!-- Quartz Scheduler Library -->
 		<dependency>
 			<groupId>org.quartz-scheduler</groupId>
 			<artifactId>quartz</artifactId>

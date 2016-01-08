@@ -59,11 +59,9 @@ public class StudyResource {
 	public Response createStudy(Study study) throws AppException {
 		Form form = formService.getFormById(study.getFormId());
 		Long createStudyId = studyService.createStudy(study, form);
-		return Response
-				.status(Response.Status.CREATED)
+		return Response.status(Response.Status.CREATED)
 				// 201
-				.entity("A new study has been created at index")
-				.header("Location", String.valueOf(createStudyId))
+				.entity("A new study has been created at index").header("Location", String.valueOf(createStudyId))
 				.header("ObjectId", String.valueOf(createStudyId)).build();
 	}
 
@@ -79,12 +77,12 @@ public class StudyResource {
 	@Path("list")
 	@Consumes({ MediaType.APPLICATION_JSON })
 	public Response createStudies(List<Study> studies) throws AppException {
-		for(Study study: studies){
+		for (Study study : studies) {
 			Form form = formService.getFormById(study.getFormId());
-			studyService.createStudy(study, form);	
+			studyService.createStudy(study, form);
 		}
 		return Response.status(Response.Status.CREATED)
-		// 201
+				// 201
 				.entity("List of studies was successfully created").build();
 	}
 
@@ -104,32 +102,26 @@ public class StudyResource {
 	 */
 	@GET
 	@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
-	public List<Study> getStudies(
-			@QueryParam("numberOfStudies") @DefaultValue("25") int numberOfStudies,
-			@QueryParam("startIndex") @DefaultValue("0") Long startIndex)
-			throws IOException, AppException {
-		List<Study> studies = studyService.getStudies(numberOfStudies,
-				startIndex);
+	public List<Study> getStudies(@QueryParam("numberOfStudies") @DefaultValue("25") int numberOfStudies,
+			@QueryParam("startIndex") @DefaultValue("0") Long startIndex) throws IOException, AppException {
+		List<Study> studies = studyService.getStudies(numberOfStudies, startIndex);
 		return studies;
 	}
 
 	@GET
 	@Path("{id}")
 	@Produces({ MediaType.APPLICATION_JSON })
-	public Response getStudyById(@PathParam("id") Long id,
-			@QueryParam("detailed") boolean detailed) throws IOException,
-			AppException {
+	public Response getStudyById(@PathParam("id") Long id, @QueryParam("detailed") boolean detailed)
+			throws IOException, AppException {
 		Study studyById = studyService.getStudyById(id);
 		return Response.status(200).entity(new GenericEntity<Study>(studyById) {
-		}).header("Access-Control-Allow-Headers", "X-extra-header")
-				.allow("OPTIONS").build();
+		}).header("Access-Control-Allow-Headers", "X-extra-header").allow("OPTIONS").build();
 	}
 
 	@GET
 	@Path("/getstudiesform/{formId}")
 	@Produces({ MediaType.APPLICATION_JSON })
-	public List<Study> getStudiesForForm(@PathParam("formId") long formId)
-			throws AppException {
+	public List<Study> getStudiesForForm(@PathParam("formId") long formId) throws AppException {
 		Form form = formService.getFormById(formId);
 		List<Study> studies = studyService.getStudiesForForm(formId, form);
 		return studies;
@@ -152,8 +144,7 @@ public class StudyResource {
 	@Path("{id}")
 	@Consumes({ MediaType.APPLICATION_JSON })
 	@Produces({ MediaType.TEXT_HTML })
-	public Response putStudyById(@PathParam("id") Long id, Study study)
-			throws AppException {
+	public Response putStudyById(@PathParam("id") Long id, Study study) throws AppException {
 
 		Study studyById = studyService.verifyStudyExistenceById(id);
 		Form form = formService.getFormById(study.getFormId());
@@ -161,16 +152,14 @@ public class StudyResource {
 			// resource not existent yet, and should be created under the
 			// specified URI
 			Long createStudyId = studyService.createStudy(study, form);
-			return Response
-					.status(Response.Status.CREATED)
+			return Response.status(Response.Status.CREATED)
 					// 201
 					.entity("A new study has been created AT THE LOCATION you specified")
 					.header("Location", String.valueOf(createStudyId)).build();
 		} else {
 			// resource is existent and a full update should occur
 			studyService.updateFullyStudy(study, form);
-			return Response
-					.status(Response.Status.OK)
+			return Response.status(Response.Status.OK)
 					// 200
 					.entity("The study you specified has been fully updated created AT THE LOCATION you specified")
 					.header("Location", String.valueOf(id)).build();
@@ -182,48 +171,42 @@ public class StudyResource {
 	@Path("{id}")
 	@Consumes({ MediaType.APPLICATION_JSON })
 	@Produces({ MediaType.TEXT_HTML })
-	public Response partialUpdateStudy(@PathParam("id") Long id, Study study)
-			throws AppException {
+	public Response partialUpdateStudy(@PathParam("id") Long id, Study study) throws AppException {
 		study.setId(id);
 		Form form = formService.getFormById(study.getFormId());
 		studyService.updatePartiallyStudy(study, form);
-		return Response
-				.status(Response.Status.OK)
+		return Response.status(Response.Status.OK)
 				// 200
-				.entity("The study you specified has been successfully updated")
-				.build();
+				.entity("The study you specified has been successfully updated").build();
 	}
 
 	@PUT
 	@Path("/updatestudies")
 	@Consumes({ MediaType.APPLICATION_JSON })
 	public Response updateStudies(List<Study> studies) throws AppException {
-		for(Study study : studies){
+		for (Study study : studies) {
 			Form form = formService.getFormById(study.getFormId());
-			if(studyService.verifyStudyExistenceById(study.getId()) == null){
+			if (studyService.verifyStudyExistenceById(study.getId()) == null) {
 				studyService.createStudy(study, form);
-			}else{
+			} else {
 				studyService.updateFullyStudy(study, form);
 			}
 		}
 		return Response.status(Response.Status.OK)
-		// 20
+				// 20
 				.entity("List of studies was successfully created").build();
 	}
-	
+
 	@DELETE
 	@Path("{id}")
 	@Produces({ MediaType.TEXT_HTML })
-	public Response deleteStudy(@PathParam("id") Long id)
-			throws AppException {
+	public Response deleteStudy(@PathParam("id") Long id) throws AppException {
 		Study study = studyService.verifyStudyExistenceById(id);
 		Form form = formService.getFormById(study.getFormId());
 		studyService.deleteStudy(study, form);
 		return Response.status(Response.Status.NO_CONTENT)// 204
 				.entity("Study successfully removed from database").build();
 	}
-	
-	
 
 	// ************************************* FILE UPLOAD
 	// ************************************

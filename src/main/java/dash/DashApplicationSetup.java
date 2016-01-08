@@ -36,7 +36,7 @@ public class DashApplicationSetup extends ResourceConfig {
 		register(FormResponseResource.class);
 		register(FileUploadResource.class);
 		register(StudyResource.class);
-		
+
 		// register filters
 		register(RequestContextFilter.class);
 		register(LoggingResponseFilter.class);
@@ -50,7 +50,6 @@ public class DashApplicationSetup extends ResourceConfig {
 		register(JacksonFeature.class);
 		register(MultiPartFeature.class);
 		register(EntityFilteringFeature.class);
-		
+
 	}
 }
-

@@ -10,20 +10,19 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class LoggingResponseFilter
-implements ContainerResponseFilter {
+public class LoggingResponseFilter implements ContainerResponseFilter {
 
 	private static final Logger logger = LoggerFactory.getLogger(LoggingResponseFilter.class);
 
 	@Override
-	public void filter(ContainerRequestContext requestContext,
-			ContainerResponseContext responseContext) throws IOException {
+	public void filter(ContainerRequestContext requestContext, ContainerResponseContext responseContext)
+			throws IOException {
 		String method = requestContext.getMethod();
 
 		logger.debug("Requesting " + method + " for path " + requestContext.getUriInfo().getPath());
 		Object entity = responseContext.getEntity();
 		if (entity != null) {
-			logger.debug("Response " + new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(entity));
+			logger.trace("Response " + new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(entity));
 		}
 
 	}

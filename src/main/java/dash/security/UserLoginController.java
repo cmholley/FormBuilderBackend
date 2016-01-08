@@ -11,15 +11,15 @@ import org.springframework.jdbc.object.SqlUpdate;
 import dash.pojo.User;
 
 /**
- * Handles the authorities table by adding and removing roles for the UserResource.
+ * Handles the authorities table by adding and removing roles for the
+ * UserResource.
  * 
  * Config the data source in webSecurityConfig.xml where this bean is declared.
  * 
  * @author Tyler.swensen@gmail.com
  *
  */
-public class UserLoginController  extends JdbcDaoSupport {
-
+public class UserLoginController extends JdbcDaoSupport {
 
 	private InsertAuthority insertAuthority;
 	private InsertLogin insertLogin;
@@ -31,7 +31,7 @@ public class UserLoginController  extends JdbcDaoSupport {
 	protected void initDao() throws Exception {
 		insertLogin = new InsertLogin(getDataSource());
 		insertAuthority = new InsertAuthority(getDataSource());
-		resetPassword= new ResetPassword(getDataSource());
+		resetPassword = new ResetPassword(getDataSource());
 
 	}
 
@@ -39,12 +39,12 @@ public class UserLoginController  extends JdbcDaoSupport {
 		insertLogin.insert(user);
 		insertAuthority.insert(user, authority);
 	}
-	
-	public void passwordReset(User user){
+
+	public void passwordReset(User user) {
 		resetPassword.reset(user);
 	}
 
-	/********* Inner Classes  ************/
+	/********* Inner Classes ************/
 	protected class InsertAuthority extends SqlUpdate {
 		protected InsertAuthority(DataSource ds) {
 			super(ds, "INSERT INTO authorities (username, authority) VALUES (?, ?)");
@@ -59,7 +59,7 @@ public class UserLoginController  extends JdbcDaoSupport {
 		}
 
 	}
-	
+
 	protected class InsertLogin extends SqlUpdate {
 		protected InsertLogin(DataSource ds) {
 			super(ds, "INSERT INTO login VALUES (?, ?, ?, ?)");
@@ -71,12 +71,12 @@ public class UserLoginController  extends JdbcDaoSupport {
 		}
 
 		protected void insert(User user) {
-			Object[] objs = new Object[] { user.getUsername(), user.getPassword(), 1, user.getId()  };
+			Object[] objs = new Object[] { user.getUsername(), user.getPassword(), 1, user.getId() };
 			super.update(objs);
 		}
 
 	}
-	
+
 	protected class ResetPassword extends SqlUpdate {
 		protected ResetPassword(DataSource ds) {
 			super(ds, "UPDATE `login` SET `password` = ? WHERE `login`.`id` = ? ;");
@@ -84,11 +84,11 @@ public class UserLoginController  extends JdbcDaoSupport {
 			declareParameter(new SqlParameter(Types.INTEGER));
 			compile();
 		}
-		
-		protected void reset(User user){
-			Object[] objs = new Object[] {user.getPassword(), user.getId()};
+
+		protected void reset(User user) {
+			Object[] objs = new Object[] { user.getPassword(), user.getId() };
 			super.update(objs);
 		}
 	}
-	
+
 }

@@ -37,8 +37,7 @@ public class FormDaoJPA2Impl implements FormDao {
 
 		sqlString = "SELECT u FROM FormEntity u WHERE u.id < ?1 ORDER BY u.insertion_date DESC";
 
-		TypedQuery<FormEntity> query = entityManager.createQuery(sqlString,
-				FormEntity.class);
+		TypedQuery<FormEntity> query = entityManager.createQuery(sqlString, FormEntity.class);
 		if (startIndex == 0)
 			startIndex = Long.MAX_VALUE;
 		query.setParameter(1, startIndex);
@@ -52,8 +51,7 @@ public class FormDaoJPA2Impl implements FormDao {
 
 		try {
 			String qlString = "SELECT u FROM FormEntity u WHERE u.id = ?1";
-			TypedQuery<FormEntity> query = entityManager.createQuery(qlString,
-					FormEntity.class);
+			TypedQuery<FormEntity> query = entityManager.createQuery(qlString, FormEntity.class);
 			query.setParameter(1, id);
 
 			return query.getSingleResult();
@@ -65,8 +63,7 @@ public class FormDaoJPA2Impl implements FormDao {
 	@Override
 	public void deleteFormById(Form formPojo) {
 
-		FormEntity form = entityManager
-				.find(FormEntity.class, formPojo.getId());
+		FormEntity form = entityManager.find(FormEntity.class, formPojo.getId());
 		entityManager.remove(form);
 
 	}
@@ -99,8 +96,7 @@ public class FormDaoJPA2Impl implements FormDao {
 	public int getNumberOfForms() {
 		try {
 			String qlString = "SELECT COUNT(*) FROM form";
-			TypedQuery<FormEntity> query = entityManager.createQuery(qlString,
-					FormEntity.class);
+			TypedQuery<FormEntity> query = entityManager.createQuery(qlString, FormEntity.class);
 
 			return query.getFirstResult();
 		} catch (NoResultException e) {
@@ -110,7 +106,7 @@ public class FormDaoJPA2Impl implements FormDao {
 
 	@SuppressWarnings({ "unchecked" })
 	@Override
-	@Transactional//Must be transactional to unwrap the session for Native SQL
+	@Transactional // Must be transactional to unwrap the session for Native SQL
 	public List<Object[]> getMyForms(int numberOfForms, Long startIndex) {
 		try {
 			Session session = entityManager.unwrap(Session.class);
@@ -120,10 +116,9 @@ public class FormDaoJPA2Impl implements FormDao {
 					+ "ON acl_sid.id = acl_entry.sid "
 					+ "WHERE acl_sid.sid = :username AND acl_object_identity.object_id_class = '11' "
 					+ "ORDER BY acl_object_identity.object_id_identity DESC, acl_entry.mask DESC";
-			Authentication auth = SecurityContextHolder.getContext()
-					.getAuthentication();
+			Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 			String name = ((UserDetails) auth.getPrincipal()).getUsername();
-			//name = "\"" + name +"\"";
+			// name = "\"" + name +"\"";
 			SQLQuery query = session.createSQLQuery(queryString);
 			query.setString("username", name);
 			return query.list();
@@ -134,7 +129,7 @@ public class FormDaoJPA2Impl implements FormDao {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	@Transactional//Must be transactional to unwrap the session for Native SQL
+	@Transactional // Must be transactional to unwrap the session for Native SQL
 	public List<Object[]> getPermissionsForm(long id) {
 		try {
 			Session session = entityManager.unwrap(Session.class);

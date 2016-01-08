@@ -25,8 +25,8 @@ import dash.security.IAclObject;
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 @Entity
-@Table(name="file_uploads")
-public class FileUpload implements  IAclObject {
+@Table(name = "file_uploads")
+public class FileUpload implements IAclObject {
 
 	/** id of the object */
 	@Id
@@ -34,17 +34,19 @@ public class FileUpload implements  IAclObject {
 	@XmlElement(name = "id")
 	@Column(name = "id")
 	private Long id;
-	
+
 	/** The user this file belongs to */
 	@XmlElement(name = "user_id")
 	@Column(name = "user_id")
 	private Long user_id;
-	
+
 	@XmlElement(name = "form_id")
 	@Column(name = "form_id")
 	private Long form_id;
-	
-	/**The path of the file relative to the applications root uploads folder.*/
+
+	/**
+	 * The path of the file relative to the applications root uploads folder.
+	 */
 	@XmlElement(name = "path")
 	@Column(name = "path")
 	private String path;
@@ -58,24 +60,24 @@ public class FileUpload implements  IAclObject {
 	@XmlElement(name = "content_type")
 	@Column(name = "content_type")
 	private String content_type;
-	
+
 	/** insertion date in the database */
 	@XmlElement(name = "upload_timestamp")
 	@Column(name = "upload_timestamp")
 	@XmlJavaTypeAdapter(DateISO8601Adapter.class)
 	private Date upload_timestamp;
 
-	public FileUpload(){
+	public FileUpload() {
 		super();
 	}
-	
+
 	public FileUpload(Long user_id, Long form_id, String path, String file_name, String content_type) {
 		super();
 		this.user_id = user_id;
 		this.form_id = form_id;
 		this.path = path;
 		this.file_name = file_name;
-		this.content_type= content_type;
+		this.content_type = content_type;
 	}
 
 	public Long getId() {
@@ -89,7 +91,6 @@ public class FileUpload implements  IAclObject {
 	public Long getUser_id() {
 		return user_id;
 	}
-	
 
 	public Long getForm_id() {
 		return form_id;
@@ -134,8 +135,5 @@ public class FileUpload implements  IAclObject {
 	public void setContent_type(String content_type) {
 		this.content_type = content_type;
 	}
-
-
-
 
 }

@@ -1,36 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE project>
 <configuration>
-	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
-    	<!-- encoders are assigned the type
-         	ch.qos.logback.classic.encoder.PatternLayoutEncoder by default -->
-    	<encoder>
-      		<pattern>%d [%thread] %-5level %logger{35} - %msg %n</pattern>
-    	</encoder>
-    	<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-			<level>TRACE</level>
-		</filter>
-  	</appender>
-  	
-  	<appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+
+
+	<appender name="FILE"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
 		<file>/var/log/tomcat/webapps/formbuilder-backend.log</file>
 		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-      		<!-- rollover daily -->
+			<!-- rollover daily -->
 			<fileNamePattern>/var/log/tomcat/webapps/formbuilder-backend-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
-			
-			<timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
-                <maxFileSize>5MB</maxFileSize>
-            </timeBasedFileNamingAndTriggeringPolicy>
 
-			<!-- keep 30 days' worth of history -->
-			<maxHistory>30</maxHistory>
+			<timeBasedFileNamingAndTriggeringPolicy
+				class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<maxFileSize>5MB</maxFileSize>
+			</timeBasedFileNamingAndTriggeringPolicy>
+
+			<!-- keep 5 days' worth of history -->
+			<maxHistory>5</maxHistory>
 		</rollingPolicy>
 		<encoder>
 			<pattern>%d [%thread] %-5level %logger{35} - %msg %n</pattern>
 		</encoder>
 	</appender>
 
-  	<!-- Application specific logs only go to file -->
+	<!-- This appender will be the default instead of STDOUT -->
+	<appender name="STDOUT-FILE"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>/var/log/tomcat/webapps/formbuilder-backend-stdout.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<!-- rollover daily -->
+			<fileNamePattern>/var/log/tomcat/webapps/formbuilder-backend-stdout-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+
+			<timeBasedFileNamingAndTriggeringPolicy
+				class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<maxFileSize>5MB</maxFileSize>
+			</timeBasedFileNamingAndTriggeringPolicy>
+
+			<!-- keep 5 days' worth of history -->
+			<maxHistory>5</maxHistory>
+		</rollingPolicy>
+		<encoder>
+			<pattern>%d [%thread] %-5level %logger{35} - %msg %n</pattern>
+		</encoder>
+	</appender>
+
+	<!-- Application specific logs only go to file -->
 	<logger name="dash" additivity="false">
 		<level value="DEBUG" />
 		<appender-ref ref="FILE" />
@@ -40,12 +54,12 @@
 		<level value="WARN" />
 		<appender-ref ref="FILE" />
 	</logger>
-	<logger name = "org.quartz">
+	<logger name="org.quartz">
 		<level value="WARN" />
 		<appender-ref ref="FILE" />
 	</logger>
 	<root>
 		<level value="INFO" />
-		<appender-ref ref="STDOUT" />
+		<appender-ref ref="STDOUT-FILE" />
 	</root>
 </configuration> 

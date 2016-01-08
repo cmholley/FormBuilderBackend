@@ -13,19 +13,22 @@ import dash.pojo.User;
 /**
  * Example service interface for a basic object.
  * 
- * This is where you set method/object level permissions using Spring annotations.
+ * This is where you set method/object level permissions using Spring
+ * annotations.
  * 
  * @author Tyler.swensen@gmail.com
  *
  */
 
 public interface FormService {
-	
+
 	/*
-	 * ******************** Create related methods *********************/
-	
+	 * ******************** Create related methods
+	 *********************/
+
 	/**
 	 * Create a new form and set the current user as owner and manager.
+	 * 
 	 * @param form
 	 * @return
 	 * @throws AppException
@@ -52,16 +55,17 @@ public interface FormService {
 	 * @return list with forms corresponding to search criteria
 	 * @throws AppException
 	 */
-	//Enable post filter to restrict read access to a collection
-	//@PostFilter("hasPermission(filterObject, 'READ')")
+	// Enable post filter to restrict read access to a collection
+	// @PostFilter("hasPermission(filterObject, 'READ')")
 	public List<Form> getForms(int numberOfForms, Long startIndex) throws AppException;
-	
-	//This filter was a temp fix that has been replaced with an SQL query which 
-	//Returns a list of all the forms with the permissions
-	//@PostFilter("hasPermission(filterObject, 'WRITE') or hasPermission(filterObject, 'READ')"
-	//		+ "or hasPermission(filterObject, 'DELETE')")
+
+	// This filter was a temp fix that has been replaced with an SQL query which
+	// Returns a list of all the forms with the permissions
+	// @PostFilter("hasPermission(filterObject, 'WRITE') or
+	// hasPermission(filterObject, 'READ')"
+	// + "or hasPermission(filterObject, 'DELETE')")
 	public LinkedHashMap<Form, List<Integer>> getMyForms(int numberOfForms, Long startIndex) throws AppException;
-	
+
 	/**
 	 * Returns a form given its id
 	 *
@@ -69,14 +73,19 @@ public interface FormService {
 	 * @return
 	 * @throws AppException
 	 */
-	
-	//Enable the following line of code to restrict read access to a single object.
-	// and returnObject.getPubli()==true or returnObject.getEnabled()==true and hasRole('ROLE_USER')
-	//This post authorize has been removed. We are preventing responses at response creation rather than at form request
-	//@PostAuthorize("hasPermission(returnObject, 'read') or hasRole('ROLE_ADMIN') or returnObject.getEnabled()==true and returnObject.getPubli()==true "
-	//		+ "and returnObject.isExpired()==false or returnObject.getEnabled()==true and hasRole('ROLE_USER') and returnObject.isExpired()==false")
+
+	// Enable the following line of code to restrict read access to a single
+	// object.
+	// and returnObject.getPubli()==true or returnObject.getEnabled()==true and
+	// hasRole('ROLE_USER')
+	// This post authorize has been removed. We are preventing responses at
+	// response creation rather than at form request
+	// @PostAuthorize("hasPermission(returnObject, 'read') or
+	// hasRole('ROLE_ADMIN') or returnObject.getEnabled()==true and
+	// returnObject.getPubli()==true "
+	// + "and returnObject.isExpired()==false or returnObject.getEnabled()==true
+	// and hasRole('ROLE_USER') and returnObject.isExpired()==false")
 	public Form getFormById(Long id) throws AppException;
-	
 
 	/*
 	 * ******************** Update related methods **********************
@@ -92,28 +101,28 @@ public interface FormService {
 	 */
 	@PreAuthorize("hasPermission(#form, 'DELETE') or hasRole('ROLE_ADMIN')")
 	public void updatePermission(User user, Form form, String permissionRole) throws AppException;
-	
+
 	@PreAuthorize("hasPermission(#form, 'DELETE') or hasRole('ROLE_ADMIN')")
 	public void deleteAllPermissions(User user, Form form);
-	
+
 	@PreAuthorize("hasPermission(#form, 'WRITE') or hasRole('ROLE_ADMIN')")
 	public HashMap<String, String> getPermissionsForm(Form form);
-	
+
 	/*
 	 * ******************** Delete related methods **********************
 	 */
 
-
 	@PreAuthorize("hasPermission(#form, 'DELETE') or hasRole('ROLE_ADMIN')")
 	public void deleteForm(Form form);
-	/** removes all forms
-	 * DO NOT USE, IMPROPERLY UPDATES ACL_OBJECT table
-	 * Functional but does not destroy old acl's which doesnt hurt anything
-	 * but they will take up space if this is commonly used */
+
+	/**
+	 * removes all forms DO NOT USE, IMPROPERLY UPDATES ACL_OBJECT table
+	 * Functional but does not destroy old acl's which doesnt hurt anything but
+	 * they will take up space if this is commonly used
+	 */
 	@PreAuthorize("hasRole('ROLE_ROOT')")
 	public void deleteForms();
-		
-	
+
 	/*
 	 * ******************** Helper methods **********************
 	 */

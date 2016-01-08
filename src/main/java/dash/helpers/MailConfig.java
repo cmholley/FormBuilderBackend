@@ -5,25 +5,20 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.mail.SimpleMailMessage;
 
-@Configuration 
+@Configuration
 public class MailConfig {
 
-  
-   
+	@Value("DASH-Core")
+	private String from;
 
-    @Value("DASH-Core")
-    private String from;
+	@Value("Default Message Head")
+	private String subject;
 
-    @Value("Default Message Head")
-    private String subject;
-    
-    
-
-    @Bean
-    public SimpleMailMessage simpleMailMessage() {
-       SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
-       simpleMailMessage.setFrom(from);
-       simpleMailMessage.setSubject(subject);
-       return simpleMailMessage;
-    }
+	@Bean
+	public SimpleMailMessage simpleMailMessage() {
+		SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
+		simpleMailMessage.setFrom(from);
+		simpleMailMessage.setSubject(subject);
+		return simpleMailMessage;
+	}
 }

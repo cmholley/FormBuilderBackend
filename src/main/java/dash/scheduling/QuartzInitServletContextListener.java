@@ -12,6 +12,8 @@ import javax.servlet.annotation.WebListener;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.impl.StdSchedulerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @WebListener
 public class QuartzInitServletContextListener implements ServletContextListener {
@@ -34,7 +36,8 @@ public class QuartzInitServletContextListener implements ServletContextListener 
 			scheduler.shutdown();
 		} catch (SchedulerException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Logger logger = LoggerFactory.getLogger(this.getClass());
+			logger.error("Exception thrown in " + this.getClass().getName(), e);
 		}
 		dailyTimer.cancel();
 		dailyTimer.purge();
@@ -46,7 +49,8 @@ public class QuartzInitServletContextListener implements ServletContextListener 
 			Thread.sleep(10000);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Logger logger = LoggerFactory.getLogger(this.getClass());
+			logger.error("Exception thrown in " + this.getClass().getName(), e);
 		}
 	}
 
@@ -65,7 +69,8 @@ public class QuartzInitServletContextListener implements ServletContextListener 
 			scheduler.start();
 		} catch (SchedulerException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Logger logger = LoggerFactory.getLogger(this.getClass());
+			logger.error("Exception thrown in " + this.getClass().getName(), e);
 		}
 		Calendar cal = Calendar.getInstance();
 		cal.add(Calendar.DATE, 1);
@@ -74,12 +79,13 @@ public class QuartzInitServletContextListener implements ServletContextListener 
 									// ambiguity
 		cal.set(Calendar.SECOND, 0);
 		cal.set(Calendar.MILLISECOND, 0);
-		//cal.add(Calendar.SECOND, 20); // Can be used for development to schedule
-										// immediately rather then at 12:05
+		// cal.add(Calendar.SECOND, 20); // Can be used for development to
+		// schedule
+		// immediately rather then at 12:05
 		Date midnightDate = cal.getTime();
-		dailyTimer.scheduleAtFixedRate(new DailyInitTask(sce, scheduler),
-				midnightDate, TimeUnit.MILLISECONDS.convert(1, TimeUnit.DAYS)); // Executes
-																				// daily
+		dailyTimer.scheduleAtFixedRate(new DailyInitTask(sce, scheduler), midnightDate,
+				TimeUnit.MILLISECONDS.convert(1, TimeUnit.DAYS)); // Executes
+																	// daily
 	}
 
 }

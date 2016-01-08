@@ -11,10 +11,11 @@ import java.util.Map.Entry;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.beanutils.BeanUtilsBean;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.ApplicationObjectSupport;
 import org.springframework.security.acls.domain.PrincipalSid;
-import org.springframework.security.acls.model.Permission;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -196,10 +197,12 @@ public class FormServiceDbAccessImpl extends ApplicationObjectSupport implements
 			withNull.copyProperties(verifyFormExistenceById, form);
 		} catch (IllegalAccessException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Logger logger = LoggerFactory.getLogger(this.getClass());
+			logger.error("Exception thrown in " + this.getClass().getName(), e);
 		} catch (InvocationTargetException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Logger logger = LoggerFactory.getLogger(this.getClass());
+			logger.error("Exception thrown in " + this.getClass().getName(), e);
 		}
 
 	}
@@ -258,10 +261,12 @@ public class FormServiceDbAccessImpl extends ApplicationObjectSupport implements
 			notNull.copyProperties(verifyFormExistenceById, form);
 		} catch (IllegalAccessException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Logger logger = LoggerFactory.getLogger(this.getClass());
+			logger.error("Exception thrown in " + this.getClass().getName(), e);
 		} catch (InvocationTargetException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Logger logger = LoggerFactory.getLogger(this.getClass());
+			logger.error("Exception thrown in " + this.getClass().getName(), e);
 		}
 
 	}
@@ -272,15 +277,14 @@ public class FormServiceDbAccessImpl extends ApplicationObjectSupport implements
 
 	/**
 	 * Takes a role, and applies the associated permissions with that role
-	 * owner: READ, WRITE, CREATE, DELETE, DELETE_RESPONSES 
-	 * collaborator: READ, WRITE, CREATE 
-	 * response_viewer: READ 
-	 * responder: CREATE
-	 * @throws AppException 
+	 * owner: READ, WRITE, CREATE, DELETE, DELETE_RESPONSES collaborator: READ,
+	 * WRITE, CREATE response_viewer: READ responder: CREATE
+	 * 
+	 * @throws AppException
 	 */
 	@Override
 	public void updatePermission(User user, Form form, String permissionRole) throws AppException {
-		//Create factory and PrincipalSid
+		// Create factory and PrincipalSid
 		CustomPermissionFactory factory = new CustomPermissionFactory();
 		PrincipalSid sid = new PrincipalSid(user.getUsername());
 		// Switch applies the new one permissions
@@ -293,8 +297,8 @@ public class FormServiceDbAccessImpl extends ApplicationObjectSupport implements
 			aclController.createAce(form, factory.buildFromName("WRITE"), sid);
 			aclController.createAce(form, factory.buildFromName("CREATE"), sid);
 			break;
-			// No break because we want it to fall through t the collabrator
-			// case also
+		// No break because we want it to fall through t the collabrator
+		// case also
 		case ("collaborator"):
 			deleteAllPermissions(user, form);
 			aclController.createAce(form, factory.buildFromName("READ"), sid);
@@ -310,21 +314,18 @@ public class FormServiceDbAccessImpl extends ApplicationObjectSupport implements
 			aclController.createAce(form, factory.buildFromName("CREATE"), sid);
 			break;
 		default:
-			throw new AppException(
-					Response.Status.FORBIDDEN.getStatusCode(),
-					403,
-					"The permission role you sent is not valid",
-					"Please verify the role", AppConstants.DASH_POST_URL);
-			
+			throw new AppException(Response.Status.FORBIDDEN.getStatusCode(), 403,
+					"The permission role you sent is not valid", "Please verify the role", AppConstants.DASH_POST_URL);
+
 		}
 	}
-	
+
 	@Override
-	public void deleteAllPermissions(User user, Form form){
-		//Create factory and PrincipalSid
+	public void deleteAllPermissions(User user, Form form) {
+		// Create factory and PrincipalSid
 		CustomPermissionFactory factory = new CustomPermissionFactory();
 		PrincipalSid sid = new PrincipalSid(user.getUsername());
-		//Delete all existing permissions
+		// Delete all existing permissions
 		aclController.deleteACE(form, factory.buildFromName("READ"), sid);
 		aclController.deleteACE(form, factory.buildFromName("WRITE"), sid);
 		aclController.deleteACE(form, factory.buildFromName("CREATE"), sid);
@@ -353,31 +354,31 @@ public class FormServiceDbAccessImpl extends ApplicationObjectSupport implements
 		if (!username.equals("")) {
 			permissions.put(username, permissionsTemp);
 		}
-		//Assigns a role for every list of masks
+		// Assigns a role for every list of masks
 		HashMap<String, String> permissionRoles = new LinkedHashMap<String, String>();
 		String role;
-		for(Entry<String, List<Integer>> entry : permissions.entrySet()){
+		for (Entry<String, List<Integer>> entry : permissions.entrySet()) {
 			role = "ERROR";
 			List<Integer> values = entry.getValue();
 			List<Integer> comparing = new ArrayList<Integer>();
-			comparing.add(4);//CREATE
-			if(values.containsAll(comparing))//List just holds 4
+			comparing.add(4);// CREATE
+			if (values.containsAll(comparing))// List just holds 4
 				role = "responder";
 			comparing.clear();
-			comparing.add(1);//READ
-			if(values.containsAll(comparing))
+			comparing.add(1);// READ
+			if (values.containsAll(comparing))
 				role = "response_viewer";
-			comparing.add(4);//Re-add CREATE
-			comparing.add(2);//WRITE
-			if(values.containsAll(comparing))
+			comparing.add(4);// Re-add CREATE
+			comparing.add(2);// WRITE
+			if (values.containsAll(comparing))
 				role = "collaborator";
-			comparing.add(8);//DELETE
-			comparing.add(128);//DELETE_RESPONSES
-			if(values.containsAll(comparing))
+			comparing.add(8);// DELETE
+			comparing.add(128);// DELETE_RESPONSES
+			if (values.containsAll(comparing))
 				role = "owner";
 			permissionRoles.put(entry.getKey(), role);
 		}
-		
+
 		return permissionRoles;
 	}
 }

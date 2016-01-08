@@ -51,17 +51,13 @@ public class SampleObjectResource {
 	@POST
 	@Consumes({ MediaType.APPLICATION_JSON })
 	@Produces({ MediaType.TEXT_HTML })
-	public Response createSampleObject(SampleObject sampleObject)
-			throws AppException {
-		Long createSampleObjectId = sampleObjectService
-				.createSampleObject(sampleObject);
-		return Response
-				.status(Response.Status.CREATED)
+	public Response createSampleObject(SampleObject sampleObject) throws AppException {
+		Long createSampleObjectId = sampleObjectService.createSampleObject(sampleObject);
+		return Response.status(Response.Status.CREATED)
 				// 201
 				.entity("A new sampleObject has been created at index")
 				.header("Location", String.valueOf(createSampleObjectId))
-				.header("ObjectId", String.valueOf(createSampleObjectId))
-				.build();
+				.header("ObjectId", String.valueOf(createSampleObjectId)).build();
 	}
 
 	/**
@@ -75,13 +71,11 @@ public class SampleObjectResource {
 	@POST
 	@Path("list")
 	@Consumes({ MediaType.APPLICATION_JSON })
-	public Response createSampleObjects(List<SampleObject> sampleObjects)
-			throws AppException {
+	public Response createSampleObjects(List<SampleObject> sampleObjects) throws AppException {
 		sampleObjectService.createSampleObjects(sampleObjects);
 		return Response.status(Response.Status.CREATED)
 				// 201
-				.entity("List of sampleObjects was successfully created")
-				.build();
+				.entity("List of sampleObjects was successfully created").build();
 	}
 
 	// *************************************
@@ -102,25 +96,19 @@ public class SampleObjectResource {
 	@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
 	public List<SampleObject> getSampleObjects(
 			@QueryParam("numberOfSampleObjects") @DefaultValue("25") int numberOfSampleObjects,
-			@QueryParam("startIndex") @DefaultValue("0") Long startIndex)
-			throws IOException, AppException {
-		List<SampleObject> sampleObjects = sampleObjectService
-				.getSampleObjects(numberOfSampleObjects, startIndex);
+			@QueryParam("startIndex") @DefaultValue("0") Long startIndex) throws IOException, AppException {
+		List<SampleObject> sampleObjects = sampleObjectService.getSampleObjects(numberOfSampleObjects, startIndex);
 		return sampleObjects;
 	}
 
 	@GET
 	@Path("{id}")
 	@Produces({ MediaType.APPLICATION_JSON })
-	public Response getSampleObjectById(@PathParam("id") Long id,
-			@QueryParam("detailed") boolean detailed) throws IOException,
-			AppException {
-		SampleObject sampleObjectById = sampleObjectService
-				.getSampleObjectById(id);
-		return Response.status(200)
-				.entity(new GenericEntity<SampleObject>(sampleObjectById) {
-				}).header("Access-Control-Allow-Headers", "X-extra-header")
-				.allow("OPTIONS").build();
+	public Response getSampleObjectById(@PathParam("id") Long id, @QueryParam("detailed") boolean detailed)
+			throws IOException, AppException {
+		SampleObject sampleObjectById = sampleObjectService.getSampleObjectById(id);
+		return Response.status(200).entity(new GenericEntity<SampleObject>(sampleObjectById) {
+		}).header("Access-Control-Allow-Headers", "X-extra-header").allow("OPTIONS").build();
 	}
 
 	// ************************************* UPDATE
@@ -141,52 +129,42 @@ public class SampleObjectResource {
 	@Path("{id}")
 	@Consumes({ MediaType.APPLICATION_JSON })
 	@Produces({ MediaType.TEXT_HTML })
-	public Response putSampleObjectById(@PathParam("id") Long id,
-			SampleObject sampleObject) throws AppException {
+	public Response putSampleObjectById(@PathParam("id") Long id, SampleObject sampleObject) throws AppException {
 
-		SampleObject sampleObjectById = sampleObjectService
-				.verifySampleObjectExistenceById(id);
+		SampleObject sampleObjectById = sampleObjectService.verifySampleObjectExistenceById(id);
 
 		if (sampleObjectById == null) {
 			// resource not existent yet, and should be created under the
 			// specified URI
-			Long createSampleObjectId = sampleObjectService
-					.createSampleObject(sampleObject);
-			return Response
-					.status(Response.Status.CREATED)
+			Long createSampleObjectId = sampleObjectService.createSampleObject(sampleObject);
+			return Response.status(Response.Status.CREATED)
 					// 201
 					.entity("A new sampleObject has been created AT THE LOCATION you specified")
-					.header("Location", String.valueOf(createSampleObjectId))
-					.build();
+					.header("Location", String.valueOf(createSampleObjectId)).build();
 		} else {
 			// resource is existent and a full update should occur
 			sampleObjectService.updateFullySampleObject(sampleObject);
-			return Response
-					.status(Response.Status.OK)
+			return Response.status(Response.Status.OK)
 					// 200
 					.entity("The sampleObject you specified has been fully updated created AT THE LOCATION you specified")
 					.header("Location", String.valueOf(id)).build();
 		}
 	}
 
-	//PARTIAL update
+	// PARTIAL update
 	@POST
 	@Path("{id}")
 	@Consumes({ MediaType.APPLICATION_JSON })
 	@Produces({ MediaType.TEXT_HTML })
-	public Response partialUpdateSampleObject(@PathParam("id") Long id,
-			SampleObject sampleObject) throws AppException {
+	public Response partialUpdateSampleObject(@PathParam("id") Long id, SampleObject sampleObject) throws AppException {
 		sampleObject.setId(id);
 		sampleObjectService.updatePartiallySampleObject(sampleObject);
-		return Response
-				.status(Response.Status.OK)
+		return Response.status(Response.Status.OK)
 				// 200
-				.entity("The sampleObject you specified has been successfully updated")
-				.build();
+				.entity("The sampleObject you specified has been successfully updated").build();
 	}
-	
+
 	// ************************************* FILE UPLOAD
 	// ************************************
-	
-	
+
 }

@@ -24,18 +24,21 @@ public class GenericExceptionMapper implements ExceptionMapper<Throwable> {
 		errorMessage.setDeveloperMessage(errorStackTrace.toString());
 		errorMessage.setLink(AppConstants.DASH_POST_URL);
 
-		return Response.status(errorMessage.getStatus())
-				.entity(errorMessage)
-				.type(MediaType.APPLICATION_JSON)
-				.build();
+		return Response.status(errorMessage.getStatus()).entity(errorMessage).type(MediaType.APPLICATION_JSON).build();
 	}
 
 	private void setHttpStatus(Throwable ex, ErrorMessage errorMessage) {
-		if(ex instanceof WebApplicationException ) { //NICE way to combine both of methods, say it in the blog
-			errorMessage.setStatus(((WebApplicationException)ex).getResponse().getStatus());
+		if (ex instanceof WebApplicationException) { // NICE way to combine both
+														// of methods, say it in
+														// the blog
+			errorMessage.setStatus(((WebApplicationException) ex).getResponse().getStatus());
 		} else {
-			errorMessage.setStatus(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()); //defaults to internal server error 500
+			errorMessage.setStatus(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()); // defaults
+																							// to
+																							// internal
+																							// server
+																							// error
+																							// 500
 		}
 	}
 }
-

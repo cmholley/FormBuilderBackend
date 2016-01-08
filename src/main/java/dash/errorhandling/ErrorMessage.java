@@ -8,6 +8,8 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.apache.commons.beanutils.BeanUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @XmlRootElement
 public class ErrorMessage {
@@ -20,7 +22,7 @@ public class ErrorMessage {
 	@XmlElement(name = "code")
 	int code;
 
-	/** message describing the error*/
+	/** message describing the error */
 	@XmlElement(name = "message")
 	String message;
 
@@ -76,9 +78,11 @@ public class ErrorMessage {
 		try {
 			BeanUtils.copyProperties(this, ex);
 		} catch (IllegalAccessException e) {
-			e.printStackTrace();
+			Logger logger = LoggerFactory.getLogger(this.getClass());
+			logger.error("Exception thrown in " + this.getClass().getName(), e);
 		} catch (InvocationTargetException e) {
-			e.printStackTrace();
+			Logger logger = LoggerFactory.getLogger(this.getClass());
+			logger.error("Exception thrown in " + this.getClass().getName(), e);
 		}
 	}
 
@@ -88,5 +92,6 @@ public class ErrorMessage {
 		link = "https://jersey.java.net/apidocs/2.8/jersey/javax/ws/rs/NotFoundException.html";
 	}
 
-	public ErrorMessage() {}
+	public ErrorMessage() {
+	}
 }

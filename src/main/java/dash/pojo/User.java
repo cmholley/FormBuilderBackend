@@ -16,6 +16,8 @@ import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.apache.commons.beanutils.BeanUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import dash.dao.UserEntity;
 import dash.dao.ValidationTokenEntity;
@@ -32,11 +34,9 @@ import dash.helpers.DateISO8601Adapter;
 public class User implements Serializable {
 
 	public static enum NOTIFICATION_PREFERENCE {
-		EMAIL,
-		TEXT,
-		BOTH
+		EMAIL, TEXT, BOTH
 	};
-	
+
 	private static final long serialVersionUID = -8039686696076337053L;
 
 	/** id of the user */
@@ -81,37 +81,37 @@ public class User implements Serializable {
 
 	@XmlElement(name = "activeStudies")
 	private Map<Long, Long> activeStudies = new HashMap<Long, Long>();
-	
-	@XmlElement (name = "notificationPreference")
+
+	@XmlElement(name = "notificationPreference")
 	private NOTIFICATION_PREFERENCE notificationPreference = NOTIFICATION_PREFERENCE.EMAIL;
-	
+
 	/** insertion date in the database */
 	@XmlElement(name = "insertionDate")
 	@XmlJavaTypeAdapter(DateISO8601Adapter.class)
 	private Date insertionDate;
-	
+
 	@XmlElement(name = "is_email_verified")
 	private boolean is_email_verified;
-	
+
 	@XmlTransient
 	private Set<ValidationTokenEntity> validation_tokens = new HashSet<ValidationTokenEntity>();
 
 	public User(UserEntity userEntity) {
 		try {
 			BeanUtils.copyProperties(this, userEntity);
-		} catch ( IllegalAccessException e) {
+		} catch (IllegalAccessException e) {
 
-			e.printStackTrace();
-		} catch ( InvocationTargetException e) {
+			Logger logger = LoggerFactory.getLogger(this.getClass());
+			logger.error("Exception thrown in " + this.getClass().getName(), e);
+		} catch (InvocationTargetException e) {
 
-			e.printStackTrace();
+			Logger logger = LoggerFactory.getLogger(this.getClass());
+			logger.error("Exception thrown in " + this.getClass().getName(), e);
 		}
 	}
 
-	public User( String username,  String password,
-			String firstName,  String lastName,  String city,
-			String homePhone,  String cellPhone,  String email,
-			String picturePath) {
+	public User(String username, String password, String firstName, String lastName, String city, String homePhone,
+			String cellPhone, String email, String picturePath) {
 
 		this.username = username;
 		this.password = password;
@@ -131,7 +131,7 @@ public class User implements Serializable {
 		return username;
 	}
 
-	public void setUsername( String username) {
+	public void setUsername(String username) {
 		this.username = username;
 	}
 
@@ -139,7 +139,7 @@ public class User implements Serializable {
 		return password;
 	}
 
-	public void setPassword( String password) {
+	public void setPassword(String password) {
 		this.password = password;
 	}
 
@@ -147,7 +147,7 @@ public class User implements Serializable {
 		return firstName;
 	}
 
-	public void setFirstName( String firstName) {
+	public void setFirstName(String firstName) {
 		this.firstName = firstName;
 	}
 
@@ -155,7 +155,7 @@ public class User implements Serializable {
 		return lastName;
 	}
 
-	public void setLastName( String lastName) {
+	public void setLastName(String lastName) {
 		this.lastName = lastName;
 	}
 
@@ -163,7 +163,7 @@ public class User implements Serializable {
 		return city;
 	}
 
-	public void setCity( String city) {
+	public void setCity(String city) {
 		this.city = city;
 	}
 
@@ -171,7 +171,7 @@ public class User implements Serializable {
 		return homePhone;
 	}
 
-	public void setHomePhone( String homePhone) {
+	public void setHomePhone(String homePhone) {
 		this.homePhone = homePhone;
 	}
 
@@ -179,7 +179,7 @@ public class User implements Serializable {
 		return cellPhone;
 	}
 
-	public void setCellPhone( String cellPhone) {
+	public void setCellPhone(String cellPhone) {
 		this.cellPhone = cellPhone;
 	}
 
@@ -187,7 +187,7 @@ public class User implements Serializable {
 		return email;
 	}
 
-	public void setEmail( String email) {
+	public void setEmail(String email) {
 		this.email = email;
 	}
 
@@ -195,7 +195,7 @@ public class User implements Serializable {
 		return picturePath;
 	}
 
-	public void setPicture( String picturePath) {
+	public void setPicture(String picturePath) {
 		this.picturePath = picturePath;
 	}
 
@@ -203,7 +203,7 @@ public class User implements Serializable {
 		return id;
 	}
 
-	public void setId( Long id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 
@@ -211,7 +211,7 @@ public class User implements Serializable {
 		return insertionDate;
 	}
 
-	public void setInsertionDate( Date insertionDate) {
+	public void setInsertionDate(Date insertionDate) {
 		this.insertionDate = insertionDate;
 	}
 
@@ -235,8 +235,7 @@ public class User implements Serializable {
 		return notificationPreference;
 	}
 
-	public void setNotificationPreference(
-			NOTIFICATION_PREFERENCE notificationPreference) {
+	public void setNotificationPreference(NOTIFICATION_PREFERENCE notificationPreference) {
 		this.notificationPreference = notificationPreference;
 	}
 
@@ -255,7 +254,5 @@ public class User implements Serializable {
 	public void setValidation_tokens(Set<ValidationTokenEntity> validation_tokens) {
 		this.validation_tokens = validation_tokens;
 	}
-
-
 
 }

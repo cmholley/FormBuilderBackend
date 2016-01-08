@@ -1,3 +1,4 @@
+
 package dash.dao;
 
 import java.io.Serializable;
@@ -19,21 +20,22 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.Table;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlTransient;
 
 import org.apache.commons.beanutils.BeanUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import dash.pojo.User;
 import dash.pojo.User.NOTIFICATION_PREFERENCE;
 
 /**
  * User entity
+ * 
  * @author plindner
  *
  */
 @Entity
-@Table(name="user_data")
+@Table(name = "user_data")
 public class UserEntity implements Serializable {
 
 	private static final long serialVersionUID = -8039686696076337053L;
@@ -41,7 +43,7 @@ public class UserEntity implements Serializable {
 	/** id of the user */
 	@Id
 	@GeneratedValue
-	@Column(name="id")
+	@Column(name = "id")
 	private Long id;
 
 	/** username of the user */
@@ -76,32 +78,31 @@ public class UserEntity implements Serializable {
 	@Column(name = "picture")
 	private String picturePath;
 
-	@ElementCollection (fetch= FetchType.EAGER)
-	@CollectionTable(name = "active_studies", joinColumns = {@JoinColumn(name="user_id")})
+	@ElementCollection(fetch = FetchType.EAGER)
+	@CollectionTable(name = "active_studies", joinColumns = { @JoinColumn(name = "user_id") })
 	@Column(name = "value")
 	private Map<Long, Long> activeStudies = new HashMap<Long, Long>();
-	
+
 	@Enumerated(EnumType.STRING)
-	@Column (name = "notification_preference")
+	@Column(name = "notification_preference")
 	private NOTIFICATION_PREFERENCE notificationPreference = NOTIFICATION_PREFERENCE.EMAIL;
-	
+
 	/** insertion date in the database */
 	@Column(name = "insertion_date")
 	private Date insertionDate;
 
 	@Column(name = "is_email_verified")
 	private boolean is_email_verified;
-	
-	@ElementCollection (fetch= FetchType.EAGER)
-	@CollectionTable(name = "validation_tokens", joinColumns = {@JoinColumn(name="user_id")})
-	private Set<ValidationTokenEntity> validation_tokens = new HashSet<ValidationTokenEntity>();
-	
-	public UserEntity(){}
 
-	public UserEntity( String username, 
-			String firstName,  String lastName,  String city,
-			String homePhone,  String cellPhone,  String email,
-			String picturePath) {
+	@ElementCollection(fetch = FetchType.EAGER)
+	@CollectionTable(name = "validation_tokens", joinColumns = { @JoinColumn(name = "user_id") })
+	private Set<ValidationTokenEntity> validation_tokens = new HashSet<ValidationTokenEntity>();
+
+	public UserEntity() {
+	}
+
+	public UserEntity(String username, String firstName, String lastName, String city, String homePhone,
+			String cellPhone, String email, String picturePath) {
 
 		this.username = username;
 		this.firstName = firstName;
@@ -117,12 +118,14 @@ public class UserEntity implements Serializable {
 	public UserEntity(User user) {
 		try {
 			BeanUtils.copyProperties(this, user);
-		} catch ( IllegalAccessException e) {
+		} catch (IllegalAccessException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch ( InvocationTargetException e) {
+			Logger logger = LoggerFactory.getLogger(this.getClass());
+			logger.error("Exception thrown in " + this.getClass().getName(), e);
+		} catch (InvocationTargetException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Logger logger = LoggerFactory.getLogger(this.getClass());
+			logger.error("Exception thrown in " + this.getClass().getName(), e);
 		}
 	}
 
@@ -133,7 +136,6 @@ public class UserEntity implements Serializable {
 	public void setUsername(String username) {
 		this.username = username;
 	}
-
 
 	public String getFirstName() {
 		return firstName;
@@ -147,7 +149,7 @@ public class UserEntity implements Serializable {
 		return lastName;
 	}
 
-	public void setLastName( String lastName) {
+	public void setLastName(String lastName) {
 		this.lastName = lastName;
 	}
 
@@ -195,7 +197,7 @@ public class UserEntity implements Serializable {
 		return id;
 	}
 
-	public void setId( Long id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 
@@ -227,8 +229,7 @@ public class UserEntity implements Serializable {
 		return notificationPreference;
 	}
 
-	public void setNotificationPreference(
-			NOTIFICATION_PREFERENCE notificationPreference) {
+	public void setNotificationPreference(NOTIFICATION_PREFERENCE notificationPreference) {
 		this.notificationPreference = notificationPreference;
 	}
 

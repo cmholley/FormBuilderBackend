@@ -14,19 +14,22 @@ import dash.pojo.FormResponse;
 /**
  * Example service interface for a basic object.
  * 
- * This is where you set method/object level permissions using Spring annotations.
+ * This is where you set method/object level permissions using Spring
+ * annotations.
  * 
  * @author Tyler.swensen@gmail.com
  *
  */
 
 public interface FormResponseService {
-	
+
 	/*
-	 * ******************** Create related methods *********************/
-	
+	 * ******************** Create related methods
+	 *********************/
+
 	/**
 	 * Create a new formResponse and set the current user as owner and manager.
+	 * 
 	 * @param formResponse
 	 * @return
 	 * @throws AppException
@@ -48,17 +51,18 @@ public interface FormResponseService {
 	 *            - if set, it represents the order by criteria (ASC or DESC)
 	 *            for displaying formResponses
 	 * @param numberDaysToLookBack
-	 *            - if set, it represents number of days to look back for formResponses,
-	 *            null
+	 *            - if set, it represents number of days to look back for
+	 *            formResponses, null
 	 * @return list with formResponses corresponding to search criteria
 	 * @throws AppException
 	 */
-	//Enable post filter to restrict read access to a collection
+	// Enable post filter to restrict read access to a collection
 	@PostFilter("hasPermission(filterObject, 'READ') or hasRole('ROLE_ADMIN')")
 	public List<FormResponse> getFormResponses(int numberOfFormResponses, Long startIndex) throws AppException;
-	
+
 	@PostFilter("hasPermission(filterObject, 'WRITE')")
 	public List<FormResponse> getMyFormResponses(int numberOfFormResponses, Long startIndex) throws AppException;
+
 	/**
 	 * Returns a formResponse given its id
 	 *
@@ -66,15 +70,17 @@ public interface FormResponseService {
 	 * @return
 	 * @throws AppException
 	 */
-	
-	//Enable the following line of code to restrict read access to a single object.
-	@PostAuthorize("hasPermission(returnObject, 'READ') or hasPermission(#form, 'WRITE') "
-			+ "or hasRole('ROLE_ADMIN')")
+
+	// Enable the following line of code to restrict read access to a single
+	// object.
+	@PostAuthorize("hasPermission(returnObject, 'READ') or hasPermission(#form, 'WRITE') " + "or hasRole('ROLE_ADMIN')")
 	public FormResponse getFormResponseById(Long id, Form form) throws AppException;
-	
-	//@PostFilter("hasPermission(filterObject, 'read') or hasRole('ROLE_ADMIN')")
+
+	// @PostFilter("hasPermission(filterObject, 'read') or
+	// hasRole('ROLE_ADMIN')")
 	@PostFilter("hasPermission(#form, 'WRITE') or hasRole('ROLE_ADMIN')")
-	public List<FormResponse> getFormResponsesByFormId(Long id, int numberOfFormResponses, int page, Form form) throws AppException;
+	public List<FormResponse> getFormResponsesByFormId(Long id, int numberOfFormResponses, int page, Form form)
+			throws AppException;
 
 	/*
 	 * ******************** Update related methods **********************
@@ -89,18 +95,18 @@ public interface FormResponseService {
 	 * ******************** Delete related methods **********************
 	 */
 
-
 	@PreAuthorize("hasPermission(#formResponse, 'delete') or hasPermission(#form, "
 			+ "'DELETE_RESPONSES') or hasRole('ROLE_ADMIN')")
 	public void deleteFormResponse(FormResponse formResponse, Form form);
-	/** removes all formResponses
-	 * DO NOT USE, IMPROPERLY UPDATES ACL_OBJECT table
-	 * Functional but does not destroy old acl's which doesnt hurt anything
-	 * but they will take up space if this is commonly used */
+
+	/**
+	 * removes all formResponses DO NOT USE, IMPROPERLY UPDATES ACL_OBJECT table
+	 * Functional but does not destroy old acl's which doesnt hurt anything but
+	 * they will take up space if this is commonly used
+	 */
 	@PreAuthorize("hasRole('ROLE_ROOT')")
 	public void deleteFormResponses();
-	
-	
+
 	/*
 	 * ******************** Helper methods **********************
 	 */
@@ -111,13 +117,12 @@ public interface FormResponseService {
 
 	public int getNumberOfFormResponses();
 
-	public void uploadFile(InputStream uploadedInputStream,
-			String uploadedFileLocation) throws AppException;
+	public void uploadFile(InputStream uploadedInputStream, String uploadedFileLocation) throws AppException;
 
-	public List<String> getFileNames(FormResponse formResponse)throws AppException;
+	public List<String> getFileNames(FormResponse formResponse) throws AppException;
 
-	public Object getUploadFile(String uploadedFileLocation)throws AppException;
+	public Object getUploadFile(String uploadedFileLocation) throws AppException;
 
-	public void deleteUploadFile(String uploadedFileLocation)throws AppException;
+	public void deleteUploadFile(String uploadedFileLocation) throws AppException;
 
 }

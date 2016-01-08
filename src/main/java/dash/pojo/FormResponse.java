@@ -12,6 +12,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.apache.commons.beanutils.BeanUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import dash.dao.FormResponseEntity;
 import dash.helpers.DateISO8601Adapter;
@@ -25,67 +27,69 @@ import dash.security.IAclObject;
  */
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
-public class FormResponse implements  IAclObject {
+public class FormResponse implements IAclObject {
 
 	/** id of the object */
 	@XmlElement(name = "id")
 	private Long id;
-	
+
 	@XmlElement(name = "form_id")
 	private Long form_id;
-	
+
 	@XmlElement(name = "owner_id")
 	private Long owner_id;
-	
+
 	@XmlElement(name = "study_id")
 	private Long studyId;
-	
+
 	@XmlElement(name = "insertion_date")
 	@XmlJavaTypeAdapter(DateISO8601Adapter.class)
 	private Date insertion_date;
-	
+
 	@XmlElement(name = "latest_update")
 	@XmlJavaTypeAdapter(DateISO8601Adapter.class)
 	private Date latest_update;
-	
+
 	@XmlElement(name = "is_complete")
 	private boolean is_complete;
-	
+
 	@XmlElement(name = "document_folder")
 	private String document_folder;
-	
+
 	@XmlElement(name = "responder_email")
 	private String responder_email;
-	
-	@XmlElement(name= "entries")
-	private Set<Entry> entries= new HashSet<Entry>();
-	
+
+	@XmlElement(name = "entries")
+	private Set<Entry> entries = new HashSet<Entry>();
+
 	@XmlElement(name = "send_receipt")
 	private boolean send_receipt;
 
 	public FormResponse(FormResponseEntity objectEntity) {
 		try {
 			BeanUtils.copyProperties(this, objectEntity);
-		} catch ( IllegalAccessException e) {
+		} catch (IllegalAccessException e) {
 
-			e.printStackTrace();
-		} catch ( InvocationTargetException e) {
+			Logger logger = LoggerFactory.getLogger(this.getClass());
+			logger.error("Exception thrown in " + this.getClass().getName(), e);
+		} catch (InvocationTargetException e) {
 
-			e.printStackTrace();
+			Logger logger = LoggerFactory.getLogger(this.getClass());
+			logger.error("Exception thrown in " + this.getClass().getName(), e);
 		}
 	}
 
 	public FormResponse() {
 	}
 
-	public FormResponse(Long form_id, Long owner_id, boolean is_complete,
-			Set<Entry> entries, String document_folder, String responder_email, boolean send_receipt) {
+	public FormResponse(Long form_id, Long owner_id, boolean is_complete, Set<Entry> entries, String document_folder,
+			String responder_email, boolean send_receipt) {
 		super();
 		this.form_id = form_id;
 		this.owner_id = owner_id;
 		this.is_complete = is_complete;
 		this.entries = entries;
-		this.document_folder= document_folder;
+		this.document_folder = document_folder;
 		this.responder_email = responder_email;
 		this.send_receipt = send_receipt;
 	}
@@ -153,20 +157,20 @@ public class FormResponse implements  IAclObject {
 	public void setDocument_folder(String document_folder) {
 		this.document_folder = document_folder;
 	}
-	
-	public String getResponderEmail(){
+
+	public String getResponderEmail() {
 		return responder_email;
 	}
-	
-	public void setResponderEmail(String responder_email){
+
+	public void setResponderEmail(String responder_email) {
 		this.responder_email = responder_email;
 	}
-	
-	public boolean getSend_receipt(){
+
+	public boolean getSend_receipt() {
 		return send_receipt;
 	}
-	
-	public void setSend_receipt(boolean send_receipt){
+
+	public void setSend_receipt(boolean send_receipt) {
 		this.send_receipt = send_receipt;
 	}
 

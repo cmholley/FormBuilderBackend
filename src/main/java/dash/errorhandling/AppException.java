@@ -1,6 +1,5 @@
 package dash.errorhandling;
 
-
 /**
  * Class to map application related exceptions
  */
@@ -9,8 +8,9 @@ public class AppException extends Exception {
 	private static final long serialVersionUID = -8999932578270387947L;
 
 	/**
-	 * contains redundantly the HTTP status of the response sent back to the client in case of error, so that
-	 * the developer does not have to look into the response headers. If null a default
+	 * contains redundantly the HTTP status of the response sent back to the
+	 * client in case of error, so that the developer does not have to look into
+	 * the response headers. If null a default
 	 */
 	Integer status;
 
@@ -20,7 +20,7 @@ public class AppException extends Exception {
 	/** link documenting the exception */
 	String link;
 
-	/** detailed error description for developers*/
+	/** detailed error description for developers */
 	String developerMessage;
 
 	/**
@@ -31,8 +31,7 @@ public class AppException extends Exception {
 	 * @param developerMessage
 	 * @param link
 	 */
-	public AppException(int status, int code, String message,
-			String developerMessage, String link) {
+	public AppException(int status, int code, String message, String developerMessage, String link) {
 		super(message);
 		this.status = status;
 		this.code = code;
@@ -40,7 +39,8 @@ public class AppException extends Exception {
 		this.link = link;
 	}
 
-	public AppException() { }
+	public AppException() {
+	}
 
 	public int getStatus() {
 		return status;
