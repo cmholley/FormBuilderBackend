@@ -23,8 +23,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -138,18 +136,6 @@ public class FormResponseResource {
 		return formResponses;
 	}
 
-	@GET
-	@Path("/test")
-	@Produces({ MediaType.APPLICATION_JSON })
-	public void testMethod() {
-		User user = null;
-		try {
-			user.getCity();
-		} catch (Exception e) {
-			Logger logger = LoggerFactory.getLogger(this.getClass());
-			logger.error("Exception thrown in " + this.getClass().getName(), e);
-		}
-	}
 
 	@GET
 	@Path("/myFormResponses")

@@ -72,7 +72,7 @@ public class ValidationTokenEntity implements Serializable {
 		this.token = RandomStringUtils.randomAlphanumeric(64);
 		// Set Expiration
 		Calendar calendar = Calendar.getInstance();
-		calendar.add(Calendar.MINUTE, this.token_life_minutes);
+		calendar.add(Calendar.MINUTE, ValidationTokenEntity.token_life_minutes);
 		expiration_date = calendar.getTime();
 	}
 

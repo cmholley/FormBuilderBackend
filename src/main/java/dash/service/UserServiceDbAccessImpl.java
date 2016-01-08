@@ -487,7 +487,6 @@ public class UserServiceDbAccessImpl extends ApplicationObjectSupport implements
 
 	public void tokenPasswordReset(Long id, String token, String password) throws AppException {
 		User user = this.getUserById(id);
-		boolean tokenIsValid = false;
 		for (ValidationTokenEntity tokenEntity : user.getValidation_tokens()) {
 			if (tokenEntity.getToken().equals(token) && tokenEntity.getExpiration_date().after(new Date())
 					&& tokenEntity.getToken_type() == ValidationTokenEntity.TOKEN_TYPE.PASSWORD_RESET) {
