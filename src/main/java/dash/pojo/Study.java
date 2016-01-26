@@ -1,6 +1,5 @@
 package dash.pojo;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -8,17 +7,19 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.persistence.CollectionTable;
+import javax.persistence.Column;
+import javax.persistence.ElementCollection;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import org.apache.commons.beanutils.BeanUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import dash.dao.StudyEntity;
 import dash.helpers.CalendarISO8601Adapter;
 import dash.helpers.DateISO8601Adapter;
 import dash.security.IAclObject;
@@ -27,73 +28,81 @@ import dash.security.IAclObject;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Study implements IAclObject {
 
+	private static final long serialVersionUID = -2453192655669468348L;
+	
+	@Id
+	@GeneratedValue
+	@Column(name = "id")
 	@XmlElement(name = "id")
 	private Long id;
 
 	/** insertion date in the database */
+	@Column(name = "insertion_date")
 	@XmlElement(name = "insertion_date")
 	@XmlJavaTypeAdapter(DateISO8601Adapter.class)
 	private Date insertionDate;
 
+	@Column(name = "studyName")
 	@XmlElement(name = "studyName")
 	private String studyName;
 
 	// The number of hours after the study is made active before it expires
+	@Column(name = "duration")
 	@XmlElement(name = "duration")
 	private Long duration;
 
+	@ElementCollection(fetch = FetchType.EAGER)
+	@CollectionTable(name = "participants", joinColumns = { @JoinColumn(name = "study_id") })
 	@XmlElement(name = "participants")
 	private Set<String> participants;
 
+	@ElementCollection(fetch = FetchType.EAGER)
+	@CollectionTable(name = "fixed_times", joinColumns = { @JoinColumn(name = "study_id") })
 	@XmlElement(name = "fixedTimes")
 	@XmlJavaTypeAdapter(CalendarISO8601Adapter.class)
 	private Set<Calendar> fixedTimes = new HashSet<Calendar>();
 
+	@Column(name = "startDate")
 	@XmlElement(name = "startDate")
 	@XmlJavaTypeAdapter(DateISO8601Adapter.class)
 	private Date startDate;
 
+	@Column(name = "endDate")
 	@XmlElement(name = "endDate")
 	@XmlJavaTypeAdapter(DateISO8601Adapter.class)
 	private Date endDate;
 
+	@Column(name = "sunday")
 	@XmlElement(name = "sunday")
 	private boolean sunday;
 
+	@Column(name = "monday")
 	@XmlElement(name = "monday")
 	private boolean monday;
 
+	@Column(name = "tuesday")
 	@XmlElement(name = "tuesday")
 	private boolean tuesday;
 
+	@Column(name = "wednesday")
 	@XmlElement(name = "wednesday")
 	private boolean wednesday;
 
+	@Column(name = "thursday")
 	@XmlElement(name = "thursday")
 	private boolean thursday;
 
+	@Column(name = "friday")
 	@XmlElement(name = "friday")
 	private boolean friday;
 
+	@Column(name = "saturday")
 	@XmlElement(name = "saturday")
 	private boolean saturday;
 
+	@Column(name = "formId")
 	@XmlElement(name = "formId")
 	private long formId;
-
-	public Study(StudyEntity studyEntity) {
-		try {
-			BeanUtils.copyProperties(this, studyEntity);
-		} catch (IllegalAccessException e) {
-
-			Logger logger = LoggerFactory.getLogger(this.getClass());
-			logger.error("Exception thrown in " + this.getClass().getName(), e);
-		} catch (InvocationTargetException e) {
-
-			Logger logger = LoggerFactory.getLogger(this.getClass());
-			logger.error("Exception thrown in " + this.getClass().getName(), e);
-		}
-	}
 
 	public Study() {
 
@@ -282,4 +291,9 @@ public class Study implements IAclObject {
 	public void setDuration(Long duration) {
 		this.duration = duration;
 	}
+	
+	public static long getSerialversionuid() {
+		return serialVersionUID;
+	}
+
 }

@@ -26,12 +26,12 @@ public class FormResponseDaoJPA2Impl implements FormResponseDao {
 	private EntityManager entityManager;
 
 	@Override
-	public List<FormResponseEntity> getFormResponses(int numberOfFormResponses, Long startIndex) {
+	public List<FormResponse> getFormResponses(int numberOfFormResponses, Long startIndex) {
 		String sqlString = null;
 
-		sqlString = "SELECT u FROM FormResponseEntity u WHERE u.id < ?1 ORDER BY u.insertion_date DESC";
+		sqlString = "SELECT u FROM FormResponse u WHERE u.id < ?1 ORDER BY u.insertion_date DESC";
 
-		TypedQuery<FormResponseEntity> query = entityManager.createQuery(sqlString, FormResponseEntity.class);
+		TypedQuery<FormResponse> query = entityManager.createQuery(sqlString, FormResponse.class);
 		if (startIndex == 0)
 			startIndex = Long.MAX_VALUE;
 		query.setParameter(1, startIndex);
@@ -41,11 +41,11 @@ public class FormResponseDaoJPA2Impl implements FormResponseDao {
 	}
 
 	@Override
-	public FormResponseEntity getFormResponseById(Long id) {
+	public FormResponse getFormResponseById(Long id) {
 
 		try {
-			String qlString = "SELECT u FROM FormResponseEntity u WHERE u.id = ?1";
-			TypedQuery<FormResponseEntity> query = entityManager.createQuery(qlString, FormResponseEntity.class);
+			String qlString = "SELECT u FROM FormResponse u WHERE u.id = ?1";
+			TypedQuery<FormResponse> query = entityManager.createQuery(qlString, FormResponse.class);
 			query.setParameter(1, id);
 
 			return query.getSingleResult();
@@ -55,11 +55,11 @@ public class FormResponseDaoJPA2Impl implements FormResponseDao {
 	}
 
 	@Override
-	public List<FormResponseEntity> getFormResponsesByFormId(Long id, int numberOfFormResponses, int page) {
+	public List<FormResponse> getFormResponsesByFormId(Long id, int numberOfFormResponses, int page) {
 
 		try {
-			String qlString = "SELECT u FROM FormResponseEntity u WHERE u.form_id = ?1 ORDER BY u.latest_update DESC";
-			TypedQuery<FormResponseEntity> query = entityManager.createQuery(qlString, FormResponseEntity.class);
+			String qlString = "SELECT u FROM FormResponse u WHERE u.form_id = ?1 ORDER BY u.latest_update DESC";
+			TypedQuery<FormResponse> query = entityManager.createQuery(qlString, FormResponse.class);
 
 			query.setFirstResult((page - 1) * numberOfFormResponses);
 			query.setParameter(1, id);
@@ -75,13 +75,13 @@ public class FormResponseDaoJPA2Impl implements FormResponseDao {
 	@Override
 	public void deleteFormResponseById(FormResponse formResponsePojo) {
 
-		FormResponseEntity formResponse = entityManager.find(FormResponseEntity.class, formResponsePojo.getId());
+		FormResponse formResponse = entityManager.find(FormResponse.class, formResponsePojo.getId());
 		entityManager.remove(formResponse);
 
 	}
 
 	@Override
-	public Long createFormResponse(FormResponseEntity formResponse) {
+	public Long createFormResponse(FormResponse formResponse) {
 
 		formResponse.setInsertion_date(new Date());
 		formResponse.setLatest_update(new Date());
@@ -92,7 +92,7 @@ public class FormResponseDaoJPA2Impl implements FormResponseDao {
 	}
 
 	@Override
-	public void updateFormResponse(FormResponseEntity formResponse) {
+	public void updateFormResponse(FormResponse formResponse) {
 		// TODO think about partial update and full update
 		formResponse.setLatest_update(new Date());
 		entityManager.merge(formResponse);
@@ -108,7 +108,7 @@ public class FormResponseDaoJPA2Impl implements FormResponseDao {
 	public int getNumberOfFormResponses() {
 		try {
 			String qlString = "SELECT COUNT(*) FROM formResponse";
-			TypedQuery<FormResponseEntity> query = entityManager.createQuery(qlString, FormResponseEntity.class);
+			TypedQuery<FormResponse> query = entityManager.createQuery(qlString, FormResponse.class);
 
 			return query.getFirstResult();
 		} catch (NoResultException e) {

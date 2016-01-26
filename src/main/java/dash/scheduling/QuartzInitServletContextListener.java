@@ -39,6 +39,7 @@ public class QuartzInitServletContextListener implements ServletContextListener 
 			Logger logger = LoggerFactory.getLogger(this.getClass());
 			logger.error("Exception thrown in " + this.getClass().getName(), e);
 		}
+		//Safely cancel and purge both timers
 		dailyTimer.cancel();
 		dailyTimer.purge();
 		timeoutTimer.cancel();

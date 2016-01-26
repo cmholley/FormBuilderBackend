@@ -20,7 +20,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import dash.dao.FormDao;
-import dash.dao.FormEntity;
 import dash.errorhandling.AppException;
 import dash.filters.AppConstants;
 import dash.helpers.NullAwareBeanUtilsBean;
@@ -54,7 +53,7 @@ public class FormServiceDbAccessImpl extends ApplicationObjectSupport implements
 	@Transactional
 	public Long createForm(Form form) throws AppException {
 
-		long formId = formDao.createForm(new FormEntity(form));
+		long formId = formDao.createForm(form);
 		form.setId(formId);
 		aclController.createACL(form);
 		aclController.createAce(form, CustomPermission.READ);
@@ -78,7 +77,7 @@ public class FormServiceDbAccessImpl extends ApplicationObjectSupport implements
 	@Override
 	public List<Form> getForms(int numberOfForms, Long startIndex) throws AppException {
 
-		List<FormEntity> forms = formDao.getForms(numberOfForms, startIndex);
+		List<Form> forms = formDao.getForms(numberOfForms, startIndex);
 		return getFormsFromEntities(forms);
 	}
 
@@ -120,7 +119,7 @@ public class FormServiceDbAccessImpl extends ApplicationObjectSupport implements
 		}
 		LinkedHashMap<Form, List<Integer>> forms = new LinkedHashMap<Form, List<Integer>>();
 		for (Entry<Long, List<Integer>> entry : formIds.entrySet()) {
-			Form form = new Form(formDao.getFormById(entry.getKey()));
+			Form form = formDao.getFormById(entry.getKey());
 			forms.put(form, entry.getValue());
 		}
 		return forms;
@@ -128,7 +127,7 @@ public class FormServiceDbAccessImpl extends ApplicationObjectSupport implements
 
 	@Override
 	public Form getFormById(Long id) throws AppException {
-		FormEntity formById = formDao.getFormById(id);
+		Form formById = formDao.getFormById(id);
 		if (formById == null) {
 			throw new AppException(Response.Status.NOT_FOUND.getStatusCode(), 404,
 					"The form you requested with id " + id + " was not found in the database",
@@ -136,20 +135,20 @@ public class FormServiceDbAccessImpl extends ApplicationObjectSupport implements
 					AppConstants.DASH_POST_URL);
 		}
 
-		return new Form(formDao.getFormById(id));
+		return formDao.getFormById(id);
 	}
 
-	private List<Form> getFormsFromEntities(List<FormEntity> formEntities) {
+	private List<Form> getFormsFromEntities(List<Form> formEntities) {
 		List<Form> response = new ArrayList<Form>();
-		for (FormEntity formEntity : formEntities) {
-			response.add(new Form(formEntity));
+		for (Form Form : formEntities) {
+			response.add(Form);
 		}
 
 		return response;
 	}
 
 	// public List<Form> getRecentForms(int numberOfDaysToLookBack) {
-	// List<FormEntity> recentForms = formDao
+	// List<Form> recentForms = formDao
 	// .getRecentForms(numberOfDaysToLookBack);
 	//
 	// return getFormsFromEntities(recentForms);
@@ -180,7 +179,7 @@ public class FormServiceDbAccessImpl extends ApplicationObjectSupport implements
 		}
 		copyAllProperties(verifyFormExistenceById, form);
 
-		formDao.updateForm(new FormEntity(verifyFormExistenceById));
+		formDao.updateForm(verifyFormExistenceById);
 
 	}
 
@@ -230,11 +229,11 @@ public class FormServiceDbAccessImpl extends ApplicationObjectSupport implements
 
 	@Override
 	public Form verifyFormExistenceById(Long id) {
-		FormEntity formById = formDao.getFormById(id);
+		Form formById = formDao.getFormById(id);
 		if (formById == null) {
 			return null;
 		} else {
-			return new Form(formById);
+			return formById;
 		}
 	}
 
@@ -250,7 +249,7 @@ public class FormServiceDbAccessImpl extends ApplicationObjectSupport implements
 					AppConstants.DASH_POST_URL);
 		}
 		copyPartialProperties(verifyFormExistenceById, form);
-		formDao.updateForm(new FormEntity(verifyFormExistenceById));
+		formDao.updateForm(verifyFormExistenceById);
 
 	}
 

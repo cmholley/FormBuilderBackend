@@ -11,7 +11,7 @@ import dash.pojo.Form;
  */
 public interface FormDao {
 
-	public List<FormEntity> getForms(int numberOfForms, Long startIndex);
+	public List<Form> getForms(int numberOfForms, Long startIndex);
 
 	public int getNumberOfForms();
 
@@ -21,13 +21,13 @@ public interface FormDao {
 	 * @param id
 	 * @return
 	 */
-	public FormEntity getFormById(Long id);
+	public Form getFormById(Long id);
 
 	public void deleteFormById(Form form);
 
-	public Long createForm(FormEntity form);
+	public Long createForm(Form form);
 
-	public void updateForm(FormEntity form);
+	public void updateForm(Form form);
 
 	/** removes all forms */
 	public void deleteForms();

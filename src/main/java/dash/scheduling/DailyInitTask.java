@@ -25,7 +25,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import dash.dao.StudyDao;
-import dash.dao.StudyEntity;
 import dash.pojo.Study;
 
 //This TimerTask is designed to run every day at midnight. 
@@ -45,17 +44,16 @@ public class DailyInitTask extends TimerTask {
 
 	@Override
 	public void run() {
+		//// Gets the current spring context to retrieve the StudyDao bean
 		ApplicationContext springContext = WebApplicationContextUtils
 				.getRequiredWebApplicationContext(servletContextEvent.getServletContext());
 		AutowireCapableBeanFactory factory = springContext.getAutowireCapableBeanFactory();
 
 		StudyDao studyDao = (StudyDao) factory.getBean(StudyDao.class);
-
-		List<StudyEntity> todaysStudyEntities = studyDao.getTodaysStudies();
-		List<Study> todaysStudies = new ArrayList<Study>();
-		for (StudyEntity studyEntity : todaysStudyEntities) {
-			todaysStudies.add(new Study(studyEntity));
-		}
+		
+		//Retrieves the list of studies to be executed
+		List<Study> todaysStudies = studyDao.getTodaysStudies();
+		
 		int counter = 0;
 		Date date = new Date();
 		SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy");
@@ -63,12 +61,20 @@ public class DailyInitTask extends TimerTask {
 		String dateString = format.format(date);
 		String studyName;
 		String groupName;
+		
+		//Construct a mapping of JobDetails to a list 
+		//of triggers that are to be assigned to it
 		Map<JobDetail, List<Trigger>> jobs = new HashMap<JobDetail, List<Trigger>>();
 		for (Study study : todaysStudies) {
+			//Used for the identity of the job. 
+			//See Quartz documentation for more information on groups and names
 			studyName = (dateString + counter++);
 			groupName = ("group_" + dateString);
+			//Create the actual job, use .usingJobData() to pass in the formId and studyId
 			JobDetail job = JobBuilder.newJob(StudyJob.class).withIdentity(studyName, groupName)
 					.usingJobData("formId", study.getFormId()).usingJobData("studyId", study.getId()).build();
+			
+			//Generate the triggers for the job
 			List<String> cronStrings = study.generateCronStrings();
 			List<Trigger> triggers = new ArrayList<Trigger>();
 			for (String cronString : cronStrings) {

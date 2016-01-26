@@ -1,22 +1,26 @@
 package dash.pojo;
 
-import java.lang.reflect.InvocationTargetException;
+import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.CollectionTable;
+import javax.persistence.Column;
+import javax.persistence.ElementCollection;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import org.apache.commons.beanutils.BeanUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import dash.dao.FormEntity;
 import dash.helpers.DateISO8601Adapter;
 import dash.security.IAclObject;
 
@@ -29,104 +33,92 @@ import dash.security.IAclObject;
  */
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
-public class Form implements IAclObject {
+public class Form implements IAclObject, Serializable {
 
 	public static enum THEME {
 		PLAIN
 	};
 
+	private static final long serialVersionUID = -8039686696076337053L;
+	
 	/** id of the form */
+	@Id
+	@GeneratedValue
+	@Column(name = "id")
 	@XmlElement(name = "id")
 	private Long id;
 
 	/** name of the form */
+	@Column(name = "name")
 	@XmlElement(name = "name")
 	private String name;
 
+	@Column(name = "subtitle")
 	@XmlElement(name = "subtitle")
 	private String subtitle;
 
 	/** insertion date in the database */
+	@Column(name = "insertion_date")
 	@XmlElement(name = "insertion_date")
 	@XmlJavaTypeAdapter(DateISO8601Adapter.class)
 	private Date insertion_date;
 
+	@ElementCollection(fetch = FetchType.EAGER)
+	@CollectionTable(name = "questions", joinColumns = { @JoinColumn(name = "form_id") })
 	@XmlElement(name = "questions")
 	private Set<Question> questions = new HashSet<Question>();
 
+	@Column(name = "enabled")
 	@XmlElement(name = "enabled")
 	private boolean enabled;
 
+	@Column(name = "public")
 	@XmlElement(name = "public")
 	private boolean publi;
 
+	@Enumerated(EnumType.STRING)
+	@Column(name = "theme")
 	@XmlElement(name = "theme")
 	private THEME theme = THEME.PLAIN;
 
+	@Column(name = "redirect_to_url")
 	@XmlElement(name = "redirect_to_url")
 	private boolean redirect_to_url;
 
+	@Column(name = "send_notification")
 	@XmlElement(name = "send_notification")
 	private boolean send_notification;
 
+	@Column(name = "send_receipt")
 	@XmlElement(name = "send_receipt")
 	private boolean send_receipt;
 
+	@Column(name = "email_message")
 	@XmlElement(name = "email_message") // Message for receipt email
 	private String email_message;
 
+	@Column(name = "completed_message")
 	@XmlElement(name = "completed_message")
 	private String completed_message;
 
+	@Column(name = "redirect_url")
 	@XmlElement(name = "redirect_url")
 	private String redirect_url;
 
+	@Column(name = "expiration_date")
 	@XmlElement(name = "expiration_date")
 	private Date expiration_date;
 
+	@Column(name = "closed_message")
 	@XmlElement(name = "closed_message")
 	private String closed_message;
 
 	private HashMap<String, String> permissions;
 
+	@Column(name = "confirmation_recipient_email")
 	@XmlElement(name = "confirmation_recipient_email")
 	private String confirmation_recipient_email;
-
-	public Form(FormEntity formEntity) {
-		try {
-			BeanUtils.copyProperties(this, formEntity);
-		} catch (IllegalAccessException e) {
-
-			Logger logger = LoggerFactory.getLogger(this.getClass());
-			logger.error("Exception thrown in " + this.getClass().getName(), e);
-		} catch (InvocationTargetException e) {
-
-			Logger logger = LoggerFactory.getLogger(this.getClass());
-			logger.error("Exception thrown in " + this.getClass().getName(), e);
-		}
-	}
-
-	public Form(String name, Set<Question> questions, boolean redirect_to_url, boolean enabled, boolean publi,
-			boolean send_notification, boolean send_receipt, String email_message, String completed_message,
-			String redirect_url, Date expiration_date, String closed_message, THEME theme, String receipt_message,
-			String confirmation_recipient_email) {
-		super();
-		this.name = name;
-		this.questions = questions;
-		this.redirect_to_url = redirect_to_url;
-		this.enabled = enabled;
-		this.publi = publi;
-		this.send_notification = send_notification;
-		this.send_receipt = send_receipt;
-		this.redirect_url = redirect_url;
-		this.expiration_date = expiration_date;
-		this.theme = theme;
-		this.confirmation_recipient_email = confirmation_recipient_email;
-		this.closed_message = closed_message;
-		this.email_message = email_message;
-		this.completed_message = completed_message;
-	}
-
+	
 	public Form() {
 		this.closed_message = "We're sorry, this form is closed";
 		this.completed_message = "Thank you for your submission, your response has been recorded";
@@ -160,11 +152,11 @@ public class Form implements IAclObject {
 		this.id = id;
 	}
 
-	public Date getinsertion_date() {
+	public Date getInsertion_date() {
 		return insertion_date;
 	}
 
-	public void setinsertion_date(Date insertion_date) {
+	public void setInsertion_date(Date insertion_date) {
 		this.insertion_date = insertion_date;
 	}
 
@@ -280,6 +272,7 @@ public class Form implements IAclObject {
 		this.confirmation_recipient_email = confirmation_recipient_email;
 	}
 
+	//Tests for the expiration of the particular form at the current time. 
 	public boolean isExpired() {
 		if (expiration_date == null) {
 			return false;
@@ -289,5 +282,9 @@ public class Form implements IAclObject {
 		} else {
 			return false;
 		}
+	}
+	
+	public static long getSerialversionuid() {
+		return serialVersionUID;
 	}
 }

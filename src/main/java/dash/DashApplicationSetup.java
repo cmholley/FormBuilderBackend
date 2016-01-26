@@ -13,7 +13,6 @@ import dash.filters.LoggingResponseFilter;
 import dash.pojo.FileUploadResource;
 import dash.pojo.FormResource;
 import dash.pojo.FormResponseResource;
-import dash.pojo.SampleObjectResource;
 import dash.pojo.StudyResource;
 import dash.pojo.UsersResource;
 
@@ -31,7 +30,6 @@ public class DashApplicationSetup extends ResourceConfig {
 	public DashApplicationSetup() {
 		// register application resources
 		register(UsersResource.class);
-		register(SampleObjectResource.class);
 		register(FormResource.class);
 		register(FormResponseResource.class);
 		register(FileUploadResource.class);

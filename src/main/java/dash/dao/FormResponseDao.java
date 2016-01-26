@@ -11,7 +11,7 @@ import dash.pojo.FormResponse;
  */
 public interface FormResponseDao {
 
-	public List<FormResponseEntity> getFormResponses(int numberOfFormResponses, Long startIndex);
+	public List<FormResponse> getFormResponses(int numberOfFormResponses, Long startIndex);
 
 	public int getNumberOfFormResponses();
 
@@ -21,15 +21,15 @@ public interface FormResponseDao {
 	 * @param id
 	 * @return
 	 */
-	public FormResponseEntity getFormResponseById(Long id);
+	public FormResponse getFormResponseById(Long id);
 
-	public List<FormResponseEntity> getFormResponsesByFormId(Long id, int numberOfFormResponses, int page);
+	public List<FormResponse> getFormResponsesByFormId(Long id, int numberOfFormResponses, int page);
 
 	public void deleteFormResponseById(FormResponse formResponse);
 
-	public Long createFormResponse(FormResponseEntity formResponse);
+	public Long createFormResponse(FormResponse formResponse);
 
-	public void updateFormResponse(FormResponseEntity formResponse);
+	public void updateFormResponse(FormResponse formResponse);
 
 	/** removes all responses */
 	public void deleteFormResponses();

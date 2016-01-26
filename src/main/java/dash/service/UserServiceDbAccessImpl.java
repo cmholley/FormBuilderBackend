@@ -32,8 +32,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import dash.dao.UserDao;
-import dash.dao.UserEntity;
-import dash.dao.ValidationTokenEntity;
+import dash.dao.ValidationToken;
 import dash.errorhandling.AppException;
 import dash.filters.AppConstants;
 import dash.helpers.NullAwareBeanUtilsBean;
@@ -77,14 +76,14 @@ public class UserServiceDbAccessImpl extends ApplicationObjectSupport implements
 		validateInputForCreation(user);
 
 		// verify existence of resource in the db (feed must be unique)
-		UserEntity userByName = userDao.getUserByName(user.getUsername());
+		User userByName = userDao.getUserByName(user.getUsername());
 		if (userByName != null) {
 			throw new AppException(Response.Status.CONFLICT.getStatusCode(), 409,
 					"User with username already existing in the database with the id " + userByName.getId(),
 					"Please verify that the username and password are properly generated", AppConstants.DASH_POST_URL);
 		}
 
-		long userId = userDao.createUser(new UserEntity(user));
+		long userId = userDao.createUser(user);
 		user.setId(userId);
 		authoritiesController.create(user, userRole);
 		createUserACL(user, new PrincipalSid(user.getUsername()));
@@ -121,7 +120,7 @@ public class UserServiceDbAccessImpl extends ApplicationObjectSupport implements
 
 		// verify optional parameter numberDaysToLookBack first
 		if (numberDaysToLookBack != null) {
-			List<UserEntity> recentUsers = userDao.getRecentUsers(numberDaysToLookBack);
+			List<User> recentUsers = userDao.getRecentUsers(numberDaysToLookBack);
 			return getUsersFromEntities(recentUsers);
 		}
 
@@ -130,7 +129,7 @@ public class UserServiceDbAccessImpl extends ApplicationObjectSupport implements
 					"Please set either ASC or DESC for the orderByInsertionDate parameter", null,
 					AppConstants.DASH_POST_URL);
 		}
-		List<UserEntity> users = userDao.getUsers(orderByInsertionDate);
+		List<User> users = userDao.getUsers(orderByInsertionDate);
 
 		return getUsersFromEntities(users);
 	}
@@ -147,7 +146,7 @@ public class UserServiceDbAccessImpl extends ApplicationObjectSupport implements
 
 	@Override
 	public User getUserById(Long id) throws AppException {
-		UserEntity userById = userDao.getUserById(id);
+		User userById = userDao.getUserById(id);
 		if (userById == null) {
 			throw new AppException(Response.Status.NOT_FOUND.getStatusCode(), 404,
 					"The user you requested with id " + id + " was not found in the database",
@@ -155,20 +154,20 @@ public class UserServiceDbAccessImpl extends ApplicationObjectSupport implements
 					AppConstants.DASH_POST_URL);
 		}
 
-		return new User(userDao.getUserById(id));
+		return userDao.getUserById(id);
 	}
 
-	private List<User> getUsersFromEntities(List<UserEntity> userEntities) {
+	private List<User> getUsersFromEntities(List<User> userEntities) {
 		List<User> response = new ArrayList<User>();
-		for (UserEntity userEntity : userEntities) {
-			response.add(new User(userEntity));
+		for (User User : userEntities) {
+			response.add(User);
 		}
 
 		return response;
 	}
 
 	public List<User> getRecentUsers(int numberOfDaysToLookBack) {
-		List<UserEntity> recentUsers = userDao.getRecentUsers(numberOfDaysToLookBack);
+		List<User> recentUsers = userDao.getRecentUsers(numberOfDaysToLookBack);
 
 		return getUsersFromEntities(recentUsers);
 	}
@@ -215,7 +214,7 @@ public class UserServiceDbAccessImpl extends ApplicationObjectSupport implements
 		}
 
 		copyAllProperties(verifyUserExistenceById, user);
-		userDao.updateUser(new UserEntity(verifyUserExistenceById));
+		userDao.updateUser(verifyUserExistenceById);
 	}
 
 	/**
@@ -248,11 +247,11 @@ public class UserServiceDbAccessImpl extends ApplicationObjectSupport implements
 	}
 
 	private User verifyUserExistenceById(Long id) {
-		UserEntity userById = userDao.getUserById(id);
+		User userById = userDao.getUserById(id);
 		if (userById == null) {
 			return null;
 		} else {
-			return new User(userById);
+			return userById;
 		}
 	}
 
@@ -268,7 +267,7 @@ public class UserServiceDbAccessImpl extends ApplicationObjectSupport implements
 					AppConstants.DASH_POST_URL);
 		}
 		copyPartialProperties(verifyUserExistenceById, user);
-		userDao.updateUser(new UserEntity(verifyUserExistenceById));
+		userDao.updateUser(verifyUserExistenceById);
 
 	}
 
@@ -347,8 +346,8 @@ public class UserServiceDbAccessImpl extends ApplicationObjectSupport implements
 
 	@Override
 	public User getUserByName(String username) {
-		List<UserEntity> uel = new ArrayList<UserEntity>();
-		UserEntity ue = userDao.getUserByName(username);
+		List<User> uel = new ArrayList<User>();
+		User ue = userDao.getUserByName(username);
 		if (ue != null) {
 			uel.add(ue);
 			return getUsersFromEntities(uel).get(0);
@@ -364,7 +363,7 @@ public class UserServiceDbAccessImpl extends ApplicationObjectSupport implements
 		user.setActiveStudies(activeStudies);
 		User verifyUser = this.getUserByName(user.getUsername());
 		copyAllProperties(verifyUser, user);
-		userDao.updateUser(new UserEntity(verifyUser));
+		userDao.updateUser(verifyUser);
 	}
 
 	@Transactional
@@ -379,26 +378,26 @@ public class UserServiceDbAccessImpl extends ApplicationObjectSupport implements
 		}
 
 		copyAllProperties(verifyUserExistenceById, user);
-		userDao.updateUser(new UserEntity(verifyUserExistenceById));
+		userDao.updateUser(verifyUserExistenceById);
 
 	}
 
 	@Transactional
 	public void requestPasswordReset(User user, UriInfo uri) throws AppException {
-		UserEntity userEntity = userDao.getUserById(user.getId());
-		if (userEntity.isIs_email_verified()) {
+		User User = userDao.getUserById(user.getId());
+		if (User.isIs_email_verified()) {
 			String ws = "FormBuilder";
-			ValidationTokenEntity tokenEntity = new ValidationTokenEntity(
-					ValidationTokenEntity.TOKEN_TYPE.PASSWORD_RESET);
-			userEntity.getValidation_tokens().add(tokenEntity);
+			ValidationToken tokenEntity = new ValidationToken(
+					ValidationToken.TOKEN_TYPE.PASSWORD_RESET);
+			User.getValidation_tokens().add(tokenEntity);
 			// Then email the token
 			SimpleMailMessage msg = new SimpleMailMessage(this.templateMessage);
 			msg.setSubject("Password Reset Request");
-			msg.setTo(userEntity.getUsername());
+			msg.setTo(User.getUsername());
 			msg.setText("Hi, \n\nWe recieved a request to reset you password for " + AppConstants.APPLICATION_NAME + "."
 					+ "  To reset your password please click the following link.\n\n"
-					+ "http://www.housuggest.org/PasswordReset/#/resetPassword/uid/" + userEntity.getId() + "/token/"
-					+ tokenEntity.getToken() + "/uin/" + userEntity.getUsername() + "/ws/" + ws
+					+ "http://www.housuggest.org/PasswordReset/#/resetPassword/uid/" + User.getId() + "/token/"
+					+ tokenEntity.getToken() + "/uin/" + User.getUsername() + "/ws/" + ws
 					+ "\n\n\nThis link is only valid for 2 hours. After that point, please request another password reset. "
 					+ "If you did not attempt to reset your password please contact us immediately.");
 			try {
@@ -416,20 +415,20 @@ public class UserServiceDbAccessImpl extends ApplicationObjectSupport implements
 	@Override
 	@Transactional
 	public void requestEmailActivation(User user) throws AppException {
-		UserEntity userEntity = userDao.getUserById(user.getId());
+		User User = userDao.getUserById(user.getId());
 		String ws = "FormBuilder";
-		ValidationTokenEntity tokenEntity = new ValidationTokenEntity(
-				ValidationTokenEntity.TOKEN_TYPE.EMAIL_ACTIVATION);
-		userEntity.getValidation_tokens().add(tokenEntity);
-		userDao.updateUser(userEntity);
+		ValidationToken tokenEntity = new ValidationToken(
+				ValidationToken.TOKEN_TYPE.EMAIL_ACTIVATION);
+		User.getValidation_tokens().add(tokenEntity);
+		userDao.updateUser(User);
 		// Then email the token
 		SimpleMailMessage msg = new SimpleMailMessage(this.templateMessage);
 		msg.setSubject("Accout Activation");
-		msg.setTo(userEntity.getUsername());
+		msg.setTo(User.getUsername());
 		msg.setText("Hi, \n\nWe recieved a request to create a new account with this email for "
 				+ AppConstants.APPLICATION_NAME + "." + " To activate your account please click the following link.\n\n"
-				+ "http://www.housuggest.org/PasswordReset/#/emailValidate/uid/" + userEntity.getId() + "/token/"
-				+ tokenEntity.getToken() + "/uin/" + userEntity.getUsername() + "/ws/" + ws
+				+ "http://www.housuggest.org/PasswordReset/#/emailValidate/uid/" + User.getId() + "/token/"
+				+ tokenEntity.getToken() + "/uin/" + User.getUsername() + "/ws/" + ws
 				+ "\n\n\nIf you did not attempt to create this account, please contact us immediately.");
 		try {
 			this.mailSender.send(msg);
@@ -446,7 +445,7 @@ public class UserServiceDbAccessImpl extends ApplicationObjectSupport implements
 	public Response validateToken(Long id, String token) throws AppException {
 		User user = this.getUserById(id);
 		String debugInfo = "token failed debug out:";
-		for (ValidationTokenEntity tokenEntity : user.getValidation_tokens()) {
+		for (ValidationToken tokenEntity : user.getValidation_tokens()) {
 			debugInfo = "<br>tokenmatchcheck=";
 			if (tokenEntity.getToken().equals(token)) {
 				debugInfo += "true";
@@ -470,7 +469,7 @@ public class UserServiceDbAccessImpl extends ApplicationObjectSupport implements
 				}
 				case EMAIL_ACTIVATION: {
 					user.setIs_email_verified(true);
-					userDao.updateUser(new UserEntity(user));
+					userDao.updateUser(user);
 
 					return Response.status(200).entity("Thank you for activating your account!").build();
 				}
@@ -487,9 +486,9 @@ public class UserServiceDbAccessImpl extends ApplicationObjectSupport implements
 
 	public void tokenPasswordReset(Long id, String token, String password) throws AppException {
 		User user = this.getUserById(id);
-		for (ValidationTokenEntity tokenEntity : user.getValidation_tokens()) {
+		for (ValidationToken tokenEntity : user.getValidation_tokens()) {
 			if (tokenEntity.getToken().equals(token) && tokenEntity.getExpiration_date().after(new Date())
-					&& tokenEntity.getToken_type() == ValidationTokenEntity.TOKEN_TYPE.PASSWORD_RESET) {
+					&& tokenEntity.getToken_type() == ValidationToken.TOKEN_TYPE.PASSWORD_RESET) {
 				user.setPassword(password);
 				this.resetPassword(user);
 			}

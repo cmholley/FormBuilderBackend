@@ -34,12 +34,12 @@ public class StudyDaoJPA2Impl implements StudyDao {
 	private EntityManager entityManager;
 
 	@Override
-	public List<StudyEntity> getStudies(int numberOfStudies, Long startIndex) {
+	public List<Study> getStudies(int numberOfStudies, Long startIndex) {
 		String sqlString = null;
 
-		sqlString = "SELECT u FROM StudyEntity u WHERE u.id < ?1 ORDER BY u.time_stamp_sample DESC";
+		sqlString = "SELECT u FROM Study u WHERE u.id < ?1 ORDER BY u.time_stamp_sample DESC";
 
-		TypedQuery<StudyEntity> query = entityManager.createQuery(sqlString, StudyEntity.class);
+		TypedQuery<Study> query = entityManager.createQuery(sqlString, Study.class);
 		if (startIndex == 0)
 			startIndex = Long.MAX_VALUE;
 		query.setParameter(1, startIndex);
@@ -49,11 +49,11 @@ public class StudyDaoJPA2Impl implements StudyDao {
 	}
 
 	@Override
-	public StudyEntity getStudyById(Long id) {
+	public Study getStudyById(Long id) {
 
 		try {
-			String qlString = "SELECT u FROM StudyEntity u WHERE u.id = ?1";
-			TypedQuery<StudyEntity> query = entityManager.createQuery(qlString, StudyEntity.class);
+			String qlString = "SELECT u FROM Study u WHERE u.id = ?1";
+			TypedQuery<Study> query = entityManager.createQuery(qlString, Study.class);
 			query.setParameter(1, id);
 
 			return query.getSingleResult();
@@ -65,13 +65,13 @@ public class StudyDaoJPA2Impl implements StudyDao {
 	@Override
 	public void deleteStudyById(Study studyPojo) {
 
-		StudyEntity study = entityManager.find(StudyEntity.class, studyPojo.getId());
+		Study study = entityManager.find(Study.class, studyPojo.getId());
 		entityManager.remove(study);
 
 	}
 
 	@Override
-	public Long createStudy(StudyEntity study) {
+	public Long createStudy(Study study) {
 
 		study.setInsertionDate(new Date());
 		entityManager.persist(study);
@@ -82,7 +82,7 @@ public class StudyDaoJPA2Impl implements StudyDao {
 	}
 
 	@Override
-	public void updateStudy(StudyEntity study) {
+	public void updateStudy(Study study) {
 		// TODO think about partial update and full update
 		entityManager.merge(study);
 	}
@@ -97,7 +97,7 @@ public class StudyDaoJPA2Impl implements StudyDao {
 	public int getNumberOfStudies() {
 		try {
 			String qlString = "SELECT COUNT(*) FROM study";
-			TypedQuery<StudyEntity> query = entityManager.createQuery(qlString, StudyEntity.class);
+			TypedQuery<Study> query = entityManager.createQuery(qlString, Study.class);
 
 			return query.getFirstResult();
 		} catch (NoResultException e) {
@@ -106,18 +106,18 @@ public class StudyDaoJPA2Impl implements StudyDao {
 	}
 
 	@Override
-	public List<StudyEntity> getStudiesForForm(long formId) {
-		String sqlString = "SELECT u FROM StudyEntity u WHERE u.formId = :formId ORDER BY u.insertionDate DESC";
-		TypedQuery<StudyEntity> query = entityManager.createQuery(sqlString, StudyEntity.class);
+	public List<Study> getStudiesForForm(long formId) {
+		String sqlString = "SELECT u FROM Study u WHERE u.formId = :formId ORDER BY u.insertionDate DESC";
+		TypedQuery<Study> query = entityManager.createQuery(sqlString, Study.class);
 		query.setParameter("formId", formId);
-		List<StudyEntity> studies = query.getResultList();
+		List<Study> studies = query.getResultList();
 		return studies;
 	}
 
 	@Override
-	public List<StudyEntity> getTodaysStudies() {
-		String sqlString = "SELECT u FROM StudyEntity u WHERE u.startDate BETWEEN :startDate AND :endDate";
-		TypedQuery<StudyEntity> query = entityManager.createQuery(sqlString, StudyEntity.class);
+	public List<Study> getTodaysStudies() {
+		String sqlString = "SELECT u FROM Study u WHERE u.startDate BETWEEN :startDate AND :endDate";
+		TypedQuery<Study> query = entityManager.createQuery(sqlString, Study.class);
 		Calendar cal = Calendar.getInstance();
 		cal.set(Calendar.MILLISECOND, 0);
 		cal.set(Calendar.SECOND, 0);
@@ -128,7 +128,7 @@ public class StudyDaoJPA2Impl implements StudyDao {
 		Date startDate = cal.getTime();
 		query.setParameter("startDate", startDate);
 		query.setParameter("endDate", endDate);
-		List<StudyEntity> studies = query.getResultList();
+		List<Study> studies = query.getResultList();
 		return studies;
 	}
 
@@ -143,11 +143,7 @@ public class StudyDaoJPA2Impl implements StudyDao {
 
 	@Override
 	public List<Long> getExpiredStudies() {
-		Configuration configuration = new Configuration().configure();
-		ServiceRegistry serviceRegistry = new ServiceRegistryBuilder().applySettings(configuration.getProperties())
-				.buildServiceRegistry();
-		SessionFactory sessionFactory = configuration.buildSessionFactory(serviceRegistry);
-		Session session = sessionFactory.openSession();
+		Session session = entityManager.unwrap(Session.class);
 		String queryString = "SELECT study_id FROM expiration_times WHERE expiration_time < NOW()";
 		SQLQuery query = session.createSQLQuery(queryString);
 		List<Long> studyIds = new ArrayList<Long>();
@@ -159,11 +155,7 @@ public class StudyDaoJPA2Impl implements StudyDao {
 
 	@Override
 	public List<Long> getUsersForActiveStudy(Long studyId) {
-		Configuration configuration = new Configuration().configure();
-		ServiceRegistry serviceRegistry = new ServiceRegistryBuilder().applySettings(configuration.getProperties())
-				.buildServiceRegistry();
-		SessionFactory sessionFactory = configuration.buildSessionFactory(serviceRegistry);
-		Session session = sessionFactory.openSession();
+		Session session = entityManager.unwrap(Session.class);
 		String queryString = "SELECT user_id FROM active_studies WHERE activeStudies_KEY = :studyId";
 		SQLQuery query = session.createSQLQuery(queryString);
 		query.setParameter("studyId", studyId);

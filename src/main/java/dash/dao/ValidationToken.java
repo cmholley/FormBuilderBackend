@@ -28,7 +28,7 @@ import dash.errorhandling.AppException;
 @XmlAccessorType(XmlAccessType.FIELD)
 @Embeddable
 @Table(name = "validation_tokens")
-public class ValidationTokenEntity implements Serializable {
+public class ValidationToken implements Serializable {
 
 	// Accounts for the different thing which a token might be used for
 	public static enum TOKEN_TYPE {
@@ -62,17 +62,17 @@ public class ValidationTokenEntity implements Serializable {
 	@Column(name = "token_type")
 	private TOKEN_TYPE token_type;
 
-	public ValidationTokenEntity() {
+	public ValidationToken() {
 		super();
 	}
 
-	public ValidationTokenEntity(TOKEN_TYPE token_type) throws AppException {
+	public ValidationToken(TOKEN_TYPE token_type) throws AppException {
 		super();
 		this.token_type = token_type;
 		this.token = RandomStringUtils.randomAlphanumeric(64);
 		// Set Expiration
 		Calendar calendar = Calendar.getInstance();
-		calendar.add(Calendar.MINUTE, ValidationTokenEntity.token_life_minutes);
+		calendar.add(Calendar.MINUTE, ValidationToken.token_life_minutes);
 		expiration_date = calendar.getTime();
 	}
 

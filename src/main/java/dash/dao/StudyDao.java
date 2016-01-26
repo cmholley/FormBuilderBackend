@@ -12,7 +12,7 @@ import dash.pojo.Study;
  */
 public interface StudyDao {
 
-	public List<StudyEntity> getStudies(int numberOfStudies, Long startIndex);
+	public List<Study> getStudies(int numberOfStudies, Long startIndex);
 
 	public int getNumberOfStudies();
 
@@ -22,20 +22,20 @@ public interface StudyDao {
 	 * @param id
 	 * @return
 	 */
-	public StudyEntity getStudyById(Long id);
+	public Study getStudyById(Long id);
 
 	public void deleteStudyById(Study study);
 
-	public Long createStudy(StudyEntity study);
+	public Long createStudy(Study study);
 
-	public void updateStudy(StudyEntity study);
+	public void updateStudy(Study study);
 
 	/** removes all studies */
 	public void deleteStudies();
 
-	public List<StudyEntity> getStudiesForForm(long formId);
+	public List<Study> getStudiesForForm(long formId);
 
-	public List<StudyEntity> getTodaysStudies();
+	public List<Study> getTodaysStudies();
 
 	public void insertExpirationTime(Long id, Date expirationDate);
 

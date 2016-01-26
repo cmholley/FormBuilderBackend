@@ -13,9 +13,9 @@ import dash.pojo.User;
  */
 public interface UserDao {
 
-	public List<UserEntity> getUsers(String orderByInsertionDate);
+	public List<User> getUsers(String orderByInsertionDate);
 
-	public List<UserEntity> getRecentUsers(int numberOfDaysToLookBack);
+	public List<User> getRecentUsers(int numberOfDaysToLookBack);
 
 	public int getNumberOfUsers();
 
@@ -25,7 +25,7 @@ public interface UserDao {
 	 * @param id
 	 * @return
 	 */
-	public UserEntity getUserById(Long id);
+	public User getUserById(Long id);
 
 	/**
 	 * Find user by name
@@ -33,15 +33,15 @@ public interface UserDao {
 	 * @param user
 	 * @return the user with the name specified or null if not existent
 	 */
-	public UserEntity getUserByName(String name);
+	public User getUserByName(String name);
 
 	public String getRoleByName(String username);
 
 	public void deleteUserById(User user);
 
-	public Long createUser(UserEntity user);
+	public Long createUser(User user);
 
-	public void updateUser(UserEntity user);
+	public void updateUser(User user);
 
 	public void updateUserRole(String role, String username);
 

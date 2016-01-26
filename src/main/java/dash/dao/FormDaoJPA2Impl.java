@@ -28,16 +28,17 @@ import dash.pojo.Form;
  */
 @Component("formDao")
 public class FormDaoJPA2Impl implements FormDao {
+	
 	@PersistenceContext(unitName = "dashPersistence")
 	private EntityManager entityManager;
 
 	@Override
-	public List<FormEntity> getForms(int numberOfForms, Long startIndex) {
+	public List<Form> getForms(int numberOfForms, Long startIndex) {
 		String sqlString = null;
 
-		sqlString = "SELECT u FROM FormEntity u WHERE u.id < ?1 ORDER BY u.insertion_date DESC";
+		sqlString = "SELECT u FROM Form u WHERE u.id < ?1 ORDER BY u.insertion_date DESC";
 
-		TypedQuery<FormEntity> query = entityManager.createQuery(sqlString, FormEntity.class);
+		TypedQuery<Form> query = entityManager.createQuery(sqlString, Form.class);
 		if (startIndex == 0)
 			startIndex = Long.MAX_VALUE;
 		query.setParameter(1, startIndex);
@@ -47,11 +48,11 @@ public class FormDaoJPA2Impl implements FormDao {
 	}
 
 	@Override
-	public FormEntity getFormById(Long id) {
+	public Form getFormById(Long id) {
 
 		try {
-			String qlString = "SELECT u FROM FormEntity u WHERE u.id = ?1";
-			TypedQuery<FormEntity> query = entityManager.createQuery(qlString, FormEntity.class);
+			String qlString = "SELECT u FROM Form u WHERE u.id = ?1";
+			TypedQuery<Form> query = entityManager.createQuery(qlString, Form.class);
 			query.setParameter(1, id);
 
 			return query.getSingleResult();
@@ -63,13 +64,13 @@ public class FormDaoJPA2Impl implements FormDao {
 	@Override
 	public void deleteFormById(Form formPojo) {
 
-		FormEntity form = entityManager.find(FormEntity.class, formPojo.getId());
+		Form form = entityManager.find(Form.class, formPojo.getId());
 		entityManager.remove(form);
 
 	}
 
 	@Override
-	public Long createForm(FormEntity form) {
+	public Long createForm(Form form) {
 
 		form.setInsertion_date(new Date());
 		entityManager.persist(form);
@@ -81,7 +82,7 @@ public class FormDaoJPA2Impl implements FormDao {
 	}
 
 	@Override
-	public void updateForm(FormEntity form) {
+	public void updateForm(Form form) {
 		// TODO think about partial update and full update
 		entityManager.merge(form);
 	}
@@ -96,7 +97,7 @@ public class FormDaoJPA2Impl implements FormDao {
 	public int getNumberOfForms() {
 		try {
 			String qlString = "SELECT COUNT(*) FROM form";
-			TypedQuery<FormEntity> query = entityManager.createQuery(qlString, FormEntity.class);
+			TypedQuery<Form> query = entityManager.createQuery(qlString, Form.class);
 
 			return query.getFirstResult();
 		} catch (NoResultException e) {

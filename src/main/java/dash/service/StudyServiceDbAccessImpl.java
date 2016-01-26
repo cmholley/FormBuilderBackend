@@ -30,7 +30,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import dash.dao.StudyDao;
-import dash.dao.StudyEntity;
 import dash.errorhandling.AppException;
 import dash.filters.AppConstants;
 import dash.helpers.NullAwareBeanUtilsBean;
@@ -73,7 +72,7 @@ public class StudyServiceDbAccessImpl extends ApplicationObjectSupport implement
 	@Transactional
 	public Long createStudy(Study study, Form form) throws AppException {
 
-		long studyId = studyDao.createStudy(new StudyEntity(study));
+		long studyId = studyDao.createStudy(study);
 		study.setId(studyId);
 		aclController.createACL(study);
 		aclController.createAce(study, CustomPermission.READ);
@@ -96,13 +95,13 @@ public class StudyServiceDbAccessImpl extends ApplicationObjectSupport implement
 	@Override
 	public List<Study> getStudies(int numberOfStudies, Long startIndex) throws AppException {
 
-		List<StudyEntity> studies = studyDao.getStudies(numberOfStudies, startIndex);
+		List<Study> studies = studyDao.getStudies(numberOfStudies, startIndex);
 		return getStudiesFromEntities(studies);
 	}
 
 	@Override
 	public Study getStudyById(Long id) throws AppException {
-		StudyEntity studyById = studyDao.getStudyById(id);
+		Study studyById = studyDao.getStudyById(id);
 		if (studyById == null) {
 			throw new AppException(Response.Status.NOT_FOUND.getStatusCode(), 404,
 					"The study you requested with id " + id + " was not found in the database",
@@ -110,13 +109,13 @@ public class StudyServiceDbAccessImpl extends ApplicationObjectSupport implement
 					AppConstants.DASH_POST_URL);
 		}
 
-		return new Study(studyDao.getStudyById(id));
+		return studyDao.getStudyById(id);
 	}
 
-	private List<Study> getStudiesFromEntities(List<StudyEntity> studyEntities) {
+	private List<Study> getStudiesFromEntities(List<Study> studyEntities) {
 		List<Study> response = new ArrayList<Study>();
-		for (StudyEntity studyEntity : studyEntities) {
-			response.add(new Study(studyEntity));
+		for (Study Study : studyEntities) {
+			response.add(Study);
 		}
 
 		return response;
@@ -154,7 +153,7 @@ public class StudyServiceDbAccessImpl extends ApplicationObjectSupport implement
 
 	// public List<Study> getRecentStudies(int
 	// numberOfDaysToLookBack) {
-	// List<StudyEntity> recentStudies = studyDao
+	// List<Study> recentStudies = studyDao
 	// .getRecentStudies(numberOfDaysToLookBack);
 	//
 	// return getStudiesFromEntities(recentStudies);
@@ -185,7 +184,7 @@ public class StudyServiceDbAccessImpl extends ApplicationObjectSupport implement
 		}
 		copyAllProperties(verifyStudyExistenceById, study);
 
-		studyDao.updateStudy(new StudyEntity(verifyStudyExistenceById));
+		studyDao.updateStudy(verifyStudyExistenceById);
 
 	}
 
@@ -234,11 +233,11 @@ public class StudyServiceDbAccessImpl extends ApplicationObjectSupport implement
 
 	@Override
 	public Study verifyStudyExistenceById(Long id) {
-		StudyEntity studyById = studyDao.getStudyById(id);
+		Study studyById = studyDao.getStudyById(id);
 		if (studyById == null) {
 			return null;
 		} else {
-			return new Study(studyById);
+			return studyById;
 		}
 	}
 
@@ -254,7 +253,7 @@ public class StudyServiceDbAccessImpl extends ApplicationObjectSupport implement
 					AppConstants.DASH_POST_URL);
 		}
 		copyPartialProperties(verifyStudyExistenceById, study);
-		studyDao.updateStudy(new StudyEntity(verifyStudyExistenceById));
+		studyDao.updateStudy(verifyStudyExistenceById);
 
 	}
 
@@ -305,7 +304,7 @@ public class StudyServiceDbAccessImpl extends ApplicationObjectSupport implement
 
 	@Override
 	public List<Study> getStudiesForForm(long formId, Form form) {
-		List<StudyEntity> studies = studyDao.getStudiesForForm(formId);
+		List<Study> studies = studyDao.getStudiesForForm(formId);
 		return getStudiesFromEntities(studies);
 	}
 

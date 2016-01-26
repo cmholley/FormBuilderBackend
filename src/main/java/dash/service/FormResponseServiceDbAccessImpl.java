@@ -38,7 +38,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import dash.dao.FormResponseDao;
-import dash.dao.FormResponseEntity;
 import dash.errorhandling.AppException;
 import dash.filters.AppConstants;
 import dash.helpers.NullAwareBeanUtilsBean;
@@ -96,7 +95,7 @@ public class FormResponseServiceDbAccessImpl extends ApplicationObjectSupport im
 			formResponse.setEntries(entries);
 		}
 
-		long formResponseId = formResponseDao.createFormResponse(new FormResponseEntity(formResponse));
+		long formResponseId = formResponseDao.createFormResponse(formResponse);
 		formResponse.setId(formResponseId);
 		aclController.createACL(formResponse);
 		aclController.createAce(formResponse, CustomPermission.READ);
@@ -121,7 +120,7 @@ public class FormResponseServiceDbAccessImpl extends ApplicationObjectSupport im
 	@Override
 	public List<FormResponse> getFormResponses(int numberOfFormResponses, Long startIndex) throws AppException {
 
-		List<FormResponseEntity> formResponses = formResponseDao.getFormResponses(numberOfFormResponses, startIndex);
+		List<FormResponse> formResponses = formResponseDao.getFormResponses(numberOfFormResponses, startIndex);
 		return getFormResponsesFromEntities(formResponses);
 	}
 
@@ -273,7 +272,7 @@ public class FormResponseServiceDbAccessImpl extends ApplicationObjectSupport im
 
 	@Override
 	public FormResponse getFormResponseById(Long id, Form form) throws AppException {
-		FormResponseEntity formResponseById = formResponseDao.getFormResponseById(id);
+		FormResponse formResponseById = formResponseDao.getFormResponseById(id);
 		if (formResponseById == null) {
 			throw new AppException(Response.Status.NOT_FOUND.getStatusCode(), 404,
 					"The formResponse you requested with id " + id + " was not found in the database",
@@ -281,13 +280,13 @@ public class FormResponseServiceDbAccessImpl extends ApplicationObjectSupport im
 					AppConstants.DASH_POST_URL);
 		}
 
-		return new FormResponse(formResponseDao.getFormResponseById(id));
+		return formResponseDao.getFormResponseById(id);
 	}
 
 	@Override
 	public List<FormResponse> getFormResponsesByFormId(Long id, int numberOfFormResponses, int page, Form form)
 			throws AppException {
-		List<FormResponseEntity> formResponsesByFormId = formResponseDao.getFormResponsesByFormId(id,
+		List<FormResponse> formResponsesByFormId = formResponseDao.getFormResponsesByFormId(id,
 				numberOfFormResponses, page);
 		if (formResponsesByFormId == null) {
 			throw new AppException(Response.Status.NOT_FOUND.getStatusCode(), 404,
@@ -299,10 +298,10 @@ public class FormResponseServiceDbAccessImpl extends ApplicationObjectSupport im
 		return getFormResponsesFromEntities(formResponsesByFormId);
 	}
 
-	private List<FormResponse> getFormResponsesFromEntities(List<FormResponseEntity> formResponseEntities) {
+	private List<FormResponse> getFormResponsesFromEntities(List<FormResponse> formResponseEntities) {
 		List<FormResponse> responses = new ArrayList<FormResponse>();
-		for (FormResponseEntity formResponseEntity : formResponseEntities) {
-			responses.add(new FormResponse(formResponseEntity));
+		for (FormResponse FormResponse : formResponseEntities) {
+			responses.add(FormResponse);
 		}
 
 		return responses;
@@ -340,7 +339,7 @@ public class FormResponseServiceDbAccessImpl extends ApplicationObjectSupport im
 
 	// public List<FormResponse> getRecentFormResponses(int
 	// numberOfDaysToLookBack) {
-	// List<FormResponseEntity> recentFormResponses = formResponseDao
+	// List<FormResponse> recentFormResponses = formResponseDao
 	// .getRecentFormResponses(numberOfDaysToLookBack);
 	//
 	// return getFormResponsesFromEntities(recentFormResponses);
@@ -372,7 +371,7 @@ public class FormResponseServiceDbAccessImpl extends ApplicationObjectSupport im
 		copyAllProperties(verifyFormResponseExistenceById, formResponse);
 		Form form = formService.getFormById(formResponse.getForm_id());
 
-		formResponseDao.updateFormResponse(new FormResponseEntity(verifyFormResponseExistenceById));
+		formResponseDao.updateFormResponse(verifyFormResponseExistenceById);
 		if (formResponse.isIs_complete()) {
 			if (formResponse.getSend_receipt()) // Sends Confirmation Email to
 												// Responder
@@ -428,11 +427,11 @@ public class FormResponseServiceDbAccessImpl extends ApplicationObjectSupport im
 
 	@Override
 	public FormResponse verifyFormResponseExistenceById(Long id) {
-		FormResponseEntity formResponseById = formResponseDao.getFormResponseById(id);
+		FormResponse formResponseById = formResponseDao.getFormResponseById(id);
 		if (formResponseById == null) {
 			return null;
 		} else {
-			return new FormResponse(formResponseById);
+			return formResponseById;
 		}
 	}
 
@@ -448,7 +447,7 @@ public class FormResponseServiceDbAccessImpl extends ApplicationObjectSupport im
 					AppConstants.DASH_POST_URL);
 		}
 		copyPartialProperties(verifyFormResponseExistenceById, formResponse);
-		formResponseDao.updateFormResponse(new FormResponseEntity(verifyFormResponseExistenceById));
+		formResponseDao.updateFormResponse(verifyFormResponseExistenceById);
 
 	}
 
