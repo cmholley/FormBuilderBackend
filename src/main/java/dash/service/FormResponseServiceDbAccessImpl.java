@@ -271,7 +271,7 @@ public class FormResponseServiceDbAccessImpl extends ApplicationObjectSupport im
 	}
 
 	@Override
-	public FormResponse getFormResponseById(Long id, Form form) throws AppException {
+	public FormResponse getFormResponseById(Long id) throws AppException {
 		FormResponse formResponseById = formResponseDao.getFormResponseById(id);
 		if (formResponseById == null) {
 			throw new AppException(Response.Status.NOT_FOUND.getStatusCode(), 404,
