@@ -46,7 +46,7 @@ public class Study implements IAclObject {
 	@XmlJavaTypeAdapter(DateISO8601Adapter.class)
 	private Date insertionDate;
 
-	@Column(name = "studyName")
+	@Column(name = "study_name")
 	@XmlElement(name = "studyName")
 	private String studyName;
 
@@ -66,45 +66,47 @@ public class Study implements IAclObject {
 	@XmlJavaTypeAdapter(CalendarISO8601Adapter.class)
 	private Set<Calendar> fixedTimes = new HashSet<Calendar>();
 
-	@Column(name = "startDate")
+	@Column(name = "start_date")
 	@XmlElement(name = "startDate")
 	@XmlJavaTypeAdapter(DateISO8601Adapter.class)
 	private Date startDate;
 
-	@Column(name = "endDate")
+	@Column(name = "end_date")
 	@XmlElement(name = "endDate")
 	@XmlJavaTypeAdapter(DateISO8601Adapter.class)
 	private Date endDate;
 
-	@Column(name = "sunday")
+	//We explicitly notify hibernate that the column will be a bit to prevent 
+	//Errors during the schema validation
+	@Column(name = "sunday", columnDefinition = "BIT", length = 1)
 	@XmlElement(name = "sunday")
 	private boolean sunday;
 
-	@Column(name = "monday")
+	@Column(name = "monday", columnDefinition = "BIT", length = 1)
 	@XmlElement(name = "monday")
 	private boolean monday;
 
-	@Column(name = "tuesday")
+	@Column(name = "tuesday", columnDefinition = "BIT", length = 1)
 	@XmlElement(name = "tuesday")
 	private boolean tuesday;
 
-	@Column(name = "wednesday")
+	@Column(name = "wednesday", columnDefinition = "BIT", length = 1)
 	@XmlElement(name = "wednesday")
 	private boolean wednesday;
 
-	@Column(name = "thursday")
+	@Column(name = "thursday", columnDefinition = "BIT", length = 1)
 	@XmlElement(name = "thursday")
 	private boolean thursday;
 
-	@Column(name = "friday")
+	@Column(name = "friday", columnDefinition = "BIT", length = 1)
 	@XmlElement(name = "friday")
 	private boolean friday;
 
-	@Column(name = "saturday")
+	@Column(name = "saturday", columnDefinition = "BIT", length = 1)
 	@XmlElement(name = "saturday")
 	private boolean saturday;
 
-	@Column(name = "formId")
+	@Column(name = "form_id", columnDefinition = "BIT", length = 1)
 	@XmlElement(name = "formId")
 	private long formId;
 

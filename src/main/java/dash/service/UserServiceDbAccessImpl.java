@@ -232,7 +232,7 @@ public class UserServiceDbAccessImpl extends ApplicationObjectSupport implements
 			withNull.copyProperty(verifyUserExistenceById, "homePhone", user.getHomePhone());
 			withNull.copyProperty(verifyUserExistenceById, "cellPhone", user.getCellPhone());
 			withNull.copyProperty(verifyUserExistenceById, "email", user.getEmail());
-			withNull.copyProperty(verifyUserExistenceById, "picture", user.getPicture());
+			withNull.copyProperty(verifyUserExistenceById, "picture", user.getPicturePath());
 			withNull.copyProperty(verifyUserExistenceById, "activeStudies", user.getActiveStudies());
 		} catch (IllegalAccessException e) {
 			// TODO Auto-generated catch block
@@ -385,11 +385,11 @@ public class UserServiceDbAccessImpl extends ApplicationObjectSupport implements
 	@Transactional
 	public void requestPasswordReset(User user, UriInfo uri) throws AppException {
 		User User = userDao.getUserById(user.getId());
-		if (User.isIs_email_verified()) {
+		if (User.isEmailVerified()) {
 			String ws = "FormBuilder";
 			ValidationToken tokenEntity = new ValidationToken(
 					ValidationToken.TOKEN_TYPE.PASSWORD_RESET);
-			User.getValidation_tokens().add(tokenEntity);
+			User.getValidationTokens().add(tokenEntity);
 			// Then email the token
 			SimpleMailMessage msg = new SimpleMailMessage(this.templateMessage);
 			msg.setSubject("Password Reset Request");
@@ -419,7 +419,7 @@ public class UserServiceDbAccessImpl extends ApplicationObjectSupport implements
 		String ws = "FormBuilder";
 		ValidationToken tokenEntity = new ValidationToken(
 				ValidationToken.TOKEN_TYPE.EMAIL_ACTIVATION);
-		User.getValidation_tokens().add(tokenEntity);
+		User.getValidationTokens().add(tokenEntity);
 		userDao.updateUser(User);
 		// Then email the token
 		SimpleMailMessage msg = new SimpleMailMessage(this.templateMessage);
@@ -445,7 +445,7 @@ public class UserServiceDbAccessImpl extends ApplicationObjectSupport implements
 	public Response validateToken(Long id, String token) throws AppException {
 		User user = this.getUserById(id);
 		String debugInfo = "token failed debug out:";
-		for (ValidationToken tokenEntity : user.getValidation_tokens()) {
+		for (ValidationToken tokenEntity : user.getValidationTokens()) {
 			debugInfo = "<br>tokenmatchcheck=";
 			if (tokenEntity.getToken().equals(token)) {
 				debugInfo += "true";
@@ -468,7 +468,7 @@ public class UserServiceDbAccessImpl extends ApplicationObjectSupport implements
 					}
 				}
 				case EMAIL_ACTIVATION: {
-					user.setIs_email_verified(true);
+					user.setEmailVerified(true);
 					userDao.updateUser(user);
 
 					return Response.status(200).entity("Thank you for activating your account!").build();
@@ -486,7 +486,7 @@ public class UserServiceDbAccessImpl extends ApplicationObjectSupport implements
 
 	public void tokenPasswordReset(Long id, String token, String password) throws AppException {
 		User user = this.getUserById(id);
-		for (ValidationToken tokenEntity : user.getValidation_tokens()) {
+		for (ValidationToken tokenEntity : user.getValidationTokens()) {
 			if (tokenEntity.getToken().equals(token) && tokenEntity.getExpiration_date().after(new Date())
 					&& tokenEntity.getToken_type() == ValidationToken.TOKEN_TYPE.PASSWORD_RESET) {
 				user.setPassword(password);

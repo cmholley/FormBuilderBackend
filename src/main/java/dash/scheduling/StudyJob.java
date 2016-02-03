@@ -46,7 +46,7 @@ public class StudyJob extends QuartzJobBean {
 		participants = new HashSet<String>();
 		for (String participant : study.getParticipants()) {
 			User user = userService.getUserByName(participant);
-			if (user.isIs_email_verified()) {
+			if (user.isEmailVerified()) {
 				participants.add(participant);
 			}
 		}

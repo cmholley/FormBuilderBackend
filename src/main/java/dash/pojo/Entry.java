@@ -26,12 +26,12 @@ public class Entry implements Serializable {
 	/** Corresponds to the question.index that this is an answer to */
 	@XmlElement(name = "question_id")
 	@Column(name = "question_id")
-	private Long question_id;
+	private Long questionId;
 
 	@GeneratedValue
 	@XmlElement(name = "entry_id")
 	@Column(name = "entry_id")
-	private Long entry_id;
+	private Long entryId;
 
 	/** Corresponds to the question.label that this is an answer to */
 	@XmlElement(name = "label")
@@ -48,7 +48,7 @@ public class Entry implements Serializable {
 
 	public Entry(Long question_id, String label, String value) {
 		super();
-		this.question_id = question_id;
+		this.questionId = question_id;
 		this.label = label;
 		this.value = value;
 	}
@@ -57,20 +57,20 @@ public class Entry implements Serializable {
 		return serialVersionUID;
 	}
 
-	public Long getEntry_id() {
-		return entry_id;
+	public Long getEntryId() {
+		return entryId;
 	}
 
-	public void setEntry_id(Long entry_id) {
-		this.entry_id = entry_id;
+	public void setEntryId(Long entryId) {
+		this.entryId = entryId;
 	}
 
-	public Long getQuestion_id() {
-		return question_id;
+	public Long getQuestionId() {
+		return questionId;
 	}
 
-	public void setQuestion_id(Long question_id) {
-		this.question_id = question_id;
+	public void setQuestionId(Long questionId) {
+		this.questionId = questionId;
 	}
 
 	public String getLabel() {

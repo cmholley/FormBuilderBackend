@@ -44,7 +44,7 @@ public class Form implements IAclObject, Serializable {
 	};
 
 	private static final long serialVersionUID = -8039686696076337053L;
-	
+
 	/** id of the form */
 	@Id
 	@GeneratedValue
@@ -65,18 +65,22 @@ public class Form implements IAclObject, Serializable {
 	@Column(name = "insertion_date")
 	@XmlElement(name = "insertion_date")
 	@XmlJavaTypeAdapter(DateISO8601Adapter.class)
-	private Date insertion_date;
+	private Date insertionDate;
 
 	@ElementCollection(fetch = FetchType.EAGER)
 	@CollectionTable(name = "questions", joinColumns = { @JoinColumn(name = "form_id") })
 	@XmlElement(name = "questions")
 	private Set<Question> questions = new HashSet<Question>();
 
-	@Column(name = "enabled")
+	//We explicitly notify hibernate that the column will be a bit to prevent 
+	//Errors during the schema validation
+	@Column(name = "enabled", columnDefinition = "BIT", length = 1)
 	@XmlElement(name = "enabled")
 	private boolean enabled;
 
-	@Column(name = "public")
+	//We explicitly notify hibernate that the column will be a bit to prevent 
+	//Errors during the schema validation
+	@Column(name = "public", columnDefinition = "BIT", length = 1)
 	@XmlElement(name = "public")
 	private boolean publi;
 
@@ -85,59 +89,65 @@ public class Form implements IAclObject, Serializable {
 	@XmlElement(name = "theme")
 	private THEME theme = THEME.PLAIN;
 
-	@Column(name = "redirect_to_url")
+	//We explicitly notify hibernate that the column will be a bit to prevent 
+	//Errors during the schema validation
+	@Column(name = "redirect_to_url", columnDefinition = "BIT", length = 1)
 	@XmlElement(name = "redirect_to_url")
-	private boolean redirect_to_url;
+	private boolean redirectToUrl;
 
-	@Column(name = "send_notification")
+	//We explicitly notify hibernate that the column will be a bit to prevent 
+	//Errors during the schema validation
+	@Column(name = "send_notification", columnDefinition = "BIT", length = 1)
 	@XmlElement(name = "send_notification")
-	private boolean send_notification;
+	private boolean sendNotification;
 
-	@Column(name = "send_receipt")
+	//We explicitly notify hibernate that the column will be a bit to prevent 
+	//Errors during the schema validation
+	@Column(name = "send_receipt", columnDefinition = "BIT", length = 1)
 	@XmlElement(name = "send_receipt")
-	private boolean send_receipt;
+	private boolean sendReceipt;
 
 	@Column(name = "email_message")
 	@XmlElement(name = "email_message") // Message for receipt email
-	private String email_message;
+	private String emailMessage;
 
 	@Column(name = "completed_message")
 	@XmlElement(name = "completed_message")
-	private String completed_message;
+	private String completedMessage;
 
 	@Column(name = "redirect_url")
 	@XmlElement(name = "redirect_url")
-	private String redirect_url;
+	private String redirectUrl;
 
 	@Column(name = "expiration_date")
 	@XmlElement(name = "expiration_date")
-	private Date expiration_date;
+	private Date expirationDate;
 
 	@Column(name = "closed_message")
 	@XmlElement(name = "closed_message")
-	private String closed_message;
+	private String closedMessage;
 
 	private HashMap<String, String> permissions;
 
 	@Column(name = "confirmation_recipient_email")
 	@XmlElement(name = "confirmation_recipient_email")
-	private String confirmation_recipient_email;
-	
+	private String confirmationRecipientEmail;
+
 	public Form() {
-		this.closed_message = "We're sorry, this form is closed";
-		this.completed_message = "Thank you for your submission, your response has been recorded";
-		this.email_message = "Thank you for completing this form. Your response has been recorded";
+		this.closedMessage = "We're sorry, this form is closed";
+		this.completedMessage = "Thank you for your submission, your response has been recorded";
+		this.emailMessage = "Thank you for completing this form. Your response has been recorded";
 		// User user =
 		// (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		// this.confirmation_recipient_email = user.getUsername();
 	}
-
-	public Set<Question> getQuestions() {
-		return questions;
+	
+	public Long getId() {
+		return id;
 	}
 
-	public void setQuestions(Set<Question> questions) {
-		this.questions = questions;
+	public void setId(Long id) {
+		this.id = id;
 	}
 
 	public String getName() {
@@ -148,116 +158,116 @@ public class Form implements IAclObject, Serializable {
 		this.name = name;
 	}
 
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	public Date getInsertion_date() {
-		return insertion_date;
-	}
-
-	public void setInsertion_date(Date insertion_date) {
-		this.insertion_date = insertion_date;
-	}
-
-	public boolean getEnabled() {
-		return enabled;
-	}
-
-	public void setEnabled(boolean newEnabled) {
-		this.enabled = newEnabled;
-	}
-
-	public boolean getPubli() {
-		return publi;
-	}
-
-	public void setPubli(boolean newPubli) {
-		this.publi = newPubli;
-	}
-
-	public THEME getTheme() {
-		return theme;
-	}
-
-	public void setTheme(THEME newTheme) {
-		this.theme = newTheme;
-	}
-
-	public boolean getRedirect_to_url() {
-		return redirect_to_url;
-	}
-
-	public void setRedirect_to_url(boolean newRedirect_to_url) {
-		this.redirect_to_url = newRedirect_to_url;
-	}
-
-	public boolean getSend_notification() {
-		return send_notification;
-	}
-
-	public void setSend_notification(boolean newSend_notification) {
-		this.send_notification = newSend_notification;
-	}
-
-	public boolean getSend_receipt() {
-		return send_receipt;
-	}
-
-	public void setSend_receipt(boolean newSend_receipt) {
-		this.send_receipt = newSend_receipt;
-	}
-
-	public String getEmail_message() {
-		return email_message;
-	}
-
-	public void setEmail_message(String newEmail_message) {
-		this.email_message = newEmail_message;
-	}
-
-	public String getCompleted_message() {
-		return completed_message;
-	}
-
-	public void setCompleted_message(String newCompleted_message) {
-		this.completed_message = newCompleted_message;
-	}
-
-	public String getRedirect_url() {
-		return redirect_url;
-	}
-
-	public void setRedirect_url(String newRedirect_url) {
-		this.redirect_url = newRedirect_url;
-	}
-
-	public Date getExpiration_date() {
-		return expiration_date;
-	}
-
-	public void setExpiration_date(Date newExpiration_date) {
-		this.expiration_date = newExpiration_date;
-	}
-
-	public String getClosed_message() {
-		return closed_message;
-	}
-
-	public void setClosed_message(String newClosed_message) {
-		this.closed_message = newClosed_message;
-	}
-
 	public String getSubtitle() {
 		return subtitle;
 	}
 
 	public void setSubtitle(String subtitle) {
 		this.subtitle = subtitle;
+	}
+
+	public Date getInsertionDate() {
+		return insertionDate;
+	}
+
+	public void setInsertionDate(Date insertionDate) {
+		this.insertionDate = insertionDate;
+	}
+
+	public Set<Question> getQuestions() {
+		return questions;
+	}
+
+	public void setQuestions(Set<Question> questions) {
+		this.questions = questions;
+	}
+
+	public boolean isEnabled() {
+		return enabled;
+	}
+
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
+	}
+
+	public boolean isPubli() {
+		return publi;
+	}
+
+	public void setPubli(boolean publi) {
+		this.publi = publi;
+	}
+
+	public THEME getTheme() {
+		return theme;
+	}
+
+	public void setTheme(THEME theme) {
+		this.theme = theme;
+	}
+
+	public boolean isRedirectToUrl() {
+		return redirectToUrl;
+	}
+
+	public void setRedirectToUrl(boolean redirectToUrl) {
+		this.redirectToUrl = redirectToUrl;
+	}
+
+	public boolean isSendNotification() {
+		return sendNotification;
+	}
+
+	public void setSendNotification(boolean sendNotification) {
+		this.sendNotification = sendNotification;
+	}
+
+	public boolean isSendReceipt() {
+		return sendReceipt;
+	}
+
+	public void setSendReceipt(boolean sendReceipt) {
+		this.sendReceipt = sendReceipt;
+	}
+
+	public String getEmailMessage() {
+		return emailMessage;
+	}
+
+	public void setEmailMessage(String emailMessage) {
+		this.emailMessage = emailMessage;
+	}
+
+	public String getCompletedMessage() {
+		return completedMessage;
+	}
+
+	public void setCompletedMessage(String completedMessage) {
+		this.completedMessage = completedMessage;
+	}
+
+	public String getRedirectUrl() {
+		return redirectUrl;
+	}
+
+	public void setRedirectUrl(String redirectUrl) {
+		this.redirectUrl = redirectUrl;
+	}
+
+	public Date getExpirationDate() {
+		return expirationDate;
+	}
+
+	public void setExpirationDate(Date expirationDate) {
+		this.expirationDate = expirationDate;
+	}
+
+	public String getClosedMessage() {
+		return closedMessage;
+	}
+
+	public void setClosedMessage(String closedMessage) {
+		this.closedMessage = closedMessage;
 	}
 
 	public HashMap<String, String> getPermissions() {
@@ -268,26 +278,27 @@ public class Form implements IAclObject, Serializable {
 		this.permissions = permissions;
 	}
 
-	public String getConfirmation_recipient_email() {
-		return confirmation_recipient_email;
+	public String getConfirmationRecipientEmail() {
+		return confirmationRecipientEmail;
 	}
 
-	public void setConfirmation_recipient_email(String confirmation_recipient_email) {
-		this.confirmation_recipient_email = confirmation_recipient_email;
+	public void setConfirmationRecipientEmail(String confirmationRecipientEmail) {
+		this.confirmationRecipientEmail = confirmationRecipientEmail;
 	}
 
-	//Tests for the expiration of the particular form at the current time. 
+
+	// Tests for the expiration of the particular form at the current time.
 	public boolean isExpired() {
-		if (expiration_date == null) {
+		if (expirationDate == null) {
 			return false;
 		}
-		if (expiration_date.before(new Date())) {
+		if (expirationDate.before(new Date())) {
 			return true;
 		} else {
 			return false;
 		}
 	}
-	
+
 	public static long getSerialversionuid() {
 		return serialVersionUID;
 	}

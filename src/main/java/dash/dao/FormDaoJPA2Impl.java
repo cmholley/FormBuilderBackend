@@ -72,7 +72,7 @@ public class FormDaoJPA2Impl implements FormDao {
 	@Override
 	public Long createForm(Form form) {
 
-		form.setInsertion_date(new Date());
+		form.setInsertionDate(new Date());
 		entityManager.persist(form);
 		// entityManager.flush();// force insert to receive the id of the form
 

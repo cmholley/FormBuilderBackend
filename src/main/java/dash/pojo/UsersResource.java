@@ -143,7 +143,7 @@ public class UsersResource {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		String username = ((UserDetails) auth.getPrincipal()).getUsername();
 		User user = userService.getUserByName(username);
-		if (user.isIs_email_verified())
+		if (user.isEmailVerified())
 			return Response.status(200).entity(new GenericEntity<User>(user) {
 			}).build();
 		else

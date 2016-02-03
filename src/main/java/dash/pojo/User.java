@@ -64,12 +64,12 @@ public class User implements Serializable {
 	private String password;
 
 	/** firstname of the user */
-	@Column(name = "firstName")
+	@Column(name = "first_name")
 	@XmlElement(name = "firstName")
 	private String firstName;
 
 	/** lastname of the user */
-	@Column(name = "lastName")
+	@Column(name = "last_name")
 	@XmlElement(name = "lastName")
 	private String lastName;
 
@@ -79,12 +79,12 @@ public class User implements Serializable {
 	private String city;
 
 	/** home phone number of the user */
-	@Column(name = "homePhone")
+	@Column(name = "home_phone")
 	@XmlElement(name = "homePhone")
 	private String homePhone;
 
 	/** cellPhone number of the user */
-	@Column(name = "cellPhone")
+	@Column(name = "cell_phone")
 	@XmlElement(name = "cellPhone")
 	private String cellPhone;
 
@@ -94,7 +94,7 @@ public class User implements Serializable {
 	private String email;
 
 	/** path to stored picture of the user */
-	@Column(name = "picturePath")
+	@Column(name = "picture_path")
 	@XmlElement(name = "picturePath")
 	private String picturePath;
 
@@ -106,25 +106,26 @@ public class User implements Serializable {
 	private Map<Long, Long> activeStudies = new HashMap<Long, Long>();
 
 	@Enumerated(EnumType.STRING)
-	@Column(name = "notificationPreference")
+	@Column(name = "notification_preference")
 	@XmlElement(name = "notificationPreference")
 	private NOTIFICATION_PREFERENCE notificationPreference = NOTIFICATION_PREFERENCE.EMAIL;
 
 	/** insertion date in the database */
-	@Column(name = "insertionDate")
+	@Column(name = "insertion_date")
 	@XmlElement(name = "insertionDate")
 	@XmlJavaTypeAdapter(DateISO8601Adapter.class)
 	private Date insertionDate;
 
-	@Column(name = "is_email_verified")
+	//We explicitly notify hibernate that the column will be a bit to prevent 
+	//Errors during the schema validation
+	@Column(name = "email_verified", columnDefinition = "BIT", length = 1)
 	@XmlElement(name = "is_email_verified")
-	private boolean is_email_verified;
+	private boolean emailVerified;
 
 	@ElementCollection(fetch = FetchType.EAGER)
 	@CollectionTable(name = "validation_tokens", joinColumns = { @JoinColumn(name = "user_id") })
 	@XmlTransient
-	private Set<ValidationToken> validation_tokens = new HashSet<ValidationToken>();
-
+	private Set<ValidationToken> validationTokens = new HashSet<ValidationToken>();
 
 	public User(String username, String password, String firstName, String lastName, String city, String homePhone,
 			String cellPhone, String email, String picturePath) {
@@ -141,6 +142,14 @@ public class User implements Serializable {
 	}
 
 	public User() {
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
 	}
 
 	public String getUsername() {
@@ -207,30 +216,6 @@ public class User implements Serializable {
 		this.email = email;
 	}
 
-	public String getPicture() {
-		return picturePath;
-	}
-
-	public void setPicture(String picturePath) {
-		this.picturePath = picturePath;
-	}
-
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	public Date getInsertionDate() {
-		return insertionDate;
-	}
-
-	public void setInsertionDate(Date insertionDate) {
-		this.insertionDate = insertionDate;
-	}
-
 	public String getPicturePath() {
 		return picturePath;
 	}
@@ -255,20 +240,28 @@ public class User implements Serializable {
 		this.notificationPreference = notificationPreference;
 	}
 
-	public boolean isIs_email_verified() {
-		return is_email_verified;
+	public Date getInsertionDate() {
+		return insertionDate;
 	}
 
-	public void setIs_email_verified(boolean is_email_verified) {
-		this.is_email_verified = is_email_verified;
+	public void setInsertionDate(Date insertionDate) {
+		this.insertionDate = insertionDate;
 	}
 
-	public Set<ValidationToken> getValidation_tokens() {
-		return validation_tokens;
+	public boolean isEmailVerified() {
+		return emailVerified;
 	}
 
-	public void setValidation_tokens(Set<ValidationToken> validation_tokens) {
-		this.validation_tokens = validation_tokens;
+	public void setEmailVerified(boolean isEmailVerified) {
+		this.emailVerified = isEmailVerified;
+	}
+
+	public Set<ValidationToken> getValidationTokens() {
+		return validationTokens;
+	}
+
+	public void setValidationTokens(Set<ValidationToken> validationTokens) {
+		this.validationTokens = validationTokens;
 	}
 
 	public static long getSerialversionuid() {

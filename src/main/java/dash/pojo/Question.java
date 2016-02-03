@@ -37,15 +37,17 @@ public class Question implements Serializable {
 	@GeneratedValue
 	@XmlElement(name = "question_id")
 	@Column(name = "question_id")
-	private Long question_id;
+	private Long questionId;
 
 	/**
 	 * Can this question be changed, possibly useful to prevent accidental
 	 * removal of a question which is critical to an organization or is a
 	 * dependency for an external application
 	 */
+	//We explicitly notify hibernate that the column will be a bit to prevent 
+	//Errors during the schema validation
 	@XmlElement(name = "editable")
-	@Column(name = "editable")
+	@Column(name = "editable", columnDefinition = "BIT", length = 1)
 	private boolean editable = true;
 
 	/** The order in which this question appears on the form it belongs to. */
@@ -81,8 +83,10 @@ public class Question implements Serializable {
 	private String options = "[]";
 
 	/** Must the question have a response in order to submit the form */
+	//We explicitly notify hibernate that the column will be a bit to prevent 
+	//Errors during the schema validation
 	@XmlElement(name = "required")
-	@Column(name = "required")
+	@Column(name = "required", columnDefinition = "BIT", length = 1)
 	private boolean required;
 
 	/**
@@ -124,11 +128,11 @@ public class Question implements Serializable {
 	}
 
 	public Long getQuestion_id() {
-		return question_id;
+		return questionId;
 	}
 
 	public void setQuestion_id(Long question_id) {
-		this.question_id = question_id;
+		this.questionId = question_id;
 	}
 
 	public boolean isEditable() {

@@ -88,7 +88,7 @@ public class FormResponseServiceDbAccessImpl extends ApplicationObjectSupport im
 		if (questions != null && formResponse.getEntries().isEmpty()) {
 			for (Question question : questions) {
 				Entry entry = new Entry();
-				entry.setQuestion_id(question.getQuestion_id());
+				entry.setQuestionId(question.getQuestion_id());
 				entry.setLabel(question.getLabel());
 				entries.add(entry);
 			}
@@ -140,7 +140,7 @@ public class FormResponseServiceDbAccessImpl extends ApplicationObjectSupport im
 		msg.setFrom("NOREPLY@Housuggest.org");
 		msg.setTo(formResponse.getResponderEmail());
 		msg.setSubject("Confirmation Receipt for FormBuilder Form: " + form.getName());
-		msg.setText(form.getEmail_message());
+		msg.setText(form.getEmailMessage());
 		try {
 			this.mailSender.send(msg);
 		} catch (MailException ex) {
@@ -157,7 +157,7 @@ public class FormResponseServiceDbAccessImpl extends ApplicationObjectSupport im
 			MimeMessageHelper helper = new MimeMessageHelper(message, true);
 			helper.setFrom("NOREPLY@Housuggest.org");
 			helper.setFrom(templateMessage.getFrom());
-			helper.setTo(form.getConfirmation_recipient_email());
+			helper.setTo(form.getConfirmationRecipientEmail());
 			helper.setSubject("Response Alert for FormBuilder form: " + form.getName());
 			helper.setText(generateHTML(formResponse, form), true);
 
@@ -178,7 +178,7 @@ public class FormResponseServiceDbAccessImpl extends ApplicationObjectSupport im
 
 		HashMap<Integer, String> htmlList = new HashMap<Integer, String>();
 		for (Entry entry : formResponse.getEntries()) {
-			long questionID = entry.getQuestion_id();
+			long questionID = entry.getQuestionId();
 			String component = null;
 			String temp;
 			int index = 0;
@@ -376,7 +376,7 @@ public class FormResponseServiceDbAccessImpl extends ApplicationObjectSupport im
 			if (formResponse.getSend_receipt()) // Sends Confirmation Email to
 												// Responder
 				this.sendReceiptEmail(formResponse, form);
-			if (form.getSend_notification())
+			if (form.isSendNotification())
 				this.sendEmbeddedResponse(formResponse, form);
 		}
 	}

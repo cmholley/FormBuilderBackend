@@ -65,7 +65,9 @@ public class FormResponse implements IAclObject {
 	@XmlJavaTypeAdapter(DateISO8601Adapter.class)
 	private Date latest_update;
 
-	@Column(name = "is_complete")
+	//We explicitly notify hibernate that the column will be a bit to prevent 
+	//Errors during the schema validation
+	@Column(name = "is_complete", columnDefinition = "BIT", length = 1)
 	@XmlElement(name = "is_complete")
 	private boolean is_complete;
 
@@ -82,7 +84,9 @@ public class FormResponse implements IAclObject {
 	@XmlElement(name = "entries")
 	private Set<Entry> entries = new HashSet<Entry>();
 
-	@Column(name = "send_receipt")
+	//We explicitly notify hibernate that the column will be a bit to prevent 
+	//Errors during the schema validation
+	@Column(name = "send_receipt", columnDefinition = "BIT", length = 1)
 	@XmlElement(name = "send_receipt")
 	private boolean send_receipt;
 
